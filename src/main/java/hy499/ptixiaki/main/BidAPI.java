@@ -55,25 +55,44 @@ public class BidAPI {
                         new Gson().toJsonTree(null)));
     }
 
+    public String getReqHandler(Request req, Response res) {
+        if (req.queryParams("BID") != null) {
+            return getABid(req, res);
+        } else if (req.queryParams("LID") != null) {
+            return getAllBidsForAListing(req, res);
+        } else if (req.queryParams("UID") != null) {
+            return getAllUserBids(req, res);
+        } else if (req.queryParams("selected") != null) {
+            return getAllSelectedBids(req, res);
+        }
+        return getAllBids(req, res);
+    }
+
     public String getAllBids(Request req, Response res) {
         Map<String, Bid> bids = bidService.getBids();
         return createResponse(res, bids);
     }
 
     public String getAllUserBids(Request req, Response res) {
-        String UID = req.params(":UID");
+        String UID = req.queryParams("UID");
         Map<String, Bid> bids = bidService.getBidsFromAUser(UID);
         return createResponse(res, bids);
     }
 
     public String getAllBidsForAListing(Request req, Response res) {
-        String LID = req.params(":LID");
+        String LID = req.queryParams("LID");
         Map<String, Bid> listingBids = bidService.getListingBids(LID);
         return createResponse(res, listingBids);
     }
 
+    public String getAllSelectedBids(Request req, Response res) {
+        Boolean selected = Boolean.valueOf(req.queryParams("selected"));
+        Map<String, Bid> listingBids = bidService.getSelectedBids(selected);
+        return createResponse(res, listingBids);
+    }
+
     public String getABid(Request req, Response res) {
-        String BID = req.params(":BID");
+        String BID = req.queryParams("BID");
         Bid bid = bidService.getBid(BID);
         return createResponse(res, bid, bid != null);
     }

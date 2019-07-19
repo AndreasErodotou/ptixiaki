@@ -55,19 +55,28 @@ public class TimetableAPI {
                         new Gson().toJsonTree(null)));
     }
 
+    public String getReqHandler(Request req, Response res) {
+        if (req.queryParams("LID") != null) {
+            return getATimetableEvent(req, res);
+        } else if (req.queryParams("UID") != null) {
+            return getAllUserEvents(req, res);
+        }
+        return getAllTimetableEvents(req, res);
+    }
+
     public String getAllTimetableEvents(Request req, Response res) {
         Map<String, TimetableEvent> timetableEvents = timetableService.getTimetableEvents();
         return createResponse(res, timetableEvents);
     }
 
     public String getAllUserEvents(Request req, Response res) {
-        String UID = req.params(":UID");
+        String UID = req.queryParams("UID");
         Map<String, TimetableEvent> timetableEvents = timetableService.getUserTimetableEvents(UID);
         return createResponse(res, timetableEvents);
     }
 
     public String getATimetableEvent(Request req, Response res) {
-        String LID = req.params(":LID");
+        String LID = req.queryParams("LID");
         TimetableEvent timetableEvent = timetableService.getTimetableEvent(LID);
         return createResponse(res, timetableEvent, timetableEvent != null);
     }

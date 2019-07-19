@@ -198,7 +198,13 @@ public class ReviewService {
 
     public Review getReview(String RID) {
 
-        return reviews.get(RID);
+        Review review = reviews.get(RID);
+        if (review == null) {
+            reviewMsg = "There Are No Review With RID = " + RID;
+        } else {
+            reviewMsg = "Review With RID = " + RID;
+        }
+        return review;
     }
 
     public Map<String, Review> getReviews() {

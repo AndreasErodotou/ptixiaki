@@ -55,6 +55,15 @@ public class ListingAPI {
                         new Gson().toJsonTree(null)));
     }
 
+    public String getReqHandler(Request req, Response res) {
+        if (req.queryParams("LID") != null) {
+            return getAListing(req, res);
+        } else if (req.queryParams("UID") != null) {
+            return getAllUserListings(req, res);
+        }
+        return getAllListings(req, res);
+    }
+
     public String getAllListings(Request req, Response res) {
 
         Map<String, Listing> listings = listingService.getListings();
@@ -62,13 +71,13 @@ public class ListingAPI {
     }
 
     public String getAllUserListings(Request req, Response res) {
-        String UID = req.params(":UID");
+        String UID = req.queryParams("UID");
         Map<String, Listing> listings = listingService.getUserListings(UID);
         return createResponse(res, listings);
     }
 
     public String getAListing(Request req, Response res) {
-        String LID = req.params(":LID");
+        String LID = req.queryParams("LID");
         Listing listing = listingService.getListing(LID);
         return createResponse(res, listing, listing != null);
     }

@@ -58,9 +58,9 @@ public class ListingService {
                 if (listing.getMax_price() > 0 && listing.getMax_price() != preExistListing.getMax_price()) {
                     preExistListing.setMax_price(listing.getMax_price());
                 }
-                if (listing.getPic() != null && !listing.getPic().equals(preExistListing.getPic())) {
-                    preExistListing.setPic(listing.getPic());
-                }
+//                if (listing.getPic() != null && !listing.getPic().equals(preExistListing.getPic())) {
+//                    preExistListing.setPic(listing.getPic());
+//                }
                 if (listing.getTitle() != null && !listing.getTitle().equals(preExistListing.getTitle())) {
                     preExistListing.setTitle(listing.getTitle());
                 }
@@ -68,7 +68,7 @@ public class ListingService {
                 listingMsg = "Listing Edited";
                 return preExistListing;
             }
-            listingMsg = "Bid Does Not Exist!!";
+            listingMsg = "Listing Does Not Exist!!";
         }
         return null;
     }
@@ -106,10 +106,10 @@ public class ListingService {
                 listingMsg += "Price Cannot Be Less Than 0\n";
             }
             if (listing.getAvailable_from() == null) {
-                listingMsg += "Available Hours Cannot Be Blank\n";
+                listingMsg += "Available From Cannot Be Blank\n";
             }
             if (listing.getAvailable_until() == null) {
-                listingMsg += "Expiration Cannot Be Blank\n";
+                listingMsg += "Available until Cannot Be Blank\n";
             }
             if (listing.getDescription() == null) {
                 listingMsg += "Description Cannot Be Blank\n";
@@ -131,22 +131,22 @@ public class ListingService {
             }
             return listingMsg.isEmpty();
         }
-        listingMsg = "Bid Cannot Be Null";
+        listingMsg = "Listing Cannot Be Null";
         return false;
     }
 
     public Map<String, Listing> getUserListings(String UID) {
         Map<String, Listing> userListings = new HashMap<>();
-        Set<String> bidKeys = listings.keySet();
-        for (String key : bidKeys) {
+        Set<String> listingKeys = listings.keySet();
+        for (String key : listingKeys) {
             if (listings.get(key).getUID().equals(UID)) {
                 userListings.put(key, listings.get(key));
             }
         }
         if (userListings.isEmpty()) {
-            listingMsg = "There Are No Bids From This User";
+            listingMsg = "There Are No Listings From This User";
         } else {
-            listingMsg = "User Bids";
+            listingMsg = "User Listings";
         }
         return userListings;
     }
@@ -163,7 +163,13 @@ public class ListingService {
     }
 
     public Map<String, Listing> getListings() {
-        return listings;
+        if (!listings.isEmpty()) {
+            listingMsg = "All Listings";
+            return listings;
+        } else {
+            listingMsg = "There Are No Listings";
+        }
+        return null;
     }
 
     public void setListings(Map<String, Listing> listings) {

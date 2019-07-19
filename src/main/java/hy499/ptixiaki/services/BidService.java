@@ -3,6 +3,7 @@ package hy499.ptixiaki.services;
 import hy499.ptixiaki.data.Bid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -109,10 +110,28 @@ public class BidService {
         Set<String> listingBidsKeys = listingBids.keySet();
         for (String key : listingBidsKeys) {
             if (listingBids.get(key).getUID().equals(UID)) {
+                bidMsg = "User Bid From Listing With LID = " + LID;
                 return listingBids.get(key);
             }
         }
+        bidMsg = "There Are No Bid From This User For The Listing With LID = " + LID;
         return null;
+    }
+
+    public Map<String, Bid> getSelectedBids(Boolean selected) {
+        Map<String, Bid> selectedBids = new HashMap<>();
+        Set<String> bidKeys = bids.keySet();
+        for (String key : bidKeys) {
+            if (Objects.equals(bids.get(key).getSelected(), selected)) {
+                selectedBids.put(key, bids.get(key));
+            }
+        }
+        if (selectedBids.isEmpty()) {
+            bidMsg = "There Are No Bids With Field Selected = " + selected;
+        } else {
+            bidMsg = "All Bids With Field Selected = " + selected;
+        }
+        return selectedBids;
     }
 
     public int getListingBidsSum(String LID) {
@@ -189,11 +208,22 @@ public class BidService {
         return false;
     }
 
-    public Bid getBid(String UID) {
-        return bids.get(UID);
+    public Bid getBid(String BID) {
+        Bid bid = bids.get(BID);
+        if (bid == null) {
+            bidMsg = "There Are No Bid With BID = " + BID;
+        } else {
+            bidMsg = "Bid With BID = " + BID;
+        }
+        return bid;
     }
 
     public Map<String, Bid> getBids() {
+        if (bids.isEmpty()) {
+            bidMsg = "There Are No Bids";
+        } else {
+            bidMsg = "All Bids";
+        }
         return bids;
     }
 

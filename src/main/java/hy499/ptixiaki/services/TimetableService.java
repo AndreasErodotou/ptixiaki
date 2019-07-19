@@ -103,11 +103,14 @@ public class TimetableService {
             if (timetableEvent.getUID() == null) {
                 timetableMsg += "UID Cannot Be Blank\n";
             }
-            if (timetableEvent.getDate() != null) {
+            if (timetableEvent.getDate() == null) {
                 timetableMsg += "Date Cannot Be Blank";
             }
             if (timetableEvent.getLID() == null) {
                 timetableMsg += "LID Decription Cannot Be Blank\n";
+            }
+            if (timetableEvent.getDuration() <= 0) {
+                timetableMsg += "Duration Cannot Be Less Than 1\n";
             }
             return timetableMsg.isEmpty();
         }
@@ -124,6 +127,11 @@ public class TimetableService {
     }
 
     public Map<String, TimetableEvent> getTimetableEvents() {
+        if (timetableEvents.isEmpty()) {
+            timetableMsg = "There Are No Events";
+        } else {
+            timetableMsg = "Events";
+        }
         return timetableEvents;
     }
 

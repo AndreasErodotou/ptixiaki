@@ -61,6 +61,16 @@ public class UserAPI {
                         new Gson().toJsonTree(null)));
     }
 
+    public String getReqHandler(Request req, Response res) {
+        String param = req.splat()[0];
+        if (param.equals("customers")) {
+            return getAllCustomers(req, res);
+        } else if (param.equals("professionals")) {
+            return getAllProfessionals(req, res);
+        }
+        return getUser(req, res);
+    }
+
     public String getAllUsers(Request req, Response res) {
         Map<String, User> users = userService.getUsers();
         return createResponse(res, users);
@@ -77,7 +87,7 @@ public class UserAPI {
     }
 
     public String getUser(Request req, Response res) {
-        String UID = req.params(":user");
+        String UID = req.splat()[0];
         User user = userService.getUser(UID);
         return createResponse(res, user, user != null);
     }
@@ -94,7 +104,7 @@ public class UserAPI {
 
     public String editUser(Request req, Response res) throws ParseException {
         User user;
-        String UID = req.params(":user");
+        String UID = req.params(":UID");
         if (req.body().contains("CUSTOMER")) {
             user = gson.fromJson(req.body(), Customer.class);
         } else {
@@ -107,7 +117,7 @@ public class UserAPI {
     }
 
     public String deleteUser(Request req, Response res) {
-        String UID = req.params(":user");
+        String UID = req.params(":UID");
         User user = userService.deleteUser(UID);
         return createResponse(res, user, user != null);
     }

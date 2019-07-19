@@ -55,6 +55,20 @@ public class ReviewAPI {
                         new Gson().toJsonTree(null)));
     }
 
+    public String getReqHandler(Request req, Response res) {
+        if (req.queryParams("RID") != null) {
+            return getAReview(req, res);
+        } else if (req.queryParams("UID") != null) {
+            if (req.queryParams("TO_UID") != null) {
+                return getAllUserReviewsToAUser(req, res);
+            }
+            return getAllUserReviews(req, res);
+        } else if (req.queryParams("TO_UID") != null) {
+            return getAllReviewsMadeForAUser(req, res);
+        }
+        return getAllReviews(req, res);
+    }
+
     public String getAllReviews(Request req, Response res) {
 
         Map<String, Review> reviews = reviewService.getReviews();
@@ -62,7 +76,6 @@ public class ReviewAPI {
     }
 
     public String getAllUserReviews(Request req, Response res) {
-//        String UID = req.params(":UID");
         String UID = req.queryParams("UID");
         Map<String, Review> reviews = reviewService.getReviewsFromAUser(UID);
         return createResponse(res, reviews);
@@ -76,14 +89,12 @@ public class ReviewAPI {
     }
 
     public String getAllReviewsMadeForAUser(Request req, Response res) {
-//        String TO_UID = req.params(":TO_UID");
         String TO_UID = req.queryParams("TO_UID");
         Map<String, Review> reviews = reviewService.getReviewsToAUser(TO_UID);
         return createResponse(res, reviews);
     }
 
     public String getAReview(Request req, Response res) {
-//        String RID = req.params(":RID");
         String RID = req.queryParams("RID");
         Review review = reviewService.getReview(RID);
         return createResponse(res, review, review != null);

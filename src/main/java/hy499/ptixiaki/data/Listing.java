@@ -5,8 +5,8 @@
  */
 package hy499.ptixiaki.data;
 
-import javafx.scene.image.Image;
 import hy499.ptixiaki.data.Professional.Locations;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -18,7 +18,7 @@ public class Listing {
     private String LID;
     private String title;
     private String description;
-    private Image pic;
+    private ArrayList<String> pics;
     private Date available_from;
     private Date available_until;
 
@@ -31,7 +31,7 @@ public class Listing {
         LID = "";
         title = "";
         description = "";
-        pic = null;
+        pics = new ArrayList<>();
         available_from = null;
         available_until = null;
         location = null;
@@ -39,12 +39,12 @@ public class Listing {
         max_price = -1;
     }
 
-    public Listing(String UID, String LID, String title, String description, Image pic, Date available_from, Date available_until, Locations location, String jobCategory, double max_price, Date expiration) {
+    public Listing(String UID, String LID, String title, String description, ArrayList<String> pics, Date available_from, Date available_until, Locations location, String jobCategory, double max_price, Date expiration) {
         this.UID = UID;
         this.LID = LID;
         this.title = title;
         this.description = description;
-        this.pic = pic;
+        this.pics = pics;
         this.available_from = available_from;
         this.available_until = available_until;
         this.location = location;
@@ -84,12 +84,12 @@ public class Listing {
         this.description = description;
     }
 
-    public Image getPic() {
-        return pic;
+    public ArrayList<String> getPics() {
+        return pics;
     }
 
-    public void setPic(Image pic) {
-        this.pic = pic;
+    public void setPics(ArrayList<String> pics) {
+        this.pics = pics;
     }
 
     public Date getAvailable_from() {

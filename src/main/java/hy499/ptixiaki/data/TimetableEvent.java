@@ -5,7 +5,6 @@
  */
 package hy499.ptixiaki.data;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 /**
  *
@@ -13,22 +12,21 @@ import java.util.Date;
  */
 public class TimetableEvent {
     private String UID;
-    private String date;
+    private Date date;
     private String LID;
+    private double duration;
 
-//    private int year;
-//
-//    private int week;
-//
-//    private Days day;
-
-//
-//    private String title;
-//    private String Description;
     public TimetableEvent() {
         UID = "";
         date = null;
         LID = "";
+    }
+
+    public TimetableEvent(String UID, Date date, String LID, double duration) {
+        this.UID = UID;
+        this.date = date;
+        this.LID = LID;
+        this.duration = duration;
     }
 
     public String getUID() {
@@ -39,34 +37,21 @@ public class TimetableEvent {
         this.UID = UID;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public void setDate(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("DD-MM-YYYY");
-        this.date = formatter.format(date);
+    public double getDuration() {
+        return duration;
     }
 
-//    public String getTitle() {
-//        return title;
-//    }
-//
-//    public void setTitle(String title) {
-//        this.title = title;
-//    }
-//
-//    public String getDescription() {
-//        return Description;
-//    }
-//
-//    public void setDescription(String Description) {
-//        this.Description = Description;
-//    }
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
 
     public String getLID() {
         return LID;
@@ -76,7 +61,4 @@ public class TimetableEvent {
         this.LID = LID;
     }
 
-//    public enum Days {
-//        monday, tuesday, wednesday, thursday, friday, saturday, sunday
-//    }
 }
