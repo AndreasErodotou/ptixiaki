@@ -25,11 +25,11 @@ public class UserService {
     private String userMsg;
     private final UserDB userDB;
 
-    public UserService() throws SQLException {
-        customers = new HashMap();
-        professionals = new HashMap();
+    public UserService() throws SQLException, ClassNotFoundException {
         userMsg = "";
         userDB = new UserDB();
+        customers = userDB.getUsers();
+        professionals = userDB.getUsers();
     }
 
     public Boolean addUser(User user) throws ClassNotFoundException {
@@ -41,6 +41,7 @@ public class UserService {
             } else {
                 customers.put(uniqueID, user);
             }
+            userDB.addUser(user);
             userMsg = "User Added";
             return true;
         }
@@ -133,17 +134,16 @@ public class UserService {
         return null;
     }
 
-//  todo: check alla user fields...
     private Boolean checkFieldsBeforeAdd(User user) {
         userMsg = "";
         if (user != null) {
-            if (user.getName() == null) {
+            if (user.getName() == null || user.getName().isEmpty()) {
                 userMsg += "Name Cannot Be Blank\n";
             }
-            if (user.getSurname() == null) {
+            if (user.getSurname() == null || user.getSurname().isEmpty()) {
                 userMsg += "Surname Cannot Be Blank\n";
             }
-            if (user.getUsername() == null) {
+            if (user.getUsername() == null || user.getUsername().isEmpty()) {
                 userMsg += "Username Cannot Be Blank\n";
             }
             if (user.getAccountType() == null) {
@@ -152,16 +152,16 @@ public class UserService {
             if (user.getGender() == null) {
                 userMsg += "Gender Cannot Be Blank\n";
             }
-//            if (user.getBday() == null) {
-//                userMsg += "Birthday Cannot Be Blank\n";
-//            }
-            if (user.getAddress() == null) {
+            if (user.getBday() == null) {
+                userMsg += "Birthday Cannot Be Blank\n";
+            }
+            if (user.getAddress() == null || user.getAddress().isEmpty()) {
                 userMsg += "Address Cannot Be Blank\n";
             }
-            if (user.getEmail() == null) {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
                 userMsg += "Email Cannot Be Blank\n";
             }
-            if (user.getPhoneNum() == null) {
+            if (user.getPhoneNum() == null || user.getPhoneNum().isEmpty()) {
                 userMsg += "Phone Number Cannot Be Blank\n";
             }
             return userMsg.isEmpty();

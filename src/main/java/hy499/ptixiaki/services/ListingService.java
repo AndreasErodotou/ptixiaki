@@ -24,17 +24,18 @@ public class ListingService {
     private String listingMsg;
     private final ListingDB listingDB;
 
-    public ListingService() throws SQLException {
-        listings = new HashMap();
+    public ListingService() throws SQLException, ClassNotFoundException {
         listingMsg = "";
         listingDB = new ListingDB();
+        listings = listingDB.getListings();
     }
 
-    public Boolean addListing(Listing listing) {
+    public Boolean addListing(Listing listing) throws ClassNotFoundException {
         if (checkFieldsBeforeAdd(listing)) {
             String uniqueLID = UUID.randomUUID().toString();
             listing.setLID(uniqueLID);
             listings.put(uniqueLID, listing);
+            listingDB.addListing(listing);
             listingMsg = "Listing Added";
             return true;
         }
@@ -63,6 +64,7 @@ public class ListingService {
                 if (listing.getMax_price() > 0 && listing.getMax_price() != preExistListing.getMax_price()) {
                     preExistListing.setMax_price(listing.getMax_price());
                 }
+//                todo: check array list with pics
 //                if (listing.getPic() != null && !listing.getPic().equals(preExistListing.getPic())) {
 //                    preExistListing.setPic(listing.getPic());
 //                }

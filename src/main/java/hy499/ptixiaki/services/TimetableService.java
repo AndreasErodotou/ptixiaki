@@ -22,15 +22,16 @@ public class TimetableService {
     private String timetableMsg;
     private final TimetableEventDB timetableEventDB;
 
-    public TimetableService() {
-        timetableEvents = new HashMap();
+    public TimetableService() throws ClassNotFoundException {
         timetableMsg = "";
         timetableEventDB = new TimetableEventDB();
+        timetableEvents = timetableEventDB.getEvents();
     }
 
-    public Boolean addTimetableEvent(TimetableEvent timetableEvent) {
+    public Boolean addTimetableEvent(TimetableEvent timetableEvent) throws ClassNotFoundException {
         if (checkFieldsBeforeAdd(timetableEvent)) {
             timetableEvents.put(timetableEvent.getLID(), timetableEvent);
+            timetableEventDB.addEvent(timetableEvent);
             timetableMsg = "Timetable Event Added";
             return true;
         }

@@ -15,18 +15,21 @@ public class TimetableEvent {
     private Date date;
     private String LID;
     private double duration;
+    private String wonBID;
 
     public TimetableEvent() {
         UID = "";
         date = null;
         LID = "";
+        wonBID = "";
     }
 
-    public TimetableEvent(String UID, Date date, String LID, double duration) {
+    public TimetableEvent(String UID, Date date, String LID, double duration, String wonBID) {
         this.UID = UID;
         this.date = date;
         this.LID = LID;
         this.duration = duration;
+        this.wonBID = wonBID;
     }
 
     public String getUID() {
@@ -59,6 +62,14 @@ public class TimetableEvent {
 
     public void setLID(String LID) {
         this.LID = LID;
+    }
+
+    public String getWonBID() {
+        return wonBID;
+    }
+
+    public void setWonBID(String wonBID) {
+        this.wonBID = wonBID;
     }
 
 }

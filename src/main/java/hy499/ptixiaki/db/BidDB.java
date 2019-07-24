@@ -7,10 +7,13 @@ package hy499.ptixiaki.db;
 
 import hy499.ptixiaki.data.Bid;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,6 +56,41 @@ public final class BidDB {
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public Map<String, Bid> getBids() throws ClassNotFoundException {
+        Map<String, Bid> bids = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM BID").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+//              ( BID, UID, LID, SOLUTION_DESCR, PRICE, TIME_TO_FIX, WHEN_P, SELECTED, CREATED)
+                while (res.next() == true) {
+                    Bid bid = new Bid();
+                    bid.setBID(res.getString("BID"));
+                    bid.setUID(res.getString("UID"));
+                    bid.setLID(res.getString("LID"));
+                    bid.setSolution_decription(res.getString("SOLUTION_DESCR"));
+                    bid.setPrice(res.getDouble("PRICE"));
+                    bid.setTime_to_fix(res.getDouble("TIME_TO_FIX"));
+                    bid.setWhen(res.getDate("WHEN_P"));
+                    bid.setSelected(res.getBoolean("SELECTED"));
+
+                    bids.put(bid.getBID(), bid);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return bids;
     }
 
     public void addBID(Bid bid) throws ClassNotFoundException {

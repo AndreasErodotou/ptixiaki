@@ -23,10 +23,10 @@ public class BidService {
     private String bidMsg;
     private final BidDB bidDB;
 
-    public BidService() {
-        bids = new HashMap();
+    public BidService() throws ClassNotFoundException {
         bidMsg = "";
         bidDB = new BidDB();
+        bids = bidDB.getBids();
     }
 
 

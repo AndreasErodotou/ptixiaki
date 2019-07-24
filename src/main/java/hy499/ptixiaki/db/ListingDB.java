@@ -5,9 +5,18 @@
  */
 package hy499.ptixiaki.db;
 
+import hy499.ptixiaki.data.Listing;
+import hy499.ptixiaki.data.Professional.Locations;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +56,93 @@ public final class ListingDB {
                 System.out.println("#ListingDB: Table Listing Created");
                 stmt.close();
                 con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public Map<String, Listing> getListings() throws ClassNotFoundException {
+        Map<String, Listing> listings = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM LISTING").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+//                ( LID, UID, TITLE, DESCRIPTION, PICS, START, ")
+//                 "EXPIRE, LOCATION, CATEGORY, MAX_PRICE, CREATED)
+                while (res.next() == true) {
+                    Listing listing = new Listing();
+                    listing.setLID(res.getString("LID"));
+                    listing.setUID(res.getString("UID"));
+                    listing.setTitle(res.getString("TITLE"));
+                    listing.setDescription(res.getString("DESCRIPTION"));
+                    String strPics = res.getString("PICS").replaceAll("([{}])", "");
+                    listing.setPics(new ArrayList<>(Arrays.asList(strPics.split(","))));
+                    listing.setAvailable_from(res.getDate("START"));
+                    listing.setAvailable_until(res.getDate("EXPIRE"));
+                    listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
+                    listing.setJobCategory(res.getString("CATEGORY"));
+                    listing.setMax_price(res.getDouble("MAX_PRICE"));
+
+
+                    listings.put(listing.getLID(), listing);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listings;
+    }
+
+    public void addListing(Listing listing) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                StringBuilder insQuery = new StringBuilder();
+                ArrayList<String> pics = listing.getPics();
+
+                insQuery.append("INSERT INTO ")
+                        .append(" LISTING ( LID, UID, TITLE, DESCRIPTION, PICS, START, ")
+                        .append("EXPIRE, LOCATION, CATEGORY, MAX_PRICE, CREATED) ")
+                        .append(" VALUES (")
+                        .append("'").append(listing.getLID()).append("',")
+                        .append("'").append(listing.getUID()).append("',")
+                        .append("'").append(listing.getTitle()).append("',")
+                        .append("'").append(listing.getDescription()).append("',")
+                        .append("'{");
+
+                for (int i = 0; i < pics.size(); i++) {
+                    insQuery.append("\"").append(pics.get(i)).append("\"");
+                    if (i < pics.size() - 1) {
+                        insQuery.append(",");
+                    }
+                }
+
+                insQuery.append("}',")
+                        .append("'").append(listing.getAvailable_from()).append("',")
+                        .append("'").append(listing.getAvailable_until()).append("',")
+                        .append("'").append(listing.getLocation()).append("',")
+                        .append("'").append(listing.getJobCategory()).append("',")
+                        .append(listing.getMax_price()).append(",")
+                        .append("'").append(timestamp).append("');");
+
+                stmt.executeUpdate(insQuery.toString());
+                System.out.println("#ListingDB: Listing added");
+
+                stmt.close();
+                con.close();
+
             }
 
         } catch (SQLException ex) {
