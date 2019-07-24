@@ -1,6 +1,7 @@
 package hy499.ptixiaki.services;
 
 import hy499.ptixiaki.data.TimetableEvent;
+import hy499.ptixiaki.db.TimetableEventDB;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,12 +17,15 @@ import java.util.Set;
  * @author Andreas
  */
 public class TimetableService {
+
     private Map<String, TimetableEvent> timetableEvents;
     private String timetableMsg;
+    private final TimetableEventDB timetableEventDB;
 
     public TimetableService() {
         timetableEvents = new HashMap();
         timetableMsg = "";
+        timetableEventDB = new TimetableEventDB();
     }
 
     public Boolean addTimetableEvent(TimetableEvent timetableEvent) {

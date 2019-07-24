@@ -13,12 +13,12 @@ import java.util.Date;
  */
 public class Customer extends User {
 
-    public Customer(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, Date bday, String address, String email, String phoneNum) {
-        super(name, surname, username, accountType, gender, UID, bday, address, email, phoneNum);
+    public Customer(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, Date bday, String address, String email, String phoneNum, String password) {
+        super(name, surname, username, accountType, gender, UID, bday, address, email, phoneNum, password);
     }
 
-    public Customer(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, String address, String email, String phoneNum) {
-        super(name, surname, username, accountType, gender, UID, null, address, email, phoneNum);
+    public Customer(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, String address, String email, String phoneNum, String password) {
+        super(name, surname, username, accountType, gender, UID, null, address, email, phoneNum, password);
     }
 
     public Customer() {

@@ -10,6 +10,7 @@ import hy499.ptixiaki.services.ListingService;
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.response.ServerResponse;
 import hy499.ptixiaki.response.ServerResponse.Status;
+import java.sql.SQLException;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -21,7 +22,7 @@ import spark.Response;
 public class ListingAPI {
     private ListingService listingService;
 
-    public ListingAPI() {
+    public ListingAPI() throws SQLException {
         this.listingService = new ListingService();
     }
 

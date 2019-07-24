@@ -1,6 +1,7 @@
 package hy499.ptixiaki.services;
 
 import hy499.ptixiaki.data.Review;
+import hy499.ptixiaki.db.ReviewDB;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,18 +20,21 @@ import java.util.UUID;
 public class ReviewService {
     private Map<String, Review> reviews;
     private String reviewMsg;
+    private final ReviewDB reviewDB;
 
-    public ReviewService() {
-        reviews = new HashMap();
+    public ReviewService() throws ClassNotFoundException {
         reviewMsg = "";
+        reviewDB = new ReviewDB();
+        reviews = reviewDB.getReviews();
     }
 
-    public Boolean addReview(Review review) {
+    public Boolean addReview(Review review) throws ClassNotFoundException {
         if (checkFieldsBeforeAdd(review)) {
             String uniqueRID = UUID.randomUUID().toString();
             review.setRID(uniqueRID);
             reviews.put(uniqueRID, review);
             reviewMsg = "Review Added";
+            reviewDB.addReview(review);
             return true;
         }
         return false;

@@ -13,6 +13,7 @@ import hy499.ptixiaki.data.Professional;
 import hy499.ptixiaki.data.User;
 import hy499.ptixiaki.response.ServerResponse;
 import hy499.ptixiaki.response.ServerResponse.Status;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Map;
 import spark.Request;
@@ -26,7 +27,7 @@ public class UserAPI {
 
     UserService userService;
     Gson gson;
-    public UserAPI() {
+    public UserAPI() throws SQLException {
         userService = new UserService();
         gson = new GsonBuilder().setDateFormat("dd-MMM-yyyy").create();
     }
@@ -92,7 +93,7 @@ public class UserAPI {
         return createResponse(res, user, user != null);
     }
 
-    public String addUser(Request req, Response res) {
+    public String addUser(Request req, Response res) throws ClassNotFoundException {
         User user;
         if (req.body().contains("CUSTOMER")) {
             user = gson.fromJson(req.body(), Customer.class);

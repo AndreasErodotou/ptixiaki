@@ -24,6 +24,14 @@ public class Review {
         comments = "";
     }
 
+    public Review(String UID, String TO_UID, String RID, Double rating, String comments) {
+        this.UID = UID;
+        this.TO_UID = TO_UID;
+        this.RID = RID;
+        this.rating = rating;
+        this.comments = comments;
+    }
+
     public String getUID() {
         return UID;
     }

@@ -14,18 +14,18 @@ import java.util.Date;
 public class Professional extends User {
 
     private String job;
-    private String workExperience;
-//    private Map<String, TimetableEvent> timetable;
+    private Double workExperience;
+    private String aboutMe;
     private Locations sLocations;
 
-    Professional(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, Date bday, String address, String email, String phoneNum) {
-        super(name, surname, username, accountType, gender, UID, bday, address, email, phoneNum);
+    Professional(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, Date bday, String address, String email, String phoneNum, String password) {
+        super(name, surname, username, accountType, gender, UID, bday, address, email, phoneNum, password);
     }
 
     public Professional() {
         job = "";
-        workExperience = "";
-//        timetable = new HashMap<>();
+        workExperience = -1.0;
+        aboutMe = "";
         sLocations = null;
     }
 
@@ -41,21 +41,21 @@ public class Professional extends User {
         this.job = job;
     }
 
-    public String getWorkExperience() {
+    public Double getWorkExperience() {
         return workExperience;
     }
 
-    public void setWorkExperience(String workExperience) {
+    public void setWorkExperience(Double workExperience) {
         this.workExperience = workExperience;
     }
 
-//    public Map<String, TimetableEvent> getTimetable() {
-//        return timetable;
-//    }
-//
-//    public void setTimetable(Map<String, TimetableEvent> timetable) {
-//        this.timetable = timetable;
-//    }
+    public String getAboutMe() {
+        return aboutMe;
+    }
+
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
+    }
 
     public Locations getsLocations() {
         return sLocations;

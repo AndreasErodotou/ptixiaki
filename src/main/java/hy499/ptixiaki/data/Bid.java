@@ -79,6 +79,14 @@ public class Bid {
         this.time_to_fix = time_to_fix;
     }
 
+    public Date getWhen() {
+        return when;
+    }
+
+    public void setWhen(Date when) {
+        this.when = when;
+    }
+
     public Boolean getSelected() {
         return selected;
     }

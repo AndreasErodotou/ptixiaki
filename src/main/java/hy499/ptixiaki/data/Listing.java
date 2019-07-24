@@ -25,6 +25,7 @@ public class Listing {
     private Locations location;
     private String jobCategory;
     private double max_price;
+    private Date created;
 
     public Listing() {
         UID = "";
@@ -130,6 +131,14 @@ public class Listing {
 
     public void setMax_price(double max_price) {
         this.max_price = max_price;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
 }

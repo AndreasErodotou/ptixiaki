@@ -1,6 +1,7 @@
 package hy499.ptixiaki.services;
 
 import hy499.ptixiaki.data.Bid;
+import hy499.ptixiaki.db.BidDB;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,19 +21,22 @@ import java.util.UUID;
 public class BidService {
     private Map<String, Bid> bids;
     private String bidMsg;
+    private final BidDB bidDB;
 
     public BidService() {
         bids = new HashMap();
         bidMsg = "";
+        bidDB = new BidDB();
     }
 
 
-    public Boolean addBid(Bid bid) {
+    public Boolean addBid(Bid bid) throws ClassNotFoundException {
         if (checkFieldsBeforeAdd(bid)) {
             String uniqueBID = UUID.randomUUID().toString();
             bid.setBID(uniqueBID);
             bids.put(uniqueBID, bid);
             bidMsg = "Bid Added";
+            bidDB.addBID(bid);
             return true;
         }
         return false;

@@ -21,7 +21,7 @@ import spark.Response;
 public class ReviewAPI {
     ReviewService reviewService;
 
-    public ReviewAPI() {
+    public ReviewAPI() throws ClassNotFoundException {
         reviewService = new ReviewService();
     }
 
@@ -100,7 +100,7 @@ public class ReviewAPI {
         return createResponse(res, review, review != null);
     }
 
-    public String addAReview(Request req, Response res) {
+    public String addAReview(Request req, Response res) throws ClassNotFoundException {
         Review review = new Gson().fromJson(req.body(), Review.class);
         return createResponse(res, review, reviewService.addReview(review));
     }

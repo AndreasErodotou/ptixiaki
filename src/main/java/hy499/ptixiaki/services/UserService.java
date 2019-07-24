@@ -6,6 +6,8 @@
 package hy499.ptixiaki.services;
 
 import hy499.ptixiaki.data.User;
+import hy499.ptixiaki.db.UserDB;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +23,16 @@ public class UserService {
     private Map<String, User> customers;
     private Map<String, User> professionals;
     private String userMsg;
+    private final UserDB userDB;
 
-    public UserService() {
+    public UserService() throws SQLException {
         customers = new HashMap();
         professionals = new HashMap();
         userMsg = "";
+        userDB = new UserDB();
     }
 
-    public Boolean addUser(User user) {
+    public Boolean addUser(User user) throws ClassNotFoundException {
         if (checkFieldsBeforeAdd(user)) {
             String uniqueID = UUID.randomUUID().toString();
             user.setUID(uniqueID);

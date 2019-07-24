@@ -22,6 +22,7 @@ public abstract class User {
     private String address;
     private String email;
     private String phoneNum;
+    private String password;
 
     public User() {
         name = "";
@@ -34,9 +35,10 @@ public abstract class User {
         address = "";
         email = "";
         phoneNum = "";
+        password = "";
     }
 
-    public User(String name, String surname, String username, AccountType accountType, Gender gender, String UID, Date bday, String address, String email, String phoneNum) {
+    public User(String name, String surname, String username, AccountType accountType, Gender gender, String UID, Date bday, String address, String email, String phoneNum, String password) {
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -47,6 +49,7 @@ public abstract class User {
         this.address = address;
         this.email = email;
         this.phoneNum = phoneNum;
+        this.password = password;
     }
 
     public AccountType getAccountType() {
@@ -127,6 +130,14 @@ public abstract class User {
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public enum Gender {

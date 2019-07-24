@@ -1,6 +1,8 @@
 package hy499.ptixiaki.services;
 
 import hy499.ptixiaki.data.Listing;
+import hy499.ptixiaki.db.ListingDB;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,12 +19,15 @@ import java.util.UUID;
  * @author Andreas
  */
 public class ListingService {
+
     private Map<String, Listing> listings;
     private String listingMsg;
+    private final ListingDB listingDB;
 
-    public ListingService() {
+    public ListingService() throws SQLException {
         listings = new HashMap();
         listingMsg = "";
+        listingDB = new ListingDB();
     }
 
     public Boolean addListing(Listing listing) {
