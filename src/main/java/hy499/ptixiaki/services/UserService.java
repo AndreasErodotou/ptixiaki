@@ -28,8 +28,8 @@ public class UserService {
     public UserService() throws SQLException, ClassNotFoundException {
         userMsg = "";
         userDB = new UserDB();
-        customers = userDB.getUsers();
-        professionals = userDB.getUsers();
+        customers = userDB.getCustomers();
+        professionals = userDB.getProfessionals();
     }
 
     public Boolean addUser(User user) throws ClassNotFoundException {
@@ -77,7 +77,7 @@ public class UserService {
         return allUsers;
     }
 
-    public User editUser(User user) throws ParseException {
+    public User editUser(User user) throws ParseException, ClassNotFoundException {
         if (checkFieldsBeforeEdit(user)) {
             User preExistUser = getUser(user.getUID());
             if (preExistUser != null) {
@@ -111,6 +111,7 @@ public class UserService {
                 if (user.getPhoneNum() != null && !user.getPhoneNum().equals(preExistUser.getPhoneNum())) {
                     preExistUser.setPhoneNum(user.getPhoneNum());
                 }
+                userDB.updateUser(user);
                 userMsg = "User Edited";
                 return preExistUser;
             }
@@ -119,13 +120,15 @@ public class UserService {
         return null;
     }
 
-    public User deleteUser(String UID) {
+    public User deleteUser(String UID) throws ClassNotFoundException {
         User user0 = customers.remove(UID);
         User user1 = professionals.remove(UID);
         if (user0 != null) {
+            userDB.deleteUser(UID, User.AccountType.CUSTOMER);
             userMsg = "User Removed!!";
             return user0;
         } else if (user1 != null) {
+            userDB.deleteUser(UID, User.AccountType.PROFESSIONAL);
             userMsg = "User Removed!!";
             return user1;
         } else {

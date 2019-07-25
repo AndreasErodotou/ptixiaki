@@ -75,8 +75,7 @@ public final class ListingDB {
                 stmt.execute(getQuery.toString());
 
                 ResultSet res = stmt.getResultSet();
-//                ( LID, UID, TITLE, DESCRIPTION, PICS, START, ")
-//                 "EXPIRE, LOCATION, CATEGORY, MAX_PRICE, CREATED)
+
                 while (res.next() == true) {
                     Listing listing = new Listing();
                     listing.setLID(res.getString("LID"));
@@ -139,6 +138,70 @@ public final class ListingDB {
 
                 stmt.executeUpdate(insQuery.toString());
                 System.out.println("#ListingDB: Listing added");
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void updateListing(Listing listing) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder updQuery = new StringBuilder();
+
+                updQuery.append("UPDATE LISTING ")
+                        .append(" SET ")
+                        .append(" TITLE = ").append("'").append(listing.getTitle()).append("',")
+                        .append(" DESCRIPTION = ").append("'").append(listing.getDescription()).append("',")
+                        .append(" PICS = ").append("'{");
+
+                for (int i = 0; i < listing.getPics().size(); i++) {
+                    updQuery.append("\"").append(listing.getPics().get(i)).append("\"");
+                    if (i < listing.getPics().size() - 1) {
+                        updQuery.append(",");
+                    }
+                }
+
+                updQuery.append("}',")
+                        .append(" START = ").append("'").append(listing.getAvailable_from()).append("',")
+                        .append(" EXPIRE = ").append("'").append(listing.getAvailable_until()).append("',")
+                        .append(" LOCATION = ").append("'").append(listing.getLocation()).append("',")
+                        .append(" CATEGORY = ").append("'").append(listing.getJobCategory()).append("',")
+                        .append(" MAX_PRICE = ").append(listing.getMax_price())
+                        .append(" WHERE LID = ").append("'").append(listing.getLID()).append("';");
+
+                stmt.executeUpdate(updQuery.toString());
+                System.out.println("#ListingDB: Listing Updated, LID: " + listing.getLID());
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void deleteListing(String LID) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder delQuery = new StringBuilder();
+
+                delQuery.append("DELETE FROM LISTING ")
+                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#ListingDB: Listing Deleted, LID: " + LID);
 
                 stmt.close();
                 con.close();

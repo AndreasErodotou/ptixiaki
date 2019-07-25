@@ -18,29 +18,7 @@ import static spark.Spark.*;
  */
 public class SparkMain {
 
-//    Connection connection;
-//    String url = "jdbc:postgresql://localhost:5432/ptixiaki";
-//    String username = "postgres";
-//    String password = "AndHer123!";
-//
-//    public Connection databaseConnection() throws ClassNotFoundException, SQLException {
-//        Class.forName("org.postgresql.Driver");
-//        connection = DriverManager.getConnection(url, username, password);
-//        return connection;
-//    }
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-//        SparkMain spMain = new SparkMain();
-//        if (spMain.databaseConnection() == null) {
-//            System.out.println("connection failed");
-//        } else {
-//            System.out.println("connection succeded");
-//        }
-//        PreparedStatement stmt;
-//        stmt = spMain.connection.prepareStatement("SELECT * FROM public.\"BID\"");
-//        ResultSet result = stmt.executeQuery();
-//        while (result.next()) {
-//            System.out.println(result.getString(1) + "\t" + result.getDouble(2) + "\t" + result.getDate(3) + "\t" + result.getBoolean(4) + "\t" + result.getString(5) + "\t" + result.getString(6));
-//        }
 
         UserAPI userApi = new UserAPI();
         ReviewAPI reviewApi = new ReviewAPI();
@@ -58,9 +36,9 @@ public class SparkMain {
 
                 post("", (req, res) -> userApi.addUser(req, res));
 
-                put("/:user", (req, res) -> userApi.editUser(req, res));
+                put("/:UID", (req, res) -> userApi.editUser(req, res));
 
-                delete("/:user", (req, res) -> userApi.deleteUser(req, res));
+                delete("/:UID", (req, res) -> userApi.deleteUser(req, res));
 
             });
 

@@ -33,7 +33,7 @@ public final class UserDB {
         try {
             initUserDB();
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ReviewDB.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -102,8 +102,6 @@ public final class UserDB {
 
                 ResultSet res = stmt.getResultSet();
 
-//                ( UID, NAME, SURNAME, USERNAME, ACCOUNT_TYPE, GENDER, BDAY, ADDRESS, EMAIL, ")
-//                            .append("PHONE_NUM, PASSWORD, CREATED)
                 while (res.next() == true) {
                     User cust = new Customer();
                     cust.setUID(res.getString("UID"));
@@ -129,7 +127,6 @@ public final class UserDB {
 
                 res = stmt.getResultSet();
 
-//                JOB, WORK_EXP, ABOUT_ME, SERVE_LOC,
                 while (res.next() == true) {
                     Professional prof = new Professional();
                     prof.setUID(res.getString("UID"));
@@ -150,6 +147,94 @@ public final class UserDB {
 
                     users.put(prof.getUID(), prof);
                 }
+                stmt.close();
+                con.close();
+            }
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return users;
+    }
+
+    public Map<String, User> getCustomers() throws ClassNotFoundException {
+        Map<String, User> users = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM CUSTOMER").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    User cust = new Customer();
+                    cust.setUID(res.getString("UID"));
+                    cust.setName(res.getString("NAME"));
+                    cust.setSurname(res.getString("SURNAME"));
+                    cust.setUsername(res.getString("USERNAME"));
+                    cust.setAccountType(AccountType.valueOf(res.getString("ACCOUNT_TYPE")));
+                    cust.setGender(Gender.valueOf(res.getString("GENDER")));
+                    cust.setBday(res.getDate("BDAY"));
+                    cust.setAddress(res.getString("ADDRESS"));
+                    cust.setEmail(res.getString("EMAIL"));
+                    cust.setPhoneNum(res.getString("PHONE_NUM"));
+                    cust.setPassword(res.getString("PASSWORD"));
+
+                    users.put(cust.getUID(), cust);
+                }
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return users;
+    }
+
+    public Map<String, User> getProfessionals() throws ClassNotFoundException {
+        Map<String, User> users = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM PROFESSIONAL").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    Professional prof = new Professional();
+                    prof.setUID(res.getString("UID"));
+                    prof.setName(res.getString("NAME"));
+                    prof.setSurname(res.getString("SURNAME"));
+                    prof.setUsername(res.getString("USERNAME"));
+                    prof.setAccountType(AccountType.valueOf(res.getString("ACCOUNT_TYPE")));
+                    prof.setGender(Gender.valueOf(res.getString("GENDER")));
+                    prof.setBday(res.getDate("BDAY"));
+                    prof.setAddress(res.getString("ADDRESS"));
+                    prof.setEmail(res.getString("EMAIL"));
+                    prof.setPhoneNum(res.getString("PHONE_NUM"));
+                    prof.setPassword(res.getString("PASSWORD"));
+                    prof.setJob(res.getString("JOB"));
+                    prof.setWorkExperience(res.getDouble("WORK_EXP"));
+                    prof.setAboutMe(res.getString("ABOUT_ME"));
+                    prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
+
+                    users.put(prof.getUID(), prof);
+                }
+                stmt.close();
+                con.close();
             }
 
         } catch (SQLException ex) {
@@ -213,6 +298,80 @@ public final class UserDB {
 
                 stmt.executeUpdate(insQuery.toString());
                 System.out.println("#UserDB: User added");
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void updateUser(User user) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder updQuery = new StringBuilder();
+
+                if (user.getAccountType() == CUSTOMER) {
+                    Customer cust = (Customer) user;
+                    updQuery.append("UPDATE CUSTOMER ")
+                            .append(" SET ")
+                            .append(" NAME = ").append("'").append(cust.getName()).append("',")
+                            .append(" SURNAME = ").append("'").append(cust.getSurname()).append("',")
+                            .append(" ACCOUNT_TYPE = ").append("'").append(cust.getAccountType()).append("',")
+                            .append(" ADDRESS = ").append("'").append(cust.getAddress()).append("',")
+                            .append(" PASSWORD = ").append("'").append(cust.getPassword()).append("'")
+                            .append(" WHERE UID = ").append("'").append(cust.getUID()).append("';");
+
+
+                } else {
+                    Professional prof = (Professional) user;
+                    updQuery.append("UPDATE PROFESSIONAL ")
+                            .append(" SET ")
+                            .append(" NAME = ").append("'").append(prof.getName()).append("',")
+                            .append(" SURNAME = ").append("'").append(prof.getSurname()).append("',")
+                            .append(" ACCOUNT_TYPE = ").append("'").append(prof.getAccountType()).append("',")
+                            .append(" ADDRESS = ").append("'").append(prof.getAddress()).append("',")
+                            .append(" PASSWORD = ").append("'").append(prof.getPassword()).append("',")
+                            .append(" JOB = ").append("'").append(prof.getJob()).append("',")
+                            .append(" WORK_EXP = ").append(prof.getWorkExperience()).append(",")
+                            .append(" ABOUT_ME = ").append("'").append(prof.getAboutMe()).append("',")
+                            .append(" SERVE_LOC = ").append("'").append(prof.getsLocations()).append("'")
+                            .append(" WHERE UID = ").append("'").append(prof.getUID()).append("';");
+                }
+                stmt.executeUpdate(updQuery.toString());
+                System.out.println("#UserDB: User Updated, UID: " + user.getUID());
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+
+
+    public void deleteUser(String UID, AccountType accType) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder delQuery = new StringBuilder();
+                if (accType == CUSTOMER) {
+                    delQuery.append("DELETE FROM CUSTOMER ")
+                            .append(" WHERE UID = ").append("'").append(UID).append("';");
+                } else {
+                    delQuery.append("DELETE FROM PROFESSIONAL ")
+                            .append(" WHERE UID = ").append("'").append(UID).append("';");
+                }
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#UserDB: User Deleted, UID: " + UID);
 
                 stmt.close();
                 con.close();

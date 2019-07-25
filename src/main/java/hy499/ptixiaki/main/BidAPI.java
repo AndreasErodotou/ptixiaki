@@ -21,7 +21,7 @@ import spark.Response;
 public class BidAPI {
     private BidService bidService;
 
-    public BidAPI() {
+    public BidAPI() throws ClassNotFoundException {
         bidService = new BidService();
     }
 
@@ -97,12 +97,12 @@ public class BidAPI {
         return createResponse(res, bid, bid != null);
     }
 
-    public String addABid(Request req, Response res) {
+    public String addABid(Request req, Response res) throws ClassNotFoundException {
         Bid bid = new Gson().fromJson(req.body(), Bid.class);
         return createResponse(res, bid, bidService.addBid(bid));
     }
 
-    public String editABid(Request req, Response res) {
+    public String editABid(Request req, Response res) throws ClassNotFoundException {
         String BID = req.params(":BID");
         Bid bid = new Gson().fromJson(req.body(), Bid.class);
         bid.setBID(BID);
@@ -110,7 +110,7 @@ public class BidAPI {
         return createResponse(res, editedBid, editedBid != null);
     }
 
-    public String deleteABid(Request req, Response res) {
+    public String deleteABid(Request req, Response res) throws ClassNotFoundException {
         String BID = req.params(":BID");
         Bid bid = bidService.deleteBid(BID);
         return createResponse(res, bid, bid != null);

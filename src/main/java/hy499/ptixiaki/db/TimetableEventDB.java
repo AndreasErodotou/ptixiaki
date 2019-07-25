@@ -113,4 +113,53 @@ public final class TimetableEventDB {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void updateEvent(TimetableEvent even) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder updQuery = new StringBuilder();
+
+                updQuery.append("UPDATE TIMETABLE ")
+                        .append(" SET ")
+                        .append(" DATE = ").append("'").append(even.getDate()).append("',")
+                        .append(" DURATION = ").append("'").append(even.getDuration()).append("'")
+                        .append(" WHERE LID = ").append("'").append(even.getLID()).append("';");
+
+                stmt.executeUpdate(updQuery.toString());
+                System.out.println("#TimetableDB: Event Updated, LID: " + even.getLID());
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void deleteEvent(String LID) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder delQuery = new StringBuilder();
+
+                delQuery.append("DELETE FROM TIMETABLE ")
+                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#TimetableDB: Event Deleted, LID: " + LID);
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

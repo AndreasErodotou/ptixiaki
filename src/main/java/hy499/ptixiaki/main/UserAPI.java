@@ -27,7 +27,7 @@ public class UserAPI {
 
     UserService userService;
     Gson gson;
-    public UserAPI() throws SQLException {
+    public UserAPI() throws SQLException, ClassNotFoundException {
         userService = new UserService();
         gson = new GsonBuilder().setDateFormat("dd-MMM-yyyy").create();
     }
@@ -103,7 +103,7 @@ public class UserAPI {
         return createResponse(res, user, userService.addUser(user));
     }
 
-    public String editUser(Request req, Response res) throws ParseException {
+    public String editUser(Request req, Response res) throws ParseException, ClassNotFoundException {
         User user;
         String UID = req.params(":UID");
         if (req.body().contains("CUSTOMER")) {
@@ -111,13 +111,12 @@ public class UserAPI {
         } else {
             user = gson.fromJson(req.body(), Professional.class);
         }
-
         user.setUID(UID);
         User editedUser = userService.editUser(user);
         return createResponse(res, editedUser, editedUser != null);
     }
 
-    public String deleteUser(Request req, Response res) {
+    public String deleteUser(Request req, Response res) throws ClassNotFoundException {
         String UID = req.params(":UID");
         User user = userService.deleteUser(UID);
         return createResponse(res, user, user != null);

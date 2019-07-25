@@ -21,7 +21,7 @@ import spark.Response;
 public class TimetableAPI {
     private TimetableService timetableService;
 
-    public TimetableAPI() {
+    public TimetableAPI() throws ClassNotFoundException {
         timetableService = new TimetableService();
     }
 
@@ -82,12 +82,12 @@ public class TimetableAPI {
     }
 
 
-    public String addATimetableEvent(Request req, Response res) {
+    public String addATimetableEvent(Request req, Response res) throws ClassNotFoundException {
         TimetableEvent timetableEvent = new Gson().fromJson(req.body(), TimetableEvent.class);
         return createResponse(res, timetableEvent, timetableService.addTimetableEvent(timetableEvent));
     }
 
-    public String editATimetableEvent(Request req, Response res) {
+    public String editATimetableEvent(Request req, Response res) throws ClassNotFoundException {
         String LID = req.params(":LID");
         TimetableEvent timetableEvent = new Gson().fromJson(req.body(), TimetableEvent.class);
         timetableEvent.setLID(LID);
@@ -95,7 +95,7 @@ public class TimetableAPI {
         return createResponse(res, editedEvent, editedEvent != null);
     }
 
-    public String deleteATimetableEvent(Request req, Response res) {
+    public String deleteATimetableEvent(Request req, Response res) throws ClassNotFoundException {
         String LID = req.params(":LID");
         TimetableEvent timetableEvent = timetableService.deleteTimetableEvent(LID);
         return createResponse(res, timetableEvent, timetableEvent != null);

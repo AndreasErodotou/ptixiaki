@@ -38,13 +38,14 @@ public class TimetableService {
         return false;
     }
 
-    public TimetableEvent editTimetableEvent(TimetableEvent timetableEvent) {
+    public TimetableEvent editTimetableEvent(TimetableEvent timetableEvent) throws ClassNotFoundException {
         if (checkFieldsBeforeEdit(timetableEvent)) {
             TimetableEvent preExistEvent = getTimetableEvent(timetableEvent.getLID());
             if (preExistEvent != null) {
                 if (timetableEvent.getDate() != null) {
                     preExistEvent.setDate(timetableEvent.getDate());
                 }
+                timetableEventDB.updateEvent(preExistEvent);
                 timetableMsg = "Timetable Event Edited";
                 return preExistEvent;
             }
@@ -53,9 +54,10 @@ public class TimetableService {
         return null;
     }
 
-    public TimetableEvent deleteTimetableEvent(String LID) {
+    public TimetableEvent deleteTimetableEvent(String LID) throws ClassNotFoundException {
         TimetableEvent timetableEvent = timetableEvents.remove(LID);
         if (timetableEvent != null) {
+            timetableEventDB.deleteEvent(LID);
             timetableMsg = "Timetable Event Removed!!";
             return timetableEvent;
         } else {

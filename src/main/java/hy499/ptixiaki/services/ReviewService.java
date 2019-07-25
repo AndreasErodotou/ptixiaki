@@ -40,7 +40,7 @@ public class ReviewService {
         return false;
     }
 
-    public Review editReview(Review review) {
+    public Review editReview(Review review) throws ClassNotFoundException {
         if (checkFieldsBeforeEdit(review)) {
             Review preExistReview = getReview(review.getRID());
             if (preExistReview != null) {
@@ -56,7 +56,7 @@ public class ReviewService {
                 if (review.getComments() != null && !review.getComments().equals(preExistReview.getComments())) {
                     preExistReview.setComments(review.getComments());
                 }
-
+                reviewDB.updateReview(review);
                 reviewMsg = "Review Edited";
                 return preExistReview;
             }
@@ -65,9 +65,10 @@ public class ReviewService {
         return null;
     }
 
-    public Review deleteReview(String RID) {
+    public Review deleteReview(String RID) throws ClassNotFoundException {
         Review review = reviews.remove(RID);
         if (review != null) {
+            reviewDB.deleteReview(RID);
             reviewMsg = "Review Removed!!";
             return review;
         } else {

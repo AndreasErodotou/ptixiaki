@@ -126,4 +126,55 @@ public final class BidDB {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void updateBid(Bid bid) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder updQuery = new StringBuilder();
+                updQuery.append("UPDATE BID ")
+                        .append(" SET ")
+                        .append(" SOLUTION_DESCR = ").append("'").append(bid.getSolution_decription()).append("',")
+                        .append(" PRICE = ").append(bid.getPrice()).append(",")
+                        .append(" TIME_TO_FIX = ").append("'").append(bid.getTime_to_fix()).append("',")
+                        .append(" WHEN_P = ").append("'").append(bid.getWhen()).append("',")
+                        .append(" SELECTED = ").append("'").append(bid.getSelected()).append("'")
+                        .append(" WHERE BID = ").append("'").append(bid.getBID()).append("';");
+
+                stmt.executeUpdate(updQuery.toString());
+                System.out.println("#BidDB: Bid Updated, BID: " + bid.getBID());
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void deleteBid(String BID) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder delQuery = new StringBuilder();
+
+                delQuery.append("DELETE FROM BID ")
+                        .append(" WHERE BID = ").append("'").append(BID).append("';");
+
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#BidDB: Bid Deleted, BID: " + BID);
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

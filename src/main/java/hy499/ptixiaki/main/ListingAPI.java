@@ -22,7 +22,7 @@ import spark.Response;
 public class ListingAPI {
     private ListingService listingService;
 
-    public ListingAPI() throws SQLException {
+    public ListingAPI() throws SQLException, ClassNotFoundException {
         this.listingService = new ListingService();
     }
 
@@ -83,12 +83,12 @@ public class ListingAPI {
         return createResponse(res, listing, listing != null);
     }
 
-    public String addAListing(Request req, Response res) {
+    public String addAListing(Request req, Response res) throws ClassNotFoundException {
         Listing listing = new Gson().fromJson(req.body(), Listing.class);
         return createResponse(res, listing, listingService.addListing(listing));
     }
 
-    public String editAListing(Request req, Response res) {
+    public String editAListing(Request req, Response res) throws ClassNotFoundException {
         String LID = req.params(":LID");
         Listing listing = new Gson().fromJson(req.body(), Listing.class);
         listing.setLID(LID);
@@ -96,7 +96,7 @@ public class ListingAPI {
         return createResponse(res, editedListing, editedListing != null);
     }
 
-    public String deleteAListing(Request req, Response res) {
+    public String deleteAListing(Request req, Response res) throws ClassNotFoundException {
         String LID = req.params(":LID");
         Listing listing = listingService.deleteListing(LID);
         return createResponse(res, listing, listing != null);

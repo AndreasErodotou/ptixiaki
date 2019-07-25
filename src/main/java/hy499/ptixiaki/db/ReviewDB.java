@@ -107,7 +107,7 @@ public final class ReviewDB {
                         .append("'").append(timestamp).append("');");
 
                 stmt.executeUpdate(insQuery.toString());
-                System.out.println("#ReviewDB: Review added");
+                System.out.println("#ReviewDB: Review added, RID: " + review.getRID());
 
                 stmt.close();
                 con.close();
@@ -120,11 +120,52 @@ public final class ReviewDB {
     }
 
     public void updateReview(Review review) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
 
+                StringBuilder updQuery = new StringBuilder();
+
+                updQuery.append("UPDATE REVIEW ")
+                        .append(" SET ")
+                        .append(" RATING = ").append("'").append(review.getRating()).append("',")
+                        .append(" COMMENTS = ").append("'").append(review.getComments()).append("'")
+                        .append(" WHERE RID = ").append("'").append(review.getRID()).append("';");
+
+                stmt.executeUpdate(updQuery.toString());
+                System.out.println("#ReviewDB: Review Updated, RID: " + review.getRID());
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void deleteReview(String RID) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
 
+                StringBuilder delQuery = new StringBuilder();
+
+                delQuery.append("DELETE FROM REVIEW ")
+                        .append(" WHERE RID = ").append("'").append(RID).append("';");
+
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#ReviewDB: Review Deleted, RID: " + RID);
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

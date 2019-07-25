@@ -42,7 +42,7 @@ public class BidService {
         return false;
     }
 
-    public Bid editBid(Bid bid) {
+    public Bid editBid(Bid bid) throws ClassNotFoundException {
         if (checkFieldsBeforeEdit(bid)) {
             Bid preExistBid = getBid(bid.getBID());
             if (preExistBid != null) {
@@ -58,6 +58,7 @@ public class BidService {
                 if (bid.getSelected() != null && !bid.getSelected().equals(preExistBid.getSelected())) {
                     preExistBid.setSelected(bid.getSelected());
                 }
+                bidDB.updateBid(bid);
                 bidMsg = "Bid Edited";
                 return preExistBid;
             }
@@ -66,9 +67,10 @@ public class BidService {
         return null;
     }
 
-    public Bid deleteBid(String BID) {
+    public Bid deleteBid(String BID) throws ClassNotFoundException {
         Bid bid = bids.remove(BID);
         if (bid != null) {
+            bidDB.deleteBid(BID);
             bidMsg = "Bid Removed!!";
             return bid;
         } else {

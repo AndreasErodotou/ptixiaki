@@ -105,7 +105,7 @@ public class ReviewAPI {
         return createResponse(res, review, reviewService.addReview(review));
     }
 
-    public String editAReview(Request req, Response res) {
+    public String editAReview(Request req, Response res) throws ClassNotFoundException {
         String RID = req.params(":RID");
         Review review = new Gson().fromJson(req.body(), Review.class);
         review.setRID(RID);
@@ -113,7 +113,7 @@ public class ReviewAPI {
         return createResponse(res, editedReview, editedReview != null);
     }
 
-    public String deleteAReview(Request req, Response res) {
+    public String deleteAReview(Request req, Response res) throws ClassNotFoundException {
         String RID = req.params(":RID");
         Review review = reviewService.deleteReview(RID);
         return createResponse(res, review, review != null);

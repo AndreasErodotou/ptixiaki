@@ -42,7 +42,7 @@ public class ListingService {
         return false;
     }
 
-    public Listing editListing(Listing listing) {
+    public Listing editListing(Listing listing) throws ClassNotFoundException {
         if (checkFieldsBeforeEdit(listing)) {
             Listing preExistListing = listings.get(listing.getLID());
             if (preExistListing != null) {
@@ -64,14 +64,13 @@ public class ListingService {
                 if (listing.getMax_price() > 0 && listing.getMax_price() != preExistListing.getMax_price()) {
                     preExistListing.setMax_price(listing.getMax_price());
                 }
-//                todo: check array list with pics
-//                if (listing.getPic() != null && !listing.getPic().equals(preExistListing.getPic())) {
-//                    preExistListing.setPic(listing.getPic());
-//                }
+                if (listing.getPics() != null && !listing.getPics().equals(preExistListing.getPics())) {
+                    preExistListing.setPics(listing.getPics());
+                }
                 if (listing.getTitle() != null && !listing.getTitle().equals(preExistListing.getTitle())) {
                     preExistListing.setTitle(listing.getTitle());
                 }
-
+                listingDB.updateListing(listing);
                 listingMsg = "Listing Edited";
                 return preExistListing;
             }
@@ -80,9 +79,10 @@ public class ListingService {
         return null;
     }
 
-    public Listing deleteListing(String LID) {
+    public Listing deleteListing(String LID) throws ClassNotFoundException {
         Listing listing = listings.remove(LID);
         if (listing != null) {
+            listingDB.deleteListing(LID);
             listingMsg = "Listing Removed!!";
             return listing;
         } else {
