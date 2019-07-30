@@ -55,17 +55,6 @@ class Signup extends React.Component{
             phoneNum, gender, accountType, jobs, servedLoc, jobExp, aboutMe)
     }
     
-    gotoSignIn(e){
-        e.preventDefault()
-        this.props.onChangeToSignIn()
-    }   
-
-    // addExtraFiledsForProfAcc(e){
-    //     e.preventDefault()
-    //     if(this.refs.accountType.state.value.label==="Professional"){
-    //         this.props.onChangeAccountType()
-    //     }
-    // }
     
     render() {
         return (
@@ -154,14 +143,14 @@ class Signup extends React.Component{
                     <div className="col-md-3">
                         <div className="form-group">
                             <label className="control-label" > Account Type: </label>
-                            <Select /*onchange={this.addExtraFiledsForProfAcc.bind(this)}*/ ref="accountType" options={ AccountType } />
+                            <Select onChange={this.props.onChangeAccountType} ref="accountType" options={ AccountType } />
                         </div>
                     </div>
 
                 </div>
 
                 {
-                (true /*this.props.AccountType==="Professional"*/) ?
+                (this.props.accountType==="Professional") ?
                 <div>
                     <div className="form-row">
                         
@@ -200,22 +189,24 @@ class Signup extends React.Component{
 
                     </div>
 
-                    <div className="form-row">
-                        <div className="col-md-3">
-                            <div className="form-group">
-                                <button className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" type="submit">Sign up</button>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
                 : <div></div>
                 }
 
                 <div className="form-row">
+                    <div className="col-md-3">
+                        <div className="form-group">
+                            <button className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" type="submit">Sign up</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="form-row">
                         <div className="md-form form-group border-top">
                             <p> 
-                                <small>Not a member yet?  
-                                    <a href="http://localhost:3000/signin" onClick={this.gotoSignIn.bind(this)}> Sign in </a>
+                                <small>Not a member yet?  <b></b>
+                                    <a href="javascript:void(0);" onClick={this.props.onChangeToSignIn} >Sign in </a>
                                 </small>
                             </p>
                         </div>

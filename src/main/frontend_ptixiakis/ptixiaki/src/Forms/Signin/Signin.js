@@ -3,18 +3,10 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 
 class Signin extends React.Component{
-    handleSignIn(e) {
-        e.preventDefault()
+    handleSignIn() {
         let email = this.refs.email.value
         let password = this.refs.password.value
-        console.log("change to sign up: "+this.props.onChangeToSignUp)
-        console.log("on sign in"+this.props.onSignIn)
         this.props.onSignIn(email, password)
-    }
-
-    gotoSignUp(e){
-        e.preventDefault()
-        this.props.onChangeToSignUp()
     }
     
     render() {
@@ -40,8 +32,8 @@ class Signin extends React.Component{
                         
                         <div className="md-form form-group border-top">
                             <p> 
-                                <small>Not a member yet?  
-                                    <a href="http://localhost:3000/signup" onClick={this.gotoSignUp.bind(this)}> Join Now </a>
+                                <small>Not a member yet?  <b></b>
+                                    <a href="javascript:void(0);" onClick={this.props.onChangeToSignUp}>Join Now </a>
                                 </small>
                             </p>
                         </div>

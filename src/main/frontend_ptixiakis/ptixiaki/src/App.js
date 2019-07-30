@@ -4,11 +4,11 @@ import Signin from './Forms/Signin/Signin';
 import Signup from './Forms/Signup/Signup';
 
 const Welcome = (props)=> {
-  
+  console.log("user: "+props.user)
   return (
     <div>
-      Welcome <strong>{props.user.email}</strong>!
-      <a href="http://localhost:3000/signin" onClick={props.onSignOut}>Sign out</a>
+      Welcome <strong>{props.user.email}</strong>! <b></b>
+      <a href="javascript:void(0);" onClick={props.onSignOut}>Sign out</a>
     </div>
   )
 }
@@ -19,17 +19,16 @@ class App extends Component{
     
     this.state = {
       user: null,
-      // user: {accountType: "Customer"},
-      isLoginOpen: false,
-      isRegisterOpen: true,
+      isLoginOpen: true,
+      isRegisterOpen: false,
     }
   }
   
   signIn(email, password) {
       this.setState({
         user: {
-          email,
-          password,
+          "email"   : email,
+          "password": password
         },
       isLoginOpen: false,
       isRegisterOpen: false
@@ -40,36 +39,37 @@ class App extends Component{
     accountType, jobs, servedLoc, jobExp, aboutMe)    {
       this.setState({
         user: {
-          name, 
-          surname, 
-          username, 
-          email, 
-          password, 
-          birthday, 
-          address, 
-          phoneNum, 
-          gender, 
-          accountType, 
-          jobs, 
-          servedLoc, 
-          jobExp, 
-          aboutMe
+          "name"        :   name, 
+          "surname"     :   surname, 
+          "username"    :   username, 
+          "email"       :   email, 
+          "password"    :   password, 
+          "birthday"    :   birthday, 
+          "address"     :   address, 
+          "phoneNum"    :   phoneNum, 
+          "gender"      :   gender, 
+          "accountType" :   accountType, 
+          "jobs"        :   jobs, 
+          "servedLoc"   :   servedLoc, 
+          "jobExp"      :   jobExp, 
+          "aboutMe"     :   aboutMe
         },
       })
   }
 
-  // changeAccountType(accountType){
-  //   this.setState({
-  //     ...this.state.user, accountType
-  //   })
-  // }
+  changeAccountType(accountType){
+    this.setState({user: {
+      ...this.state.user, accountType : accountType.label}
+    })
+    // console.log("changeAccTypeState:"+this.state)
+  }
 
   signOut() {
-    this.setState({user: null})
+    this.setState({user: null,
+                  isLoginOpen: true})
   }
 
   changeToSignUp(){
-    console.log("ime stin change to sign up")
     this.setState({
       isLoginOpen: false,
       isRegisterOpen: true
@@ -77,7 +77,6 @@ class App extends Component{
   } 
 
   changeToSignIn(){
-    console.log("ime stin change to sign in")
     this.setState({
       isLoginOpen: true,
       isRegisterOpen: false
@@ -93,22 +92,22 @@ class App extends Component{
     if(this.state.isLoginOpen){
       s_in=(
         <Signin
-        onSignIn={this.signIn.bind(this)}
-        onChangeToSignUp={this.changeToSignUp.bind(this)}
+        onSignIn={ this.signIn.bind(this) }
+        onChangeToSignUp={ this.changeToSignUp.bind(this) }
         />)
     }else if(this.state.isRegisterOpen){
       s_up=(
         <Signup
-        onSignup={this.signUp.bind(this)} 
-        onChangeToSignIn={this.changeToSignIn.bind(this)}
-        // onChangeAccountType={this.changeAccountType.bind(this)}
-        // accountType={this.state.user.accountType}
+        onSignup={ this.signUp.bind(this) } 
+        onChangeToSignIn={ this.changeToSignIn.bind(this) }
+        onChangeAccountType={ this.changeAccountType.bind(this) }
+        accountType={ (this.state.user)? this.state.user.accountType : "" }
         />)
     }else{
       welc=(
         <Welcome 
-        user={this.state.user} 
-        onSignOut={this.signOut.bind(this)} 
+        user={ this.state.user } 
+        onSignOut={ this.signOut.bind(this) } 
         />)
     }
 
