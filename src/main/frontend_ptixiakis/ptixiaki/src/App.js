@@ -19,8 +19,8 @@ class App extends Component{
     
     this.state = {
       user: null,
-      isLoginOpen: true,
-      isRegisterOpen: false,
+      isLoginOpen: false,
+      isRegisterOpen: true,
     }
   }
   
@@ -35,34 +35,35 @@ class App extends Component{
       })
   }
 
-  signUp( name, surname, username, email, password, birthday, address, phoneNum, gender, 
-    accountType, jobs, servedLoc, jobExp, aboutMe)    {
-      this.setState({
-        user: {
-          "name"        :   name, 
-          "surname"     :   surname, 
-          "username"    :   username, 
-          "email"       :   email, 
-          "password"    :   password, 
-          "birthday"    :   birthday, 
-          "address"     :   address, 
-          "phoneNum"    :   phoneNum, 
-          "gender"      :   gender, 
-          "accountType" :   accountType, 
-          "jobs"        :   jobs, 
-          "servedLoc"   :   servedLoc, 
-          "jobExp"      :   jobExp, 
-          "aboutMe"     :   aboutMe
-        },
-      })
+  // signUp( name, surname, username, email, password, birthday, address, phoneNum, gender, 
+  //   accountType, jobs, servedLoc, jobExp, aboutMe)    {
+  //     this.setState({
+  //       user: {
+  //         "name"        :   name, 
+  //         "surname"     :   surname, 
+  //         "username"    :   username, 
+  //         "email"       :   email, 
+  //         "password"    :   password, 
+  //         "birthday"    :   birthday, 
+  //         "address"     :   address, 
+  //         "phoneNum"    :   phoneNum, 
+  //         "gender"      :   gender, 
+  //         "accountType" :   accountType, 
+  //         "jobs"        :   jobs, 
+  //         "servedLoc"   :   servedLoc, 
+  //         "jobExp"      :   jobExp, 
+  //         "aboutMe"     :   aboutMe
+  //       },
+  //     })
+  // }
+
+  signUp(user){
+    this.setState({
+      ...this.state,
+      user
+    })
   }
 
-  changeAccountType(accountType){
-    this.setState({user: {
-      ...this.state.user, accountType : accountType.label}
-    })
-    // console.log("changeAccTypeState:"+this.state)
-  }
 
   signOut() {
     this.setState({user: null,
@@ -100,8 +101,6 @@ class App extends Component{
         <Signup
         onSignup={ this.signUp.bind(this) } 
         onChangeToSignIn={ this.changeToSignIn.bind(this) }
-        onChangeAccountType={ this.changeAccountType.bind(this) }
-        accountType={ (this.state.user)? this.state.user.accountType : "" }
         />)
     }else{
       welc=(

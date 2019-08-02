@@ -34,12 +34,14 @@ public class UserAPI {
 
     public String createResponse(Response res, Map<String, User> users) {
         if (!users.isEmpty()) {
+            res.header("Access-Control-Allow-Origin", "*");
             res.status(200);
             return new Gson()
                     .toJson(new ServerResponse(Status.SUCCESS,
                             userService.getUserMsg(),
                             new Gson().toJsonTree(users)));
         }
+        res.header("Access-Control-Allow-Origin", "*");
         res.status(400);
         return new Gson()
                 .toJson(new ServerResponse(Status.WARINING,
@@ -48,6 +50,7 @@ public class UserAPI {
     }
 
     public String createResponse(Response res, User user, Boolean bool) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (bool) {
             res.status(200);
             return new Gson()
