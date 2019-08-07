@@ -13,32 +13,32 @@ import java.util.Date;
  */
 public class Professional extends User {
 
-    private String job;
+    private String jobs;
     private Double workExperience;
     private String aboutMe;
-    private Locations sLocations;
+    private Locations servedLoc;
 
     Professional(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, Date bday, String address, String email, String phoneNum, String password) {
         super(name, surname, username, accountType, gender, UID, bday, address, email, phoneNum, password);
     }
 
     public Professional() {
-        job = "";
+        jobs = "";
         workExperience = -1.0;
         aboutMe = "";
-        sLocations = null;
+        servedLoc = null;
     }
 
     public enum Locations {
         HERAKLION, NICOSIA, LARNAKA
     };
 
-    public String getJob() {
-        return job;
+    public String getJobs() {
+        return jobs;
     }
 
-    public void setJob(String job) {
-        this.job = job;
+    public void setJobs(String jobs) {
+        this.jobs = jobs;
     }
 
     public Double getWorkExperience() {
@@ -58,11 +58,11 @@ public class Professional extends User {
     }
 
     public Locations getsLocations() {
-        return sLocations;
+        return servedLoc;
     }
 
     public void setsLocations(Locations sLocations) {
-        this.sLocations = sLocations;
+        this.servedLoc = sLocations;
     }
 
 }

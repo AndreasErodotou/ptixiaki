@@ -2,6 +2,7 @@ import './App.css';
 import React, { Component } from 'react';
 import Signin from './Forms/Signin/Signin';
 import Signup from './Forms/Signup/Signup';
+import Listings from './Listings/Listings';
 
 const Welcome = (props)=> {
   console.log("user: "+props.user)
@@ -18,9 +19,9 @@ class App extends Component{
     super(props)
     
     this.state = {
-      user: null,
-      isLoginOpen: false,
-      isRegisterOpen: true,
+      user: {email: null},
+      isSigninOpen: false,
+      isSignupOpen: true,
     }
   }
   
@@ -30,8 +31,8 @@ class App extends Component{
           "email"   : email,
           "password": password
         },
-      isLoginOpen: false,
-      isRegisterOpen: false
+      isSigninOpen: false,
+      isSignupOpen: false
       })
   }
 
@@ -57,49 +58,41 @@ class App extends Component{
   //     })
   // }
 
-  signUp(user){
-    this.setState({
-      ...this.state,
-      user
-    })
-  }
-
-
   signOut() {
     this.setState({user: null,
-                  isLoginOpen: true})
+                  isSigninOpen: true})
   }
 
   changeToSignUp(){
     this.setState({
-      isLoginOpen: false,
-      isRegisterOpen: true
+      isSigninOpen: false,
+      isSignupOpen: true
     })
   } 
 
   changeToSignIn(){
     this.setState({
-      isLoginOpen: true,
-      isRegisterOpen: false
+      isSigninOpen: true,
+      isSignupOpen: false
     })
   } 
   
   render() {
     console.log(this.state)
-    let s_in = null
-    let s_up = null
+    let sign_in = null
+    let sign_up = null
     let welc = null
 
-    if(this.state.isLoginOpen){
-      s_in=(
+    if(this.state.isSigninOpen){
+      sign_in=(
         <Signin
         onSignIn={ this.signIn.bind(this) }
         onChangeToSignUp={ this.changeToSignUp.bind(this) }
         />)
-    }else if(this.state.isRegisterOpen){
-      s_up=(
+    }else if(this.state.isSignupOpen){
+      sign_up=(
         <Signup
-        onSignup={ this.signUp.bind(this) } 
+        // onSignup={ this.signUp.bind(this) } 
         onChangeToSignIn={ this.changeToSignIn.bind(this) }
         />)
     }else{
@@ -112,15 +105,16 @@ class App extends Component{
 
     return (
       <div>
-        {
-          (s_in) ? 
-            s_in
+        {/* {
+          (sign_in) ? 
+            sign_in
           :
-          (s_up) ?
-            s_up
+          (sign_up) ?
+            sign_up
           :
             welc
-        }
+        } */}
+        <Listings/>
       </div>
     )
     

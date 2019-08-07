@@ -26,6 +26,7 @@ public class ReviewAPI {
     }
 
     public String createResponse(Response res, Map<String, Review> reviews) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (!reviews.isEmpty()) {
             res.status(200);
             return new Gson()
@@ -41,6 +42,7 @@ public class ReviewAPI {
     }
 
     public String createResponse(Response res, Review review, Boolean bool) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (bool) {
             res.status(200);
             return new Gson()

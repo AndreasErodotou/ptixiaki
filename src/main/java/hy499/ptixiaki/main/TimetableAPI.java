@@ -26,6 +26,7 @@ public class TimetableAPI {
     }
 
     public String createResponse(Response res, Map<String, TimetableEvent> timetableEvents) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (!timetableEvents.isEmpty()) {
             res.status(200);
             return new Gson()
@@ -41,6 +42,7 @@ public class TimetableAPI {
     }
 
     public String createResponse(Response res, TimetableEvent timetableEvent, Boolean bool) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (bool) {
             res.status(200);
             return new Gson()

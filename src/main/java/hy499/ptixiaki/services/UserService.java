@@ -186,6 +186,26 @@ public class UserService {
         return false;
     }
 
+    public Boolean checkEmailAvail(String email) throws ClassNotFoundException {
+        Boolean isAvailable = userDB.checkEmail(email);
+        if (isAvailable) {
+            userMsg = "Email Is Available!";
+        } else {
+            userMsg = "Email Already Exists...";
+        }
+        return isAvailable;
+    }
+
+    public Boolean checkUsernameAvail(String username) throws ClassNotFoundException {
+        Boolean isAvailable = userDB.checkUsername(username);
+        if (isAvailable) {
+            userMsg = "Username Is Available!";
+        } else {
+            userMsg = "Username Already Exists...";
+        }
+        return isAvailable;
+    }
+
     public Boolean isProfessional(String UID) {
         return professionals.get(UID) != null;
     }

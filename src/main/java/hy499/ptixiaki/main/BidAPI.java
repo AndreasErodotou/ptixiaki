@@ -26,6 +26,7 @@ public class BidAPI {
     }
 
     public String createResponse(Response res, Map<String, Bid> bids) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (!bids.isEmpty()) {
             res.status(200);
             return new Gson()
@@ -41,6 +42,7 @@ public class BidAPI {
     }
 
     public String createResponse(Response res, Bid bid, Boolean bool) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (bool) {
             res.status(200);
             return new Gson()

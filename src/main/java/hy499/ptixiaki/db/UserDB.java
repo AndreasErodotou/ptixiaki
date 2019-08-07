@@ -140,7 +140,7 @@ public final class UserDB {
                     prof.setEmail(res.getString("EMAIL"));
                     prof.setPhoneNum(res.getString("PHONE_NUM"));
                     prof.setPassword(res.getString("PASSWORD"));
-                    prof.setJob(res.getString("JOB"));
+                    prof.setJobs(res.getString("JOB"));
                     prof.setWorkExperience(res.getDouble("WORK_EXP"));
                     prof.setAboutMe(res.getString("ABOUT_ME"));
                     prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
@@ -226,7 +226,7 @@ public final class UserDB {
                     prof.setEmail(res.getString("EMAIL"));
                     prof.setPhoneNum(res.getString("PHONE_NUM"));
                     prof.setPassword(res.getString("PASSWORD"));
-                    prof.setJob(res.getString("JOB"));
+                    prof.setJobs(res.getString("JOB"));
                     prof.setWorkExperience(res.getDouble("WORK_EXP"));
                     prof.setAboutMe(res.getString("ABOUT_ME"));
                     prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
@@ -288,7 +288,7 @@ public final class UserDB {
                             .append("'").append(prof.getEmail()).append("',")
                             .append("'").append(prof.getPhoneNum()).append("',")
                             .append("'").append(prof.getPassword()).append("',")
-                            .append("'").append(prof.getJob()).append("',")
+                            .append("'").append(prof.getJobs()).append("',")
                             .append(prof.getWorkExperience()).append(",")
                             .append("'").append(prof.getAboutMe()).append("',")
                             .append("'").append(prof.getsLocations()).append("',")
@@ -337,7 +337,7 @@ public final class UserDB {
                             .append(" ACCOUNT_TYPE = ").append("'").append(prof.getAccountType()).append("',")
                             .append(" ADDRESS = ").append("'").append(prof.getAddress()).append("',")
                             .append(" PASSWORD = ").append("'").append(prof.getPassword()).append("',")
-                            .append(" JOB = ").append("'").append(prof.getJob()).append("',")
+                            .append(" JOB = ").append("'").append(prof.getJobs()).append("',")
                             .append(" WORK_EXP = ").append(prof.getWorkExperience()).append(",")
                             .append(" ABOUT_ME = ").append("'").append(prof.getAboutMe()).append("',")
                             .append(" SERVE_LOC = ").append("'").append(prof.getsLocations()).append("'")
@@ -381,6 +381,62 @@ public final class UserDB {
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public boolean checkEmail(String email) throws ClassNotFoundException {
+        boolean isAvailable = false;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder checkQuery = new StringBuilder();
+
+                checkQuery.append("SELECT * FROM CUSTOMER ")
+                        .append(" WHERE EMAIL = ").append("'").append(email).append("';");
+
+                stmt.execute(checkQuery.toString());
+                if (stmt.getResultSet().next() == true) {
+                    System.out.println("#UserDB: email: " + email + " already exists");
+                } else {
+                    isAvailable = true;
+                }
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return isAvailable;
+    }
+
+    public boolean checkUsername(String username) throws ClassNotFoundException {
+        boolean isAvailable = false;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder checkQuery = new StringBuilder();
+
+                checkQuery.append("SELECT * FROM CUSTOMER ")
+                        .append(" WHERE USERNAME = ").append("'").append(username).append("';");
+
+                stmt.execute(checkQuery.toString());
+                if (stmt.getResultSet().next() == true) {
+                    System.out.println("#UserDB: username: " + username + " already exists");
+                } else {
+                    isAvailable = true;
+                }
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return isAvailable;
     }
 
 }

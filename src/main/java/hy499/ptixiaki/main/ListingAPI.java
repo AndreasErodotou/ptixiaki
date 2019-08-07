@@ -27,6 +27,7 @@ public class ListingAPI {
     }
 
     public String createResponse(Response res, Map<String, Listing> listings) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (!listings.isEmpty()) {
             res.status(200);
             return new Gson()
@@ -42,6 +43,7 @@ public class ListingAPI {
     }
 
     public String createResponse(Response res, Listing listing, Boolean bool) {
+        res.header("Access-Control-Allow-Origin", "*");
         if (bool) {
             res.status(200);
             return new Gson()
