@@ -1,0 +1,16 @@
+#picdiv, #title, #descr{
+    margin: 2%;
+}
+
+#title{
+    margin-top: 4%;
+}
+
+#simpleListing{
+    padding: 0.5%;
+}
+
+#innerListing:hover{
+    background-color: rgb(241, 255, 241);
+    cursor: pointer;
+}

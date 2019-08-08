@@ -4,21 +4,24 @@ import PropTypes from 'prop-types';
 
 const SignupField = ({field, type, onChange, placeholder, className, stateNow, isValid, ref}) => {
     let styleError={
-        color: "red"
+        "color": "#ff2929",
+        // "backgroundColor": "#fff",
+        // "borderColor": "#ff2929"
     }
 
     let styleOk={
-        color: "green"
+        color: "green",
+        "borderColor": "green"
     }
 
     return (
         <div className={className}>
-            <div className="form-group">
+            <div className={(isValid)?"form-group has-success":"form-group has-error"}>
                 <label className="control-label" > {field}: <b></b>
                     <span style={(isValid)? styleOk : styleError}> 
                         { stateNow }
                     </span> </label>
-                <input className="form-control" ref= {ref} onChange={onChange} type={type} id={field} placeholder={(placeholder)? placeholder : field} />
+                <input style={(isValid)? styleOk : null} className="form-control" ref= {ref} onChange={onChange} type={type} id={field} placeholder={(placeholder)? placeholder : field} />
             </div>
         </div>
     );
@@ -42,7 +45,7 @@ SignupField.defaultProps = {
     placeholder :   "",
     className   :   "col-md-3",
     stateNow    :   "",
-    isValid     :   false
+    isValid     :   true
 };
 
 export default SignupField;

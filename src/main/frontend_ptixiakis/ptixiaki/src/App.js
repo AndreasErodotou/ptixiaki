@@ -22,6 +22,7 @@ class App extends Component{
       user: {email: null},
       isSigninOpen: false,
       isSignupOpen: true,
+      showListings: false
     }
   }
   
@@ -76,6 +77,12 @@ class App extends Component{
       isSignupOpen: false
     })
   } 
+
+  showListings(){
+    this.setState({
+      showListings: true
+    })
+  }
   
   render() {
     console.log(this.state)
@@ -114,7 +121,7 @@ class App extends Component{
           :
             welc
         } */}
-        <Listings/>
+        <Listings onShowListings={this.showListings.bind(this)}/>
       </div>
     )
     

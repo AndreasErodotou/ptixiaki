@@ -2,9 +2,7 @@ import React from 'react';
 import SignupField from './SignupField';
 import SignupSelect from './SignupSelect';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
 import PropTypes from 'prop-types';
-import { resolve, reject } from 'q';
 
 const Gender = [
     { label: "Male",    value: 1 },

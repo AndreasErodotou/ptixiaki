@@ -6,21 +6,23 @@ const SignupSelect = ({field, options, onChange, className="col-md-3", isMulti, 
     let obj={isMulti}
 
     let styleError={
-        color: "red"
+        "color": "red"
     }
 
     let styleOk={
-        color: "green"
+        color: "green",
+        // borderColor: "green",
+        // boxShadow: "green"
     }
 
     return (
         <div className={ className }>
-            <div className="form-group">
+            <div className="form-group" >
                 <label className="control-label" > {field}: <b></b>
                     <span style={(isValid)? styleOk : styleError}> 
                         { stateNow }
                     </span> </label>
-                <Select onChange={onChange} options={ options } {...(isMulti)? obj : null} />
+                <Select  onChange={onChange} options={ options } {...(isMulti)? obj : null} />
             </div>
         </div>
     );

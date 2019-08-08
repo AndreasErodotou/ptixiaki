@@ -33,7 +33,7 @@ public class ListingAPI {
             return new Gson()
                     .toJson(new ServerResponse(Status.SUCCESS,
                             listingService.getListingMsg(),
-                            new Gson().toJsonTree(listings)));
+                            new Gson().toJsonTree(listings.values()).getAsJsonArray()));
         }
         res.status(400);
         return new Gson()
