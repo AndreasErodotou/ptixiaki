@@ -1,14 +1,7 @@
-.Listings {
-   text-align: center;
-}
-
-#listingsContainer{
-    text-align: center;
-    border: black;
-    padding: 20%;
-    margin:300%;
-}
-
 #listingsRow{
-    padding: 20%;
+    padding: 5%;
+}
+
+#fullListing{
+    margin: 5%;
 }

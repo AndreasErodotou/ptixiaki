@@ -26,8 +26,16 @@ public class ListingAPI {
         this.listingService = new ListingService();
     }
 
-    public String createResponse(Response res, Map<String, Listing> listings) {
+    public void addHeaders(Response res) {
         res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Credentials", "true");
+        res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        res.header("Access-Control-Max-Age", "3600");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
+    }
+
+    public String createResponse(Response res, Map<String, Listing> listings) {
+        addHeaders(res);
         if (!listings.isEmpty()) {
             res.status(200);
             return new Gson()
@@ -43,7 +51,7 @@ public class ListingAPI {
     }
 
     public String createResponse(Response res, Listing listing, Boolean bool) {
-        res.header("Access-Control-Allow-Origin", "*");
+        addHeaders(res);
         if (bool) {
             res.status(200);
             return new Gson()

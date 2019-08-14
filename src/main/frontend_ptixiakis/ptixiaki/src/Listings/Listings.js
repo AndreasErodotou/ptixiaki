@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import Listing from './Listing/Listing';
-import FullListing from './FullListing/FullListing';
-// import "./Listings.css"
+import Listing from './Listing/Listing';
+import FullListing from './FullListing/FullListing.js';
+import NewListing from './NewListing/NewListing';
+import "./Listings.css"
 
 class Listings extends Component {
     constructor(props) {
         super(props)
         
         this.state = {
-          listings: []
+          listings: [],
+          listingClickedId: null
         }
     }
 
     componentDidMount(){
-        fetch('http://localhost:4567/management/listings', {
-        method: 'GET',
-        // body: JSON.stringify(this.state.user)
-        })
+        fetch('http://localhost:4567/management/listings')
         .then( response => response.json())
         .then( resJson => {
             // const listings= resJson.data.slice(0,3);
@@ -26,32 +25,34 @@ class Listings extends Component {
         });
     }
 
-    listingClicedHandler(LID){
-
+    listingClickedHandler(LID){
+        this.setState({listingClickedId: LID});
     }
 
     render() {
-        console.log("state: "+JSON.stringify(this.state.listings["f48e2c2d-1506-4f5a-b75d-5254a4104e30"]));
-        // const listings = this.state.listings.map(listing =>{
-        //     return <Listing 
-        //                 key={listing.LID} 
-        //                 title={listing.title} 
-        //                 imgsrc="" 
-        //                 descr={listing.description} 
-        //                 listingCliced={() => this.listingClicedHandler(listing.LID)}
-        //             />;
-        // });
+        // console.log("state: "+JSON.stringify(this.state.listings["f48e2c2d-1506-4f5a-b75d-5254a4104e30"]));
+        const listings = this.state.listings.map(listing =>{
+            return <Listing 
+                        key={listing.LID} 
+                        title={listing.title} 
+                        imgsrc="" 
+                        descr={listing.description} 
+                        listingClicked={() => this.listingClickedHandler(listing.LID)}
+                    />;
+        });
 
         return (
             <div className ="container" id="listingsContainer">
-                {/* <div className="row" id="listingsRow"> */}
-                    {/* <Listing title="t1" imgsrc="" descr="descr1" />
-                    <Listing title="t2" imgsrc="" descr="descr2" />
-                    <Listing title="t3" imgsrc="" descr="descr3" /> */}
-                    {/* {listings}
-                </div> */}
+                <div className="row" id="listingsRow">
+                     {listings}
+                </div> 
+
                 <div id="fullListing">
-                    <FullListing/>
+                    <FullListing id={this.state.listingClickedId}/>
+                </div>
+
+                <div id="newListing">
+                    <NewListing/>
                 </div>
             </div>
         );

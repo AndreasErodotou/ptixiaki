@@ -1,0 +1,21 @@
+#nl_info{
+    padding: 5%;
+}
+
+#nl_pics{
+    padding: 5%;
+}
+
+#nl_mainPic{
+    margin-bottom: 10%;
+}
+
+.pic{
+    text-align: center;
+    color: blue;
+}
+
+.pic:hover{
+    color: blue;
+    text-decoration: underline;
+}
