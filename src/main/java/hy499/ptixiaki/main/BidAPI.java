@@ -19,9 +19,8 @@ import spark.Response;
  * @author Andreas
  */
 public class BidAPI {
-//    private BidService bidService;
 
-    private BidDB bidDB;
+    private final BidDB bidDB;
 
     public BidAPI() throws ClassNotFoundException {
         bidDB = new BidDB();
@@ -67,7 +66,9 @@ public class BidAPI {
         } else if (req.queryParams("UID") != null) {
             return getAllUserBids(req, res);
         } else if (req.queryParams("selected") != null) {
-//            return getAllSelectedBids(req, res);
+            return getAllSelectedBids(req, res);
+        } else if (req.queryParams("COUNT") != null) {
+            return countAllBidsForAListing(req, res);
         }
         return getAllBids(req, res);
     }
@@ -92,11 +93,20 @@ public class BidAPI {
         return createResponse(res, listingBids, msgs);
     }
 
-//    public String getAllSelectedBids(Request req, Response res) {
-//        Boolean selected = Boolean.valueOf(req.queryParams("selected"));
-//        Map<String, Bid> listingBids = bidService.getSelectedBids(selected);
-//        return createResponse(res, listingBids);
-//    }
+    public String getAllSelectedBids(Request req, Response res) throws ClassNotFoundException {
+        Boolean selected = Boolean.valueOf(req.queryParams("selected"));
+        Map<String, Bid> listingBids = bidDB.getSelectedBids(selected);
+        String[] msgs = {"All Selected Bids", "There Are No Selected Bids"};
+        return createResponse(res, listingBids, msgs);
+    }
+
+    public String getAllUserSelectedBids(Request req, Response res) throws ClassNotFoundException {
+        Boolean selected = Boolean.valueOf(req.queryParams("selected"));
+        String UID = req.queryParams("UID");
+        Map<String, Bid> listingBids = bidDB.getUserSelectedBids(selected, UID);
+        String[] msgs = {"All Selected Bids", "There Are No Selected Bids"};
+        return createResponse(res, listingBids, msgs);
+    }
 
     public String getABid(Request req, Response res) throws ClassNotFoundException {
         String BID = req.queryParams("BID");
@@ -128,12 +138,41 @@ public class BidAPI {
         return createResponse(res, null, deleted, msgs);
     }
 
-//    public BidService getBidService() {
-//        return bidService;
-//    }
-//
-//    public void setBidService(BidService bidService) {
-//        this.bidService = bidService;
-//    }
+    public String deleteAllUserBids(Request req, Response res) throws ClassNotFoundException {
+        String UID = req.params(":UID");
+        Boolean deleted = bidDB.deleteUserBids(UID);
+        String[] msgs = {"User Bids Deleted", "User Bids Cannot Be Deleted"};
+        return createResponse(res, null, deleted, msgs);
+    }
+
+    public String deleteAllListingBids(Request req, Response res) throws ClassNotFoundException {
+        String LID = req.params(":LID");
+        Boolean deleted = bidDB.deleteListingBids(LID);
+        String[] msgs = {"Bid Deleted", "Bid Cannot Be Deleted"};
+        return createResponse(res, null, deleted, msgs);
+    }
+
+    public String countAllBidsForAListing(Request req, Response res) throws ClassNotFoundException {
+        String LID = req.queryParams("COUNT");
+        int listingBids = bidDB.countListingBids(LID);
+        String[] msgs = {"Listing Bids", "There Are No Bids For This Listing"};
+        System.out.println("There Are: " + listingBids + " Bids For This Listig ");
+        return createResponse(res, null, true, msgs);
+    }
+
+    public String countAllUserBids(Request req, Response res) throws ClassNotFoundException {
+        String UID = req.queryParams("COUNT");
+        int userBids = bidDB.countListingBids(UID);
+        String[] msgs = {"User Bids", "There Are No Bids From This User"};
+        System.out.println("There Are: " + userBids + " Bids From This User ");
+        return createResponse(res, null, true, msgs);
+    }
+
+    public String countAllSelectedBids(Request req, Response res) throws ClassNotFoundException {
+        Boolean selected = Boolean.valueOf(req.queryParams("selected"));
+        int userBids = bidDB.countSelectedBids(selected);
+        String[] msgs = {"Selected Bids", "There Are No Selected Bids"};
+        return createResponse(res, null, true, msgs);
+    }
 
 }

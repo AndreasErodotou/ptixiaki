@@ -15,6 +15,7 @@ public class ServerResponse {
     private Status status;
     private String msg;
     private JsonElement data;
+    private String resourceId;
 
     public ServerResponse(Status status) {
         this.status = status;
@@ -34,13 +35,12 @@ public class ServerResponse {
         this.data = data;
     }
 
-//    public void addHeaders(Response res) {
-//        res.header("Access-Control-Allow-Origin", "*");
-//        res.header("Access-Control-Allow-Credentials", "true");
-//        res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-//        res.header("Access-Control-Max-Age", "3600");
-//        res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
-//    }
+    public ServerResponse(Status status, String msg, JsonElement data, String resourceId) {
+        this.status = status;
+        this.msg = msg;
+        this.data = data;
+        this.resourceId = resourceId;
+    }
 
     public Status getStatus() {
         return status;
@@ -64,6 +64,14 @@ public class ServerResponse {
 
     public void setData(JsonElement data) {
         this.data = data;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
     public enum Status {

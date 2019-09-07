@@ -274,7 +274,61 @@ public final class BidDB {
         return bids;
     }
 
-    public void deleteListingBids(String LID) throws ClassNotFoundException {
+    public Map<String, Bid> getSelectedBids(Boolean Selected) throws ClassNotFoundException {
+        Map<String, Bid> bids = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM BID")
+                        .append(" WHERE Selected = ").append("'").append(Selected).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    Bid bid = resToBid(res);
+                    bids.put(bid.getBID(), bid);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return bids;
+    }
+
+    public Map<String, Bid> getUserSelectedBids(Boolean Selected, String UID) throws ClassNotFoundException {
+        Map<String, Bid> bids = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM BID")
+                        .append(" WHERE Selected = ").append("'").append(Selected).append("'")
+                        .append(" and UID = ").append("'").append(UID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    Bid bid = resToBid(res);
+                    bids.put(bid.getBID(), bid);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return bids;
+    }
+
+    public Boolean deleteListingBids(String LID) throws ClassNotFoundException {
+        Boolean deleted = false;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -289,12 +343,143 @@ public final class BidDB {
 
                 stmt.close();
                 con.close();
+                deleted = true;
 
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return deleted;
     }
 
+    public Boolean deleteUserBids(String UID) throws ClassNotFoundException {
+        Boolean deleted = false;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder delQuery = new StringBuilder();
+
+                delQuery.append("DELETE FROM BID ")
+                        .append(" WHERE UID = ").append("'").append(UID).append("';");
+
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#BidDB: User Bids Deleted, UID: " + UID);
+
+                stmt.close();
+                con.close();
+                deleted = true;
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return deleted;
+    }
+
+    public int countListingBids(String LID) throws ClassNotFoundException {
+        int listingBidsCount = 0;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT COUNT(*)")
+                        .append("FROM BID")
+                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    listingBidsCount = res.getInt("count");
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listingBidsCount;
+    }
+
+    public int countUserBids(String UID) throws ClassNotFoundException {
+        int listingBidsCount = 0;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT COUNT(*)")
+                        .append("FROM BID")
+                        .append(" WHERE UID = ").append("'").append(UID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    listingBidsCount = res.getInt("count");
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listingBidsCount;
+    }
+
+    public int countUserSelectedBids(Boolean Selected, String UID) throws ClassNotFoundException {
+        int listingBidsCount = 0;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT COUNT(*)")
+                        .append("FROM BID")
+                        .append(" WHERE Selected = ").append("'").append(Selected).append("'")
+                        .append(" and UID = ").append("'").append(UID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    listingBidsCount = res.getInt("count");
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listingBidsCount;
+    }
+
+    public int countSelectedBids(Boolean Selected) throws ClassNotFoundException {
+        int listingBidsCount = 0;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT COUNT(*)")
+                        .append("FROM BID")
+                        .append(" WHERE Selected = ").append("'").append(Selected).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    listingBidsCount = res.getInt("count");
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listingBidsCount;
+    }
 }

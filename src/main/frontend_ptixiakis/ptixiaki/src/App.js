@@ -112,7 +112,7 @@ class App extends Component{
 
     return (
       <div>
-        {/* {
+        {
           (sign_in) ? 
             sign_in
           :
@@ -120,7 +120,7 @@ class App extends Component{
             sign_up
           :
             welc
-        } */}
+        }
         <Listings onShowListings={this.showListings.bind(this)}/>
       </div>
     )

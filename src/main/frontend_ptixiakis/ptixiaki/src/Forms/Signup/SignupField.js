@@ -4,14 +4,13 @@ import PropTypes from 'prop-types';
 
 const SignupField = ({field, type, onChange, placeholder, className, stateNow, isValid, ref}) => {
     let styleError={
-        "color": "#ff2929",
-        // "backgroundColor": "#fff",
-        // "borderColor": "#ff2929"
+        color: "#ff2929",
+        // borderColor: "#ff2929"
     }
 
     let styleOk={
         color: "green",
-        "borderColor": "green"
+        borderColor: "green"
     }
 
     return (
@@ -21,7 +20,11 @@ const SignupField = ({field, type, onChange, placeholder, className, stateNow, i
                     <span style={(isValid)? styleOk : styleError}> 
                         { stateNow }
                     </span> </label>
-                <input style={(isValid)? styleOk : null} className="form-control" ref= {ref} onChange={onChange} type={type} id={field} placeholder={(placeholder)? placeholder : field} />
+                {!(type==="textarea")?
+                    <input style={(isValid)? styleOk : {/*borderColor: "#ff2929"*/}} className="form-control" ref= {ref} onChange={onChange} type={type} id={field} placeholder={(placeholder)? placeholder : field} />
+                    : 
+                    <textarea class="form-control" ref= {ref} onChange={onChange} id={field} placeholder={(placeholder)? placeholder : field} rows="3"></textarea>
+                }
             </div>
         </div>
     );

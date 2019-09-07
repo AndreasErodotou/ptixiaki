@@ -449,8 +449,9 @@ class Signup extends React.Component{
         }
 
         let signUpjsx = (
-        <div className="container my-5 border p-4 shadow p-3 mb-5 bg-white">
-        <form className="form p-4" onSubmit={this.handleSignup.bind(this)}>
+        
+        <div className="container my-5 p-4 shadow p-3 mb-5 bg-white w-50">
+        <form className="form pt-4" onSubmit={this.handleSignup.bind(this)}>
 
             <div className="form-group row justify-content-center">
                 <h4>ServiceLink</h4>
@@ -593,7 +594,7 @@ class Signup extends React.Component{
 
                     <SignupField 
                         field="About Me"   
-                        type="text" 
+                        type="textarea" 
                         onChange={ this.aboutMeChanged.bind(this) }
                         placeholder="About me..."
                         // className="col-md-9"
