@@ -229,7 +229,7 @@ public final class UserDB {
                     prof.setJobs(res.getString("JOB"));
                     prof.setWorkExperience(res.getDouble("WORK_EXP"));
                     prof.setAboutMe(res.getString("ABOUT_ME"));
-                    prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
+//                    prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
 
                     users.put(prof.getUID(), prof);
                 }

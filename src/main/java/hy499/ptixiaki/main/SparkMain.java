@@ -46,8 +46,9 @@ public class SparkMain {
         ListingAPI listingApi = new ListingAPI();
         TimetableAPI timetableApi = new TimetableAPI();
 
-        path("/management", () -> {
+        path("/api", () -> {
             before("/*", (req, res) -> res.type("application/json"));
+            // /users/:UID/listings/:LID/bids/:BID
             path("/users", () -> {
 
                 get("", (req, res) -> userApi.getReqQueryHandler(req, res));
@@ -61,6 +62,49 @@ public class SparkMain {
                 delete("/:UID", (req, res) -> userApi.deleteUser(req, res));
 
                 options("", (req, res) -> optionFunc(req, res));
+
+                path("/:UID/listings", () -> {
+
+                    get("", (req, res) -> listingApi.getReqHandler(req, res));
+
+                    post("", (req, res) -> listingApi.addAListing(req, res));
+
+                    put("/:LID", (req, res) -> listingApi.editAListing(req, res));
+
+                    delete("/:LID", (req, res) -> listingApi.deleteAListing(req, res));
+
+                    options("", (req, res) -> optionFunc(req, res));
+
+                    path(":LID/bids", () -> {
+
+                        get("", (req, res) -> bidApi.getReqHandler(req, res));
+
+                        post("", (req, res) -> bidApi.addABid(req, res));
+
+                        put("/:BID", (req, res) -> bidApi.editABid(req, res));
+
+                        delete("/:BID", (req, res) -> bidApi.deleteABid(req, res));
+
+                        options("", (req, res) -> optionFunc(req, res));
+
+                    });
+
+                });
+
+                path("/reviews", () -> {
+
+                    get("", (req, res) -> reviewApi.getReqHandler(req, res));
+
+                    post("", (req, res) -> reviewApi.addAReview(req, res));
+
+                    put("/:RID", (req, res) -> reviewApi.editAReview(req, res));
+
+                    delete("/:RID", (req, res) -> reviewApi.deleteAReview(req, res));
+
+                    options("", (req, res) -> optionFunc(req, res));
+
+                });
+
 
             });
 
@@ -103,6 +147,22 @@ public class SparkMain {
                 delete("/:BID", (req, res) -> bidApi.deleteABid(req, res));
 
                 options("", (req, res) -> optionFunc(req, res));
+
+                path(":BID/users", () -> {
+
+                    get("", (req, res) -> userApi.getReqQueryHandler(req, res));
+
+                    get("/*", (req, res) -> userApi.getReqPathHandler(req, res));
+
+                    post("", (req, res) -> userApi.addUser(req, res));
+
+                    put("/:UID", (req, res) -> userApi.editUser(req, res));
+
+                    delete("/:UID", (req, res) -> userApi.deleteUser(req, res));
+
+                    options("", (req, res) -> optionFunc(req, res));
+
+                });
 
             });
 

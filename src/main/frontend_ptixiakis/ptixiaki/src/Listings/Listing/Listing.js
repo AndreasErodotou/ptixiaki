@@ -15,6 +15,7 @@ const Listing = props => {
                 {/* <img className="img-responsive" src={`data:image/jpeg;base64,${data}`} className="img-rounded" alt="pic"></img> */}
                 
                 <h6 id="descr"><small>{props.descr}</small></h6>
+                <span></span>
             </div>
         </div>
     );

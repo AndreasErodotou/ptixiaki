@@ -79,38 +79,40 @@ public class BidService {
         return null;
     }
 
-    public Map<String, Bid> deleteListingBids(String LID) {
-        Map<String, Bid> listingBids = new HashMap<>();
-        Set<String> bidKeys = bids.keySet();
-        int counter = 0;
-        for (String key : bidKeys) {
-            if (bids.get(key).getLID().equals(LID)) {
-                listingBids.put(key, bids.remove(key));
-                counter++;
-            }
-        }
-        bidMsg = counter + " Bids deleted";
+    public void deleteListingBids(String LID) throws ClassNotFoundException {
+//        Map<String, Bid> listingBids = new HashMap<>();
+//        Set<String> bidKeys = bids.keySet();
+//        int counter = 0;
+//        for (String key : bidKeys) {
+//            if (bids.get(key).getLID().equals(LID)) {
+//                listingBids.put(key, bids.remove(key));
+//                counter++;
+//            }
+//        }
+        bidDB.deleteListingBids(LID);
+//        bidMsg = counter + " Bids deleted";
 
-        return listingBids;
+//        return listingBids;
     }
 
-    public Map<String, Bid> getListingBids(String LID) {
-        Map<String, Bid> listingBids = new HashMap<>();
-        Set<String> bidKeys = bids.keySet();
-        for (String key : bidKeys) {
-            if (bids.get(key).getLID().equals(LID)) {
-                listingBids.put(key, bids.get(key));
-            }
-        }
-        if (listingBids.isEmpty()) {
-            bidMsg = "There Are No Bids From This Listing";
-        } else {
-            bidMsg = "Listing Bids";
-        }
-        return listingBids;
+    public Map<String, Bid> getListingBids(String LID) throws ClassNotFoundException {
+//        Map<String, Bid> listingBids = new HashMap<>();
+//        Set<String> bidKeys = bids.keySet();
+//        for (String key : bidKeys) {
+//            if (bids.get(key).getLID().equals(LID)) {
+//                listingBids.put(key, bids.get(key));
+//            }
+//        }
+//        if (listingBids.isEmpty()) {
+//            bidMsg = "There Are No Bids From This Listing";
+//        } else {
+//            bidMsg = "Listing Bids";
+//        }
+//        return listingBids;
+        return bidDB.getListingBids(LID);
     }
 
-    public Bid getUserBidForAListing(String UID, String LID) {
+    public Bid getUserBidForAListing(String UID, String LID) throws ClassNotFoundException {
         Bid listingBid;
         Map<String, Bid> listingBids = getListingBids(LID);
         Set<String> listingBidsKeys = listingBids.keySet();

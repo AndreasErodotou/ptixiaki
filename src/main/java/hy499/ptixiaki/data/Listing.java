@@ -25,6 +25,7 @@ public class Listing {
     private Locations location;
     private String jobCategory;
     private double max_price;
+//    private int total_bids;
     private Date created;
 
     public Listing() {

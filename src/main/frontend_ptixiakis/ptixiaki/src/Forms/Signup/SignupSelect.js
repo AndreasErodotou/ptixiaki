@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 
-const SignupSelect = ({field, options, onChange, className="col-md-3", isMulti, stateNow="", isValid=false}) => {
+const SignupSelect = ({field, options, onChange, className="w-100", isMulti, stateNow="", isValid=false}) => {
     let obj={isMulti}
 
     let styleError={

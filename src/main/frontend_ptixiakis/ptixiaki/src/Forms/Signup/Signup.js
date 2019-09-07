@@ -357,11 +357,11 @@ class Signup extends React.Component{
     }
 
     jobsChanged(jobs) {
-        let allJobs
+        let allJobs = "";
         if (jobs !== null) {
             allJobs = jobs.map((job) => {
                 return job.label + ", "
-            })
+            });
         }
         console.log("jobs:" + jobs)
         this.setState(
@@ -381,7 +381,7 @@ class Signup extends React.Component{
     }
 
     servedLocChanged(locations) {
-        let allLocations
+        let allLocations="";
         if (locations !== null) {
             allLocations = locations.map((location) => {
                 return location.label + ", "
@@ -449,14 +449,14 @@ class Signup extends React.Component{
         }
 
         let signUpjsx = (
-        <div className="container my-4 border p-4 shadow p-3 mb-5 bg-white">
-        <form className="form" onSubmit={this.handleSignup.bind(this)}>
+        <div className="container my-5 border p-4 shadow p-3 mb-5 bg-white">
+        <form className="form p-4" onSubmit={this.handleSignup.bind(this)}>
 
             <div className="form-group row justify-content-center">
                 <h4>ServiceLink</h4>
             </div>
             
-            <div className="form-row">
+            <div className="form-row mx-5">
 
                 <SignupField 
                     field="Name"       
@@ -493,7 +493,7 @@ class Signup extends React.Component{
             </div>
 
                 
-            <div className="form-row">
+            <div className="form-row mx-5">
                 <SignupField    
                     field="Username"       
                     type="text" 
@@ -530,7 +530,7 @@ class Signup extends React.Component{
             </div>
 
 
-            <div className="form-row">
+            <div className="form-row mx-5">
 
                 <SignupSelect 
                     field="Gender"
@@ -553,13 +553,13 @@ class Signup extends React.Component{
             {
             (this.state.user.accountType==="PROFESSIONAL") ?
             <div>
-                <div className="form-row">
+                <div className="form-row mx-5">
                     
                     <SignupSelect 
                         field="Jobs"
                         options={Jobs}
                         onChange={ this.jobsChanged.bind(this) }
-                        className="col-md-6"
+                        // className="col-md-6"
                         isMulti="isMulti"
                         stateNow={ this.state.user.jobs }
                         isValid={ this.state.isValid.jobs }
@@ -569,7 +569,7 @@ class Signup extends React.Component{
                         field="Served Locations"
                         options={ServedLocations}
                         onChange={ this.servedLocChanged.bind(this) }
-                        className="col-md-6"
+                        // className="col-md-6"
                         isMulti="isMulti"
                         stateNow={ this.state.user.servedLoc }
                         isValid={ this.state.isValid.servedLoc }
@@ -579,7 +579,7 @@ class Signup extends React.Component{
                 </div>
 
 
-                <div className="form-row">
+                <div className="form-row mx-5">
 
                     <SignupField 
                         field="Job Experience"   
@@ -596,7 +596,7 @@ class Signup extends React.Component{
                         type="text" 
                         onChange={ this.aboutMeChanged.bind(this) }
                         placeholder="About me..."
-                        className="col-md-9"
+                        // className="col-md-9"
                         stateNow={ this.state.user.aboutMe }
                         isValid={ this.state.isValid.aboutMe }
                     />
@@ -608,8 +608,8 @@ class Signup extends React.Component{
             : <div></div>
             }
 
-            <div className="form-row">
-                <div className="col-md-3">
+            <div className="form-row mx-5">
+                <div className="col-md-3 float-right">
                     <div className="form-group">
                         <button className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" type="submit">Sign up</button>
                     </div>
@@ -624,8 +624,8 @@ class Signup extends React.Component{
                 </div>
             </div> */}
 
-            <div className="form-row">
-                <div className="md-form form-group border-top">
+            <div className="form-row border-top mx-5">
+                <div className="md-form form-group">
                     <p> 
                         <small>Already a member?  <b></b>
                             <a href="javascript:void(0);" onClick={this.props.onChangeToSignIn} >Sign in </a>
@@ -645,7 +645,6 @@ class Signup extends React.Component{
                     signUpjsx
                 }
             </div>
-        
         )
     }
 

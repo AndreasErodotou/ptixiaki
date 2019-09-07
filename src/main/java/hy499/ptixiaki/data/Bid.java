@@ -95,4 +95,46 @@ public class Bid {
         this.selected = selected;
     }
 
+    public Boolean checkFieldsBeforeEdit(Bid bid) {
+        String bidMsg = "";
+        if (bid != null) {
+            if (bid.getBID() == null) {
+                bidMsg += "BID Cannot Be Blank\n";
+            }
+            if (bid.getUID() == null) {
+                bidMsg += "UID Cannot Be Blank\n";
+            }
+            if (bid.getLID() == null) {
+                bidMsg += "LID Cannot Be Blank\n";
+            }
+            return bidMsg.isEmpty();
+        }
+        bidMsg = "Bid Cannot Be Null";
+        return false;
+    }
+
+    public Boolean checkFieldsBeforeAdd(Bid bid) {
+        String bidMsg = "";
+        if (bid != null) {
+            if (bid.getUID() == null) {
+                bidMsg += "UID Cannot Be Blank\n";
+            }
+            if (bid.getPrice() <= 0) {
+                bidMsg += "Price Cannot Be Less Than 0\n";
+            }
+            if (bid.getSolution_decription() == null) {
+                bidMsg += "Solution Decription Cannot Be Blank\n";
+            }
+            if (bid.getTime_to_fix() <= 0) {
+                bidMsg += "Time To Fix Cannot Be Less Than 0\n";
+            }
+            if (bid.getSelected() == null) {
+                bidMsg += "Selected Cannot Be Blank\n";
+            }
+            return bidMsg.isEmpty();
+        }
+        bidMsg = "Bid Cannot Be Null";
+        return false;
+    }
+
 }

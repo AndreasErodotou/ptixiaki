@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,6 +59,19 @@ public final class BidDB {
         }
     }
 
+    private Bid resToBid(ResultSet res) throws SQLException {
+        Bid bid = new Bid();
+        bid.setBID(res.getString("BID"));
+        bid.setUID(res.getString("UID"));
+        bid.setLID(res.getString("LID"));
+        bid.setSolution_decription(res.getString("SOLUTION_DESCR"));
+        bid.setPrice(res.getDouble("PRICE"));
+        bid.setTime_to_fix(res.getDouble("TIME_TO_FIX"));
+        bid.setWhen(res.getDate("WHEN_P"));
+        bid.setSelected(res.getBoolean("SELECTED"));
+        return bid;
+    }
+
     public Map<String, Bid> getBids() throws ClassNotFoundException {
         Map<String, Bid> bids = new HashMap<>();
         try {
@@ -70,17 +84,9 @@ public final class BidDB {
                 stmt.execute(getQuery.toString());
 
                 ResultSet res = stmt.getResultSet();
-//              ( BID, UID, LID, SOLUTION_DESCR, PRICE, TIME_TO_FIX, WHEN_P, SELECTED, CREATED)
+
                 while (res.next() == true) {
-                    Bid bid = new Bid();
-                    bid.setBID(res.getString("BID"));
-                    bid.setUID(res.getString("UID"));
-                    bid.setLID(res.getString("LID"));
-                    bid.setSolution_decription(res.getString("SOLUTION_DESCR"));
-                    bid.setPrice(res.getDouble("PRICE"));
-                    bid.setTime_to_fix(res.getDouble("TIME_TO_FIX"));
-                    bid.setWhen(res.getDate("WHEN_P"));
-                    bid.setSelected(res.getBoolean("SELECTED"));
+                    Bid bid = resToBid(res);
 
                     bids.put(bid.getBID(), bid);
                 }
@@ -93,69 +99,102 @@ public final class BidDB {
         return bids;
     }
 
-    public void addBID(Bid bid) throws ClassNotFoundException {
+    public Bid getBid(String BID) throws ClassNotFoundException {
+        Bid bid = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
-                Date date = new Date();
-                Timestamp timestamp = new Timestamp(date.getTime());
-                StringBuilder insQuery = new StringBuilder();
+                StringBuilder getQuery = new StringBuilder();
 
-                insQuery.append("INSERT INTO ")
-                        .append(" BID ( BID, UID, LID, SOLUTION_DESCR, PRICE, TIME_TO_FIX, WHEN_P, SELECTED, CREATED) ")
-                        .append(" VALUES (")
-                        .append("'").append(bid.getBID()).append("',")
-                        .append("'").append(bid.getUID()).append("',")
-                        .append("'").append(bid.getLID()).append("',")
-                        .append("'").append(bid.getSolution_decription()).append("',")
-                        .append(bid.getPrice()).append(",")
-                        .append(bid.getTime_to_fix()).append(",")
-                        .append("'").append(bid.getWhen()).append("',")
-                        .append(bid.getSelected()).append(",")
-                        .append("'").append(timestamp).append("');");
+                getQuery.append("SELECT * FROM BID")
+                        .append(" WHERE BID = ").append("'").append(BID).append("';");
 
-                stmt.executeUpdate(insQuery.toString());
-                System.out.println("#BidDB: BID added");
+                stmt.execute(getQuery.toString());
 
-                stmt.close();
-                con.close();
-
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    bid = resToBid(res);
+                }
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return bid;
     }
 
-    public void updateBid(Bid bid) throws ClassNotFoundException {
-        try {
-            try (Connection con = ConnectionDB.getDatabaseConnection();
-                    Statement stmt = con.createStatement()) {
+    public Bid addBID(Bid bid) throws ClassNotFoundException {
+        if (bid.checkFieldsBeforeAdd(bid)) {
+            String uniqueBID = UUID.randomUUID().toString();
+            bid.setBID(uniqueBID);
+            try {
+                try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
-                StringBuilder updQuery = new StringBuilder();
-                updQuery.append("UPDATE BID ")
-                        .append(" SET ")
-                        .append(" SOLUTION_DESCR = ").append("'").append(bid.getSolution_decription()).append("',")
-                        .append(" PRICE = ").append(bid.getPrice()).append(",")
-                        .append(" TIME_TO_FIX = ").append("'").append(bid.getTime_to_fix()).append("',")
-                        .append(" WHEN_P = ").append("'").append(bid.getWhen()).append("',")
-                        .append(" SELECTED = ").append("'").append(bid.getSelected()).append("'")
-                        .append(" WHERE BID = ").append("'").append(bid.getBID()).append("';");
+                    Date date = new Date();
+                    Timestamp timestamp = new Timestamp(date.getTime());
+                    StringBuilder insQuery = new StringBuilder();
 
-                stmt.executeUpdate(updQuery.toString());
-                System.out.println("#BidDB: Bid Updated, BID: " + bid.getBID());
+                    insQuery.append("INSERT INTO ")
+                            .append(" BID ( BID, UID, LID, SOLUTION_DESCR, PRICE, TIME_TO_FIX, WHEN_P, SELECTED, CREATED) ")
+                            .append(" VALUES (")
+                            .append("'").append(bid.getBID()).append("',")
+                            .append("'").append(bid.getUID()).append("',")
+                            .append("'").append(bid.getLID()).append("',")
+                            .append("'").append(bid.getSolution_decription()).append("',")
+                            .append(bid.getPrice()).append(",")
+                            .append(bid.getTime_to_fix()).append(",")
+                            .append("'").append(bid.getWhen()).append("',")
+                            .append(bid.getSelected()).append(",")
+                            .append("'").append(timestamp).append("');");
 
-                stmt.close();
-                con.close();
+                    stmt.executeUpdate(insQuery.toString());
+                    System.out.println("#BidDB: BID added");
 
+                    stmt.close();
+                    con.close();
+
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return bid;
     }
 
-    public void deleteBid(String BID) throws ClassNotFoundException {
+    public Bid updateBid(Bid bid) throws ClassNotFoundException {
+        if (bid.checkFieldsBeforeEdit(bid)) {
+            try {
+                try (Connection con = ConnectionDB.getDatabaseConnection();
+                        Statement stmt = con.createStatement()) {
+
+                    StringBuilder updQuery = new StringBuilder();
+                    updQuery.append("UPDATE BID ")
+                            .append(" SET ")
+                            .append(" SOLUTION_DESCR = ").append("'").append(bid.getSolution_decription()).append("',")
+                            .append(" PRICE = ").append(bid.getPrice()).append(",")
+                            .append(" TIME_TO_FIX = ").append("'").append(bid.getTime_to_fix()).append("',")
+                            .append(" WHEN_P = ").append("'").append(bid.getWhen()).append("',")
+                            .append(" SELECTED = ").append("'").append(bid.getSelected()).append("'")
+                            .append(" WHERE BID = ").append("'").append(bid.getBID()).append("';");
+
+                    stmt.executeUpdate(updQuery.toString());
+                    System.out.println("#BidDB: Bid Updated, BID: " + bid.getBID());
+
+                    stmt.close();
+                    con.close();
+
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return bid;
+    }
+
+    public Boolean deleteBid(String BID) throws ClassNotFoundException {
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -175,6 +214,87 @@ public final class BidDB {
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
+    public Map<String, Bid> getListingBids(String LID) throws ClassNotFoundException {
+        Map<String, Bid> bids = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * ")
+                        .append(" FROM BID ")
+                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    Bid bid = resToBid(res);
+
+                    bids.put(bid.getBID(), bid);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return bids;
+
+    }
+
+    public Map<String, Bid> getUserBids(String UID) throws ClassNotFoundException {
+        Map<String, Bid> bids = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM BID")
+                        .append(" WHERE UID = ").append("'").append(UID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    Bid bid = resToBid(res);
+                    bids.put(bid.getBID(), bid);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return bids;
+    }
+
+    public void deleteListingBids(String LID) throws ClassNotFoundException {
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder delQuery = new StringBuilder();
+
+                delQuery.append("DELETE FROM BID ")
+                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+
+                stmt.executeUpdate(delQuery.toString());
+                System.out.println("#BidDB: Listing Bids Deleted, LID: " + LID);
+
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }

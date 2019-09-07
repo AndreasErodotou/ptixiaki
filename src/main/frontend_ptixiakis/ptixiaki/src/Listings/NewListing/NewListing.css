@@ -1,9 +1,9 @@
 #nl_info{
-    padding: 5%;
+    padding-top: 5%;
 }
 
 #nl_pics{
-    padding: 5%;
+    padding: 4%;
 }
 
 #nl_mainPic{
@@ -13,9 +13,9 @@
 .pic{
     text-align: center;
     color: blue;
+    border-image: rgb(0, 0, 0);
 }
 
-.pic:hover{
-    color: blue;
-    text-decoration: underline;
+img:hover{
+    border-image: red;
 }

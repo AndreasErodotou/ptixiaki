@@ -43,7 +43,7 @@ SignupField.defaultProps = {
     type        :   "text",
     onChange    :   null,
     placeholder :   "",
-    className   :   "col-md-3",
+    className   :   "w-100",//"col-md-3",
     stateNow    :   "",
     isValid     :   true
 };
