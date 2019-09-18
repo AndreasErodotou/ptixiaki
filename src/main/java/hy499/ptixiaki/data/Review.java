@@ -5,6 +5,8 @@
  */
 package hy499.ptixiaki.data;
 
+import java.util.Date;
+
 /**
  *
  * @author Andreas
@@ -12,9 +14,11 @@ package hy499.ptixiaki.data;
 public class Review {
     private String UID;
     private String TO_UID;
+    private String LID;
     private String RID;
     private Double rating;
     private String comments;
+    private Date created; //8imame na kanw tis allages kai stin vasi...
 
     public Review() {
         UID = "";
@@ -22,11 +26,13 @@ public class Review {
         RID = "";
         rating = -1.0;
         comments = "";
+        LID = "";
     }
 
-    public Review(String UID, String TO_UID, String RID, Double rating, String comments) {
+    public Review(String UID, String TO_UID, String RID, Double rating, String comments, String LID) {
         this.UID = UID;
         this.TO_UID = TO_UID;
+        this.LID = LID;
         this.RID = RID;
         this.rating = rating;
         this.comments = comments;
@@ -70,6 +76,14 @@ public class Review {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public String getLID() {
+        return LID;
+    }
+
+    public void setLID(String LID) {
+        this.LID = LID;
     }
 
 }

@@ -6,6 +6,7 @@
 package hy499.ptixiaki.data;
 
 import java.util.Date;
+
 /**
  *
  * @author Andreas

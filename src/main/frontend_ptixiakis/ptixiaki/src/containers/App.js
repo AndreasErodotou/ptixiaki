@@ -1,8 +1,13 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import React, { Component } from 'react';
-import Signin from './Forms/Signin/Signin';
-import Signup from './Forms/Signup/Signup';
-import Listings from './Listings/Listings';
+import Signin from '../components/Forms/Signin/Signin';
+import Signup from '../components/Forms/Signup/Signup';
+import Listings from '../components/Listings/Listings';
+
+import SearchIcon from '../assets/Search.svg'
+import UserIcon from '../assets/User.svg'
+import AddIcon from '../assets/Add.svg'
 
 const Welcome = (props)=> {
   console.log("user: "+props.user)
@@ -90,6 +95,29 @@ class App extends Component{
     let sign_up = null
     let welc = null
 
+    let navBar = (<div className="border">
+
+                    <nav className="px-2">
+                        
+                        <form className=" form-inline row">
+                            <a href="#" className="col-2 font-weight-bold">ServiceLink</a>
+                            <div className="col-4">
+                                <input className="form-control blue searchBox" type="search" placeholder="Search" aria-label="Search"></input>
+                                <button className="btn p-1 ml-1 blue searchBox" type="submit"><img className="img-responsive" src={SearchIcon}></img></button>
+                            </div>
+                            <div className="col-5">
+                                <img className="img-responsive" src={AddIcon}></img>
+                                <a href="#">Create Your Own Listing</a>
+                            </div>
+                            <div className="col-1">
+                                <img className="img-responsive float-md-right" id="userIcon" src={UserIcon}></img>
+                            </div> 
+                        </form>
+                        
+                    </nav>
+                    
+                  </div>);
+
     if(this.state.isSigninOpen){
       sign_in=(
         <Signin
@@ -113,13 +141,14 @@ class App extends Component{
     return (
       <div>
         {
+          
           (sign_in) ? 
             sign_in
           :
           (sign_up) ?
             sign_up
           :
-            welc
+            navBar
         }
         <Listings onShowListings={this.showListings.bind(this)}/>
       </div>

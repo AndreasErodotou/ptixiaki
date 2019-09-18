@@ -1,0 +1,21 @@
+#listingsRow{
+    padding: 5%;
+}
+
+#fullListing{
+    margin: 5%;
+}
+
+.blue{
+    /* color: #17A2B8;  */
+    border-color: #17A2B8;
+}
+
+.p-1 {
+    padding-top: .2rem !important;
+}
+
+
+.userIcon{
+    right: 4%;
+}

@@ -106,8 +106,8 @@ public final class BidDB {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT * FROM BID")
-                        .append(" WHERE BID = ").append("'").append(BID).append("';");
+                getQuery.append("SELECT * FROM BID ")
+                        .append("WHERE BID = ").append("'").append(BID).append("';");
 
                 stmt.execute(getQuery.toString());
 
@@ -202,7 +202,7 @@ public final class BidDB {
                 StringBuilder delQuery = new StringBuilder();
 
                 delQuery.append("DELETE FROM BID ")
-                        .append(" WHERE BID = ").append("'").append(BID).append("';");
+                        .append("WHERE BID = ").append("'").append(BID).append("';");
 
                 stmt.executeUpdate(delQuery.toString());
                 System.out.println("#BidDB: Bid Deleted, BID: " + BID);
@@ -227,8 +227,8 @@ public final class BidDB {
                 StringBuilder getQuery = new StringBuilder();
 
                 getQuery.append("SELECT * ")
-                        .append(" FROM BID ")
-                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+                        .append("FROM BID ")
+                        .append("WHERE LID = ").append("'").append(LID).append("';");
 
                 stmt.execute(getQuery.toString());
 
@@ -255,8 +255,8 @@ public final class BidDB {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT * FROM BID")
-                        .append(" WHERE UID = ").append("'").append(UID).append("';");
+                getQuery.append("SELECT * FROM BID ")
+                        .append("WHERE UID = ").append("'").append(UID).append("';");
 
                 stmt.execute(getQuery.toString());
 
@@ -281,8 +281,8 @@ public final class BidDB {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT * FROM BID")
-                        .append(" WHERE Selected = ").append("'").append(Selected).append("';");
+                getQuery.append("SELECT * FROM BID ")
+                        .append("WHERE Selected = ").append("'").append(Selected).append("';");
 
                 stmt.execute(getQuery.toString());
 
@@ -307,8 +307,8 @@ public final class BidDB {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT * FROM BID")
-                        .append(" WHERE Selected = ").append("'").append(Selected).append("'")
+                getQuery.append("SELECT * FROM BID ")
+                        .append("WHERE Selected = ").append("'").append(Selected).append("'")
                         .append(" and UID = ").append("'").append(UID).append("';");
 
                 stmt.execute(getQuery.toString());
@@ -336,7 +336,7 @@ public final class BidDB {
                 StringBuilder delQuery = new StringBuilder();
 
                 delQuery.append("DELETE FROM BID ")
-                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+                        .append("WHERE LID = ").append("'").append(LID).append("';");
 
                 stmt.executeUpdate(delQuery.toString());
                 System.out.println("#BidDB: Listing Bids Deleted, LID: " + LID);
@@ -362,7 +362,7 @@ public final class BidDB {
                 StringBuilder delQuery = new StringBuilder();
 
                 delQuery.append("DELETE FROM BID ")
-                        .append(" WHERE UID = ").append("'").append(UID).append("';");
+                        .append("WHERE UID = ").append("'").append(UID).append("';");
 
                 stmt.executeUpdate(delQuery.toString());
                 System.out.println("#BidDB: User Bids Deleted, UID: " + UID);
@@ -378,6 +378,31 @@ public final class BidDB {
         return deleted;
     }
 
+    public int countBids() throws ClassNotFoundException {
+        int listingBidsCount = 0;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT COUNT(*)")
+                        .append("FROM BID").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    listingBidsCount = res.getInt("count");
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listingBidsCount;
+    }
+
     public int countListingBids(String LID) throws ClassNotFoundException {
         int listingBidsCount = 0;
         try {
@@ -386,8 +411,8 @@ public final class BidDB {
                 StringBuilder getQuery = new StringBuilder();
 
                 getQuery.append("SELECT COUNT(*)")
-                        .append("FROM BID")
-                        .append(" WHERE LID = ").append("'").append(LID).append("';");
+                        .append("FROM BID ")
+                        .append("WHERE LID = ").append("'").append(LID).append("';");
 
                 stmt.execute(getQuery.toString());
 
@@ -412,8 +437,8 @@ public final class BidDB {
                 StringBuilder getQuery = new StringBuilder();
 
                 getQuery.append("SELECT COUNT(*)")
-                        .append("FROM BID")
-                        .append(" WHERE UID = ").append("'").append(UID).append("';");
+                        .append("FROM BID ")
+                        .append("WHERE UID = ").append("'").append(UID).append("';");
 
                 stmt.execute(getQuery.toString());
 
@@ -438,8 +463,8 @@ public final class BidDB {
                 StringBuilder getQuery = new StringBuilder();
 
                 getQuery.append("SELECT COUNT(*)")
-                        .append("FROM BID")
-                        .append(" WHERE Selected = ").append("'").append(Selected).append("'")
+                        .append("FROM BID ")
+                        .append("WHERE Selected = ").append("'").append(Selected).append("'")
                         .append(" and UID = ").append("'").append(UID).append("';");
 
                 stmt.execute(getQuery.toString());
@@ -465,8 +490,8 @@ public final class BidDB {
                 StringBuilder getQuery = new StringBuilder();
 
                 getQuery.append("SELECT COUNT(*)")
-                        .append("FROM BID")
-                        .append(" WHERE Selected = ").append("'").append(Selected).append("';");
+                        .append("FROM BID ")
+                        .append("WHERE Selected = ").append("'").append(Selected).append("';");
 
                 stmt.execute(getQuery.toString());
 

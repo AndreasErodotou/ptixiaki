@@ -5,7 +5,6 @@ import FullListing from './FullListing/FullListing.js';
 import NewListing from './NewListing/NewListing';
 import "./Listings.css"
 
-import SearchIcon from '../Icons/Search.svg'
 
 class Listings extends Component {
     constructor(props) {
@@ -45,27 +44,29 @@ class Listings extends Component {
 
         return (
             <div className="">
-                <div className="border">
-                    <nav className="navbar navbar-light bg-light">
-                        <a className="navbar-brand">ServiceLink</a>
-                        <form className="form-inline">
-                            
-                            <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"></input>
-                            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                {/* <div className="border">
+
+                    <nav className="px-2">
+                        
+                        <form className=" form-inline row">
+                            <a href="#" className="col-2 font-weight-bold">ServiceLink</a>
+                            <div className="col-4">
+                                <input className="form-control blue searchBox" type="search" placeholder="Search" aria-label="Search"></input>
+                                <button className="btn p-1 ml-1 blue searchBox" type="submit"><img className="img-responsive" src={SearchIcon}></img></button>
+                            </div>
+                            <div className="col-5">
+                                <img className="img-responsive" src={AddIcon}></img>
+                                <a href="#">Create Your Own Listing</a>
+                            </div>
+                            <div className="col-1">
+                                <img className="img-responsive float-md-right" id="userIcon" src={UserIcon}></img>
+                            </div> 
                         </form>
+                        
                     </nav>
-                    {/* <div className="m-3">
-                        
-                        <h4>ServiceLink!!
-                            <span>
-                                <input className= "ml-5" type="text" placeholder="Search"></input>
-                                <img className= "mb-2 p-1 border img-responsive" src={SearchIcon} ></img>
-                            </span>
-                        </h4>    
-                        
-                    </div> */}
                     
-                </div>
+                </div> */}
+
                 {/* <div className="topnav">
                     <a className="active" href="#home">Home</a>
                     <a href="#about">About</a>

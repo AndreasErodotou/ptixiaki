@@ -40,6 +40,7 @@ public final class ReviewDB {
                         .append(" RID       VARCHAR(50)    PRIMARY KEY   NOT NULL, ")
                         .append(" UID       VARCHAR(50)    NOT NULL,")
                         .append(" TO_UID    VARCHAR(50)    NOT NULL, ")
+                        .append(" LID       VARCHAR(50)    NOT NULL,")
                         .append(" COMMENTS  TEXT           NOT NULL, ")
                         .append(" RATING    REAL           NOT NULL, ")
                         .append(" CREATED   TIMESTAMP)");
@@ -72,6 +73,7 @@ public final class ReviewDB {
                     review.setRID(res.getString("RID"));
                     review.setUID(res.getString("UID"));
                     review.setTO_UID(res.getString("TO_UID"));
+                    review.setLID(res.getString("LID"));
                     review.setRating(res.getDouble("RATING"));
                     review.setComments(res.getString("COMMENTS"));
 
@@ -97,11 +99,12 @@ public final class ReviewDB {
                 StringBuilder insQuery = new StringBuilder();
 
                 insQuery.append("INSERT INTO ")
-                        .append(" REVIEW ( RID, UID, TO_UID, RATING, COMMENTS, CREATED) ")
+                        .append(" REVIEW ( RID, UID, TO_UID, LID, RATING, COMMENTS, CREATED) ")
                         .append(" VALUES (")
                         .append("'").append(review.getRID()).append("',")
                         .append("'").append(review.getUID()).append("',")
                         .append("'").append(review.getTO_UID()).append("',")
+                        .append("'").append(review.getLID()).append("',")
                         .append(review.getRating()).append(",")
                         .append("'").append(review.getComments()).append("',")
                         .append("'").append(timestamp).append("');");

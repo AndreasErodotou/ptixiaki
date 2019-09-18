@@ -1,7 +1,7 @@
 import React from 'react';
 import SignupField from './SignupField';
 import SignupSelect from './SignupSelect';
-import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import PropTypes from 'prop-types';
 
 const Gender = [
