@@ -504,7 +504,7 @@ class Signup extends React.Component{
                 />
 
                 <SignupField 
-                    field="bday"       
+                    field="birthday"       
                     type="text" 
                     placeholder="2000-04-25" 
                     onChange={ this.bdayChanged.bind(this) }

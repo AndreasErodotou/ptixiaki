@@ -4,20 +4,9 @@ import React, { Component } from 'react';
 import Signin from '../components/Forms/Signin/Signin';
 import Signup from '../components/Forms/Signup/Signup';
 import Listings from '../components/Listings/Listings';
+import NavBar from '../components/NavBar'
+import Filters from '../components/Filters/Filters'
 
-import SearchIcon from '../assets/Search.svg'
-import UserIcon from '../assets/User.svg'
-import AddIcon from '../assets/Add.svg'
-
-const Welcome = (props)=> {
-  console.log("user: "+props.user)
-  return (
-    <div>
-      Welcome <strong>{props.user.email}</strong>! <b></b>
-      <a href="javascript:void(0);" onClick={props.onSignOut}>Sign out</a>
-    </div>
-  )
-}
 
 class App extends Component{
   constructor(props) {
@@ -26,8 +15,11 @@ class App extends Component{
     this.state = {
       user: {email: null},
       isSigninOpen: false,
-      isSignupOpen: true,
-      showListings: false
+      isSignupOpen: false,
+      showListings: true,
+      createNewListing: false,
+      search: false,
+      logoClicked: false
     }
   }
   
@@ -41,28 +33,6 @@ class App extends Component{
       isSignupOpen: false
       })
   }
-
-  // signUp( name, surname, username, email, password, birthday, address, phoneNum, gender, 
-  //   accountType, jobs, servedLoc, jobExp, aboutMe)    {
-  //     this.setState({
-  //       user: {
-  //         "name"        :   name, 
-  //         "surname"     :   surname, 
-  //         "username"    :   username, 
-  //         "email"       :   email, 
-  //         "password"    :   password, 
-  //         "birthday"    :   birthday, 
-  //         "address"     :   address, 
-  //         "phoneNum"    :   phoneNum, 
-  //         "gender"      :   gender, 
-  //         "accountType" :   accountType, 
-  //         "jobs"        :   jobs, 
-  //         "servedLoc"   :   servedLoc, 
-  //         "jobExp"      :   jobExp, 
-  //         "aboutMe"     :   aboutMe
-  //       },
-  //     })
-  // }
 
   signOut() {
     this.setState({user: null,
@@ -89,68 +59,64 @@ class App extends Component{
     })
   }
   
+  createYourOwnListingClickedHandler(){
+    this.setState({
+        ...this.state,
+        createNewListing: true
+    });
+}
+
+searchClickedHandler(){
+
+}
+
+logoClickedHandler(){
+
+}
+
+accountIconClickedHandler(){
+    
+}
+
+
+
   render() {
     console.log(this.state)
-    let sign_in = null
-    let sign_up = null
-    let welc = null
-
-    let navBar = (<div className="border">
-
-                    <nav className="px-2">
-                        
-                        <form className=" form-inline row">
-                            <a href="#" className="col-2 font-weight-bold">ServiceLink</a>
-                            <div className="col-4">
-                                <input className="form-control blue searchBox" type="search" placeholder="Search" aria-label="Search"></input>
-                                <button className="btn p-1 ml-1 blue searchBox" type="submit"><img className="img-responsive" src={SearchIcon}></img></button>
-                            </div>
-                            <div className="col-5">
-                                <img className="img-responsive" src={AddIcon}></img>
-                                <a href="#">Create Your Own Listing</a>
-                            </div>
-                            <div className="col-1">
-                                <img className="img-responsive float-md-right" id="userIcon" src={UserIcon}></img>
-                            </div> 
-                        </form>
-                        
-                    </nav>
-                    
-                  </div>);
+    let page = [];
 
     if(this.state.isSigninOpen){
-      sign_in=(
+      page.push(
         <Signin
         onSignIn={ this.signIn.bind(this) }
         onChangeToSignUp={ this.changeToSignUp.bind(this) }
         />)
     }else if(this.state.isSignupOpen){
-      sign_up=(
+      page.push(
         <Signup
         // onSignup={ this.signUp.bind(this) } 
         onChangeToSignIn={ this.changeToSignIn.bind(this) }
         />)
     }else{
-      welc=(
-        <Welcome 
-        user={ this.state.user } 
-        onSignOut={ this.signOut.bind(this) } 
+      page.push(<NavBar
+          onCreateYourOwnListingClicked={this.createYourOwnListingClickedHandler.bind(this)}
+          onSearch={this.searchClickedHandler.bind(this)}
+          onLogoClicked={this.logoClickedHandler.bind(this)}
         />)
     }
 
+    page.push(<Filters/>);
+
+    if(this.state.showListings){
+      page.push(<Listings onShowListings={this.showListings.bind(this)} createNewListing={this.state.createNewListing} />);
+    }
+
+    
+
     return (
-      <div>
+      <div className="row">
         {
-          
-          (sign_in) ? 
-            sign_in
-          :
-          (sign_up) ?
-            sign_up
-          :
-            navBar
-        }
-        <Listings onShowListings={this.showListings.bind(this)}/>
+          page
+        } 
       </div>
     )
     
