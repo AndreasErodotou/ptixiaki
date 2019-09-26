@@ -14,8 +14,8 @@ class FullListing extends Component {
 
     componentDidUpdate(){
         if(this.props.id){
-            if(!this.state.listing || (this.state.listing && this.props.id !== this.state.listing.LID)){
-                fetch('http://localhost:4567/management/listings?LID='+ this.props.id)
+            if(this.state.listing===null || (this.state.listing && this.props.id !== this.state.listing.LID)){
+                fetch('http://localhost:4567/api/listings/'+ this.props.id)
                 .then( response => response.json())
                 .then( resJson => {
                     console.log(resJson.data);

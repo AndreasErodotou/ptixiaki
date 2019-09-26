@@ -7,9 +7,19 @@ package hy499.ptixiaki.main;
 import com.google.gson.Gson;
 import hy499.ptixiaki.response.ServerResponse;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
+import org.pac4j.jwt.profile.JwtGenerator;
+import org.pac4j.sparkjava.SparkWebContext;
+import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.*;
+import spark.template.mustache.MustacheTemplateEngine;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -38,6 +48,27 @@ public class SparkMain {
 
     }
 
+    private final static String JWT_SALT = "12345678901234567890123456789012";
+    private final static MustacheTemplateEngine templateEngine = new MustacheTemplateEngine();
+
+    private static ModelAndView jwt(final Request request, final Response response) {
+        final SparkWebContext context = new SparkWebContext(request, response);
+        final ProfileManager manager = new ProfileManager(context);
+        final Optional<CommonProfile> profile = manager.get(true);
+        System.out.println("context:\n" + context);
+        System.out.println("manager:\n" + manager);
+        System.out.println("profile:\n" + profile);
+        String token = "";
+        if (profile.isPresent()) {
+            JwtGenerator generator = new JwtGenerator(new SecretSignatureConfiguration(JWT_SALT));
+            token = generator.generate(profile.get());
+            System.out.println("token:\n" + token);
+        }
+        final Map map = new HashMap();
+        map.put("token", token);
+        return new ModelAndView(map, "jwt.mustache");
+    }
+
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
 
         UserAPI userApi = new UserAPI();
@@ -51,6 +82,9 @@ public class SparkMain {
             // /users/:UID/listings/:LID/bids/:BID
             // diaforetika:
             // /users/*/listings/*/bids/*
+
+            post("/sign-in", SparkMain::jwt, templateEngine);
+
             path("/users", () -> {
 
                 path("/:UID/listings", () -> {
@@ -71,6 +105,8 @@ public class SparkMain {
 
                     //Listings
                     get("", (req, res) -> listingApi.getReqHandler(req, res));
+
+                    get("/:LID", (req, res) -> listingApi.getAListing(req, res));
 
                     post("", (req, res) -> listingApi.addAListing(req, res));
 
@@ -156,6 +192,8 @@ public class SparkMain {
                 });
 
                 get("", (req, res) -> listingApi.getReqHandler(req, res));
+
+                get("/:LID", (req, res) -> listingApi.getAListing(req, res));
 
                 post("", (req, res) -> listingApi.addAListing(req, res));
 

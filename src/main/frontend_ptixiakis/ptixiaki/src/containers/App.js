@@ -8,6 +8,7 @@ import NavBar from '../components/NavBar'
 import Filters from '../components/Filters/Filters'
 
 
+
 class App extends Component{
   constructor(props) {
     super(props)
@@ -98,16 +99,17 @@ accountIconClickedHandler(){
         />)
     }else{
       page.push(<NavBar
+          key="navbar"
           onCreateYourOwnListingClicked={this.createYourOwnListingClickedHandler.bind(this)}
           onSearch={this.searchClickedHandler.bind(this)}
           onLogoClicked={this.logoClickedHandler.bind(this)}
         />)
     }
 
-    page.push(<Filters/>);
+    page.push(<Filters key="filters"/>);
 
     if(this.state.showListings){
-      page.push(<Listings onShowListings={this.showListings.bind(this)} createNewListing={this.state.createNewListing} />);
+      page.push(<Listings key="listings" onShowListings={this.showListings.bind(this)} createNewListing={this.state.createNewListing} />);
     }
 
     

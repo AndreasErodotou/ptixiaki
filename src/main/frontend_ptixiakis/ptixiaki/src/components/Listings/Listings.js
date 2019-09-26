@@ -55,6 +55,8 @@ class Listings extends Component {
 
         if(this.props.createNewListing){
             content = <NewListing/> 
+        }else if(this.state.listingClickedId!==null){
+            content = <FullListing key={this.state.listingClickedId} id={this.state.listingClickedId}/>
         }
 
 

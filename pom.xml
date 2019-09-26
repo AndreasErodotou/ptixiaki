@@ -12,6 +12,8 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sparkPac4j.version>3.0.0</sparkPac4j.version>
+	<pac4j.version>3.2.0</pac4j.version>
     </properties>
     
     <dependencies>
@@ -62,6 +64,8 @@
             <version>1.7.5</version>
         </dependency>-->
         
+        
+        
          <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -72,6 +76,95 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.6.4</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-template-mustache</artifactId>
+            <version>2.7.1</version>
+                <exclusions>
+                        <exclusion>
+                                <groupId>com.sparkjava</groupId>
+                                <artifactId>spark-core</artifactId>
+                        </exclusion>
+                </exclusions>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>spark-pac4j</artifactId>
+                <version>${sparkPac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-core</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-oauth</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-openid</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-saml</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-cas</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-http</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-oidc</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-jwt</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-sql</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-ldap</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-mongo</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-kerberos</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-couch</artifactId>
+                <version>${pac4j.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.13</version>
+        </dependency>
+        
+        
         <!--======================================================-->
         
     </dependencies>
