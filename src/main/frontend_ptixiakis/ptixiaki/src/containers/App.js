@@ -4,8 +4,15 @@ import React, { Component } from 'react';
 import Signin from '../components/Forms/Signin/Signin';
 import Signup from '../components/Forms/Signup/Signup';
 import Listings from '../components/Listings/Listings';
-import NavBar from '../components/NavBar'
-import Filters from '../components/Filters/Filters'
+import NavBar from '../components/NavBar';
+import Filters from '../components/Filters/Filters';
+
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import ModalDialog from 'react-bootstrap/ModalDialog';
+
+// import { Button } from 'reactstrap';
+
 
 
 
@@ -14,30 +21,38 @@ class App extends Component{
     super(props)
     
     this.state = {
-      user: {email: null},
+      user: {
+        email: null,
+        password: null},
+      // listings: [],
       isSigninOpen: false,
       isSignupOpen: false,
       showListings: true,
       createNewListing: false,
       search: false,
-      logoClicked: false
+      logoClicked: false,
+      loginError: false
     }
   }
   
   signIn(email, password) {
       this.setState({
+        ...this.state,
         user: {
           "email"   : email,
           "password": password
         },
-      isSigninOpen: false,
-      isSignupOpen: false
-      })
+        isSigninOpen: false,
+        isSignupOpen: false,
+        loginError: false,
+        showListings: true
+      });
   }
 
   signOut() {
     this.setState({user: null,
-                  isSigninOpen: true})
+      isSigninOpen: true
+    })
   }
 
   changeToSignUp(){
@@ -60,24 +75,14 @@ class App extends Component{
     })
   }
   
-  createYourOwnListingClickedHandler(){
+  
+
+  loginError(){
     this.setState({
-        ...this.state,
-        createNewListing: true
+      ...this.state,
+      loginError: true
     });
-}
-
-searchClickedHandler(){
-
-}
-
-logoClickedHandler(){
-
-}
-
-accountIconClickedHandler(){
-    
-}
+  }
 
 
 
@@ -89,7 +94,9 @@ accountIconClickedHandler(){
       page.push(
         <Signin
         onSignIn={ this.signIn.bind(this) }
-        onChangeToSignUp={ this.changeToSignUp.bind(this) }
+        onChangeToSignUp={ this.changeToSignUp.bind(this)}
+        onLoginError = {this.loginError.bind(this)}
+        error={this.state.loginError}
         />)
     }else if(this.state.isSignupOpen){
       page.push(
@@ -106,10 +113,15 @@ accountIconClickedHandler(){
         />)
     }
 
-    page.push(<Filters key="filters"/>);
+    
 
     if(this.state.showListings){
-      page.push(<Listings key="listings" onShowListings={this.showListings.bind(this)} createNewListing={this.state.createNewListing} />);
+      page.push(<Filters key="filters"/>);
+      page.push(<Listings 
+        key="listings" 
+        onShowListings={this.showListings.bind(this)}
+        listings={this.state.listings}
+        createNewListing={this.state.createNewListing} />);
     }
 
     
@@ -118,7 +130,8 @@ accountIconClickedHandler(){
       <div className="row">
         {
           page
-        } 
+        }
+        
       </div>
     )
     

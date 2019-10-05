@@ -13,7 +13,7 @@ class Listings extends Component {
         super(props)
         
         this.state = {
-          listings: [],
+        //   listings: [],
           listingClickedId: null
         }
     }
@@ -41,9 +41,7 @@ class Listings extends Component {
         
         var content;
         
-        
-        
-        const listings = this.state.listings.map(listing =>{
+        const listings = this.props.listings.map(listing =>{
             return <Listing 
                         key={listing.LID} 
                         title={listing.title} 
@@ -55,7 +53,7 @@ class Listings extends Component {
 
         if(this.props.createNewListing){
             content = <NewListing/> 
-        }else if(this.state.listingClickedId!==null){
+        }else if(this.state.listingClickedId){
             content = <FullListing key={this.state.listingClickedId} id={this.state.listingClickedId}/>
         }
 
@@ -70,9 +68,9 @@ class Listings extends Component {
                         {listings}
                     </div>
 
-                    {/* <div id="fullListing">
+                    <div id="fullListing">
                         <FullListing id={this.state.listingClickedId}/>
-                    </div> */}
+                    </div>
 
                     <div id="newListing">
                         {content}

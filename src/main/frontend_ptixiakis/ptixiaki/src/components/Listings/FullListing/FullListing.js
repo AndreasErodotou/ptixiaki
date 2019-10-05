@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './FullListing.css'
 
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import ModalDialog from 'react-bootstrap/ModalDialog';
+
 class FullListing extends Component {
     constructor(props) {
         super(props)
@@ -15,7 +19,8 @@ class FullListing extends Component {
     componentDidUpdate(){
         if(this.props.id){
             if(this.state.listing===null || (this.state.listing && this.props.id !== this.state.listing.LID)){
-                fetch('http://localhost:4567/api/listings/'+ this.props.id)
+                // fetch('http://localhost:4567/api/listings/'+ this.props.id)
+                fetch('http://localhost:4567/api/listings?LID='+ this.props.id)
                 .then( response => response.json())
                 .then( resJson => {
                     console.log(resJson.data);
@@ -32,6 +37,9 @@ class FullListing extends Component {
 
         let fullListing = null;
 
+        // const [show, setShow] = State(false);
+        // const handleClose = () => setShow(false);
+        // const handleShow = () => setShow(true);
         
 
         
@@ -43,7 +51,41 @@ class FullListing extends Component {
             });
 
             fullListing=(
-                <div>
+                // <div>
+                //     <div className="container" id="simpleFullListing">
+                //         <div className="border border-info row" id="fullListing">
+                //             <div className="border-right border-info col-sm-4" id="pics">
+                //                 <div className="row" id="allPicsdiv">
+                //                     <img className="img-responsive pic col-sm-12" id="mainPic" src={data}  alt="pic"></img>
+
+                //                     {otherPics}
+
+                //                 </div>
+                //             </div>
+                //             <div className="col-sm-8" id="info">
+                //                 <h4 > {this.state.listing.title}</h4>
+                //                 <h6 ><small>{this.state.listing.description}</small></h6>
+                //                 <h6 id="category">{this.state.listing.jobCategory}</h6>
+                //                 <h6 id="loc"> location: {this.state.listing.location} </h6>
+                //                 <h6 id="posted_by"> posted by: {this.state.listing.UID} </h6>
+                //                 <h6 id="posted_from"> posted from: {this.state.listing.available_from} </h6>
+                //                 <h6 id="available"> available until: {this.state.listing.available_until} </h6>
+                //                 <h6 id="max_price"> price: {this.state.listing.max_price} </h6>
+                //             </div>
+                //         </div>
+                //     </div>
+                // </div>
+
+            <>
+            <Button variant="primary" >
+                Launch demo modal
+            </Button>
+
+            <Modal size="lg" show={true} >
+                <Modal.Header closeButton>
+                <Modal.Title>Modal heading</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                     <div className="container" id="simpleFullListing">
                         <div className="border border-info row" id="fullListing">
                             <div className="border-right border-info col-sm-4" id="pics">
@@ -66,29 +108,18 @@ class FullListing extends Component {
                             </div>
                         </div>
                     </div>
-                </div>
+                    
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" >
+                        Bid
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            </>
             );
         }
-            // <div className="container">
-            //     <div className="modal fade" id="myModal" role="dialog">
-            //         <div className="modal-dialog">
-
-            //             <div className="modal-content">
-            //                 <div className="modal-header">
-            //                     <button type="button" className="close" data-dismiss="modal">&times;</button>
-            //                     <h4 className="modal-title">Modal Header</h4>
-            //                 </div>
-            //                 <div className="modal-body">
-            //                     <p>Some text in the modal.</p>
-            //                 </div>
-            //                 <div className="modal-footer">
-            //                     <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-            //                 </div>
-            //             </div>
-                    
-            //         </div>
-            //     </div>
-            // </div>
+            
 
         return (
             fullListing

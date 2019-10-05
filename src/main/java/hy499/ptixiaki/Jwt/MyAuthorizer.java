@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Jwt;
+package hy499.ptixiaki.Jwt;
 
 import hy499.ptixiaki.db.UserDB;
 import java.sql.SQLException;

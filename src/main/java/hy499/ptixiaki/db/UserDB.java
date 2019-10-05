@@ -439,4 +439,34 @@ public final class UserDB {
         return isAvailable;
     }
 
+    public Boolean checkLogin(String email, String password) throws ClassNotFoundException {
+        Boolean authenticated = false;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder checkQuery = new StringBuilder();
+
+                checkQuery.append("SELECT * FROM CUSTOMER, PROFESSIONAL ")
+                        .append(" WHERE (CUSTOMER.EMAIL = ").append("'").append(email).append("'")
+                        .append(" and CUSTOMER.PASSWORD = ").append("'").append(password).append("')")
+                        .append(" or (PROFESSIONAL.EMAIL = ").append("'").append(email).append("'")
+                        .append(" and PROFESSIONAL.PASSWORD = ").append("'").append(password).append("');");
+
+                stmt.execute(checkQuery.toString());
+                if (stmt.getResultSet().next() == true) {
+                    System.out.println("#UserDB: login successfully");
+                    authenticated = true;
+                }
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return authenticated;
+    }
+
 }

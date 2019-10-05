@@ -83,7 +83,12 @@ public class SparkMain {
             // diaforetika:
             // /users/*/listings/*/bids/*
 
-            post("/sign-in", SparkMain::jwt, templateEngine);
+//            post("/login", SparkMain::jwt, templateEngine);
+            get("/jwt", SparkMain::jwt, templateEngine);
+
+            post("/login", (req, res) -> userApi.checkLogin(req, res));
+
+            options("", (req, res) -> optionFunc(req, res));
 
             path("/users", () -> {
 

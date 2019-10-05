@@ -11,6 +11,7 @@ import hy499.ptixiaki.services.UserService;
 import hy499.ptixiaki.data.Customer;
 import hy499.ptixiaki.data.Professional;
 import hy499.ptixiaki.data.User;
+import hy499.ptixiaki.db.UserDB;
 import hy499.ptixiaki.response.ServerResponse;
 import hy499.ptixiaki.response.ServerResponse.Status;
 import java.sql.SQLException;
@@ -81,6 +82,12 @@ public class UserAPI {
                 .toJson(new ServerResponse(Status.SUCCESS,
                         userService.getUserMsg(),
                         new Gson().toJsonTree(isAvailable)));
+    }
+
+    public String checkLogin(Request req, Response res) throws SQLException, ClassNotFoundException {
+        UserDB userDB = new UserDB();
+        User user = gson.fromJson(req.body(), Professional.class);
+        return createResponse(res, userDB.checkLogin(user.getEmail(), user.getPassword()));
     }
 
     public String getReqQueryHandler(Request req, Response res) throws ClassNotFoundException {
