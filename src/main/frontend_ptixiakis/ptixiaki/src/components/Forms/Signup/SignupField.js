@@ -19,10 +19,11 @@ const SignupField = ({field, type, onChange, placeholder, className, stateNow, i
                 <label className="control-label" > {field}: <b></b>
                     <span style={(isValid)? styleOk : styleError}> 
                         { stateNow }
-                    </span> </label>
+                    </span> 
+                </label>
                 {!(type==="textarea")?
                     <input style={(isValid)? styleOk : {/*borderColor: "#ff2929"*/}} className="form-control" ref= {ref} onChange={onChange} type={type} id={field} placeholder={(placeholder)? placeholder : field} />
-                    : 
+                    :
                     <textarea class="form-control" ref= {ref} onChange={onChange} id={field} placeholder={(placeholder)? placeholder : field} rows="3"></textarea>
                 }
             </div>
@@ -41,7 +42,7 @@ SignupField.propTypes = {
     
 };
 
-SignupField.defaultProps = { 
+SignupField.defaultProps = {
     field       :   "",
     type        :   "text",
     onChange    :   null,

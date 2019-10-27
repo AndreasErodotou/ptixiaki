@@ -1,89 +1,118 @@
-import React, { Component } from 'react';
+import React,  { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Listing from './Listing/Listing';
 import FullListing from './FullListing/FullListing.js';
 import NewListing from './NewListing/NewListing';
 import "./Listings.css"
+import CardGroup from 'react-bootstrap/CardGroup'
 
 
 
+const Listings = (props) =>  {
 
-class Listings extends Component {
-    constructor(props) {
-        super(props)
-        
-        this.state = {
-        //   listings: [],
-          listingClickedId: null
+    // console.log("state: "+JSON.stringify(this.state.listings["f48e2c2d-1506-4f5a-b75d-5254a4104e30"]));
+    
+    const [fullLShow, setFullLShow] = React.useState(false);
+    const handlefullLClose = () => setFullLShow(false);
+    const handlefullLShow = () => setFullLShow(true);
+
+    const [newLShow, setNewLShow] = React.useState(false);
+    const handleNewLClose = () => {
+        setNewLShow(false);
+        props.disableCNL();
+    }
+    const handleNewLShow = () => setNewLShow(true);
+
+    var content;
+
+    useEffect(() => {
+        // console.log("useEffect:"+props.createNewListing);
+        if(props.createNewListing){
+            handleNewLShow();
         }
-    }
-
-    componentDidMount(){
-        fetch('http://localhost:4567/api/listings')
-        .then( response => response.json())
-        .then( resJson => {
-            // const listings= resJson.data.slice(0,3);
-            this.setState({listings: resJson.data})
-            console.log(resJson.data);
-        });
-    }
-
-    listingClickedHandler(LID){
-        this.setState({listingClickedId: LID});
-    }
-
+      },[props.createNewListing]);
     
 
+    let listingClickedModalHandler = (LID) => {
+        props.listingClickedHandler(LID);
+        handlefullLShow();
+    }
+
+    // let NewListingClickedModalHander = () => {
+    //     handleNewLShow();
+    // }
+        
+    var listings = props.listings.map(listing =>{
+        return <Listing 
+                    key={listing.LID} 
+                    title={listing.title} 
+                    imgsrc={listing.pics}
+                    descr={listing.description} 
+                    listingClicked={() => listingClickedModalHandler(listing.LID)}
+                />;
+    });
     
 
-    render() {
-        // console.log("state: "+JSON.stringify(this.state.listings["f48e2c2d-1506-4f5a-b75d-5254a4104e30"]));
-        
-        var content;
-        
-        const listings = this.props.listings.map(listing =>{
-            return <Listing 
-                        key={listing.LID} 
-                        title={listing.title} 
-                        imgsrc="" 
-                        descr={listing.description} 
-                        listingClicked={() => this.listingClickedHandler(listing.LID)}
-                    />;
-        });
+    if(props.createNewListing){
+        // content =   <NewListing
+        //                 createNewListing={props.createNewListing}
+        //                 onHide = {handleNewLClose}
+        //                 show = {newLShow}
+        //             /> 
+    }else if(props.listingClickedId){
+        content =   <FullListing 
+                        key={props.listingClickedId}
+                        listing={props.listingClicked}
+                        onHide = {handlefullLClose}
+                        show = {fullLShow}
+                    />
+    }
 
-        if(this.props.createNewListing){
-            content = <NewListing/> 
-        }else if(this.state.listingClickedId){
-            content = <FullListing key={this.state.listingClickedId} id={this.state.listingClickedId}/>
-        }
+    // console.log("listings:listing: " + JSON.stringify(props.listingClicked));
 
+    // if(props.createNewListing){
+    //     handleNewLShow();
+    // }
 
+    return (
+        <div>
+            <div className ="container" id="listingsContainer">
 
-        return (
-            <div>
-                <div className ="container" id="listingsContainer">
-                    
-
-                    <div className="row" id="listingsRow">
-                        {listings}
-                    </div>
-
-                    <div id="fullListing">
-                        <FullListing id={this.state.listingClickedId}/>
-                    </div>
-
-                    <div id="newListing">
-                        {content}
-                        {/* <NewListing/> */}
-                    </div> 
+                <div className="row" id="listingsRow">
+                    {listings}
                 </div>
+
+                {(props.showFullListing)?
+                    (<div id="fullListing">
+                        <FullListing 
+                            listing={props.listingClicked}
+                            onHide = {handlefullLClose}
+                            show = {fullLShow}
+                        />
+                    </div>)
+                :
+                    null
+                }
+                
+
+                <div id="newListing">
+                    {/* {content} */}
+                    <NewListing
+                        createNewListing={props.createNewListing}
+                        onHide = {handleNewLClose}
+                        show = {newLShow}
+                        // modalHandler = {NewListingClickedModalHander}
+                        close = {handleNewLShow}
+                    />
+                    {/* <p>Listings: {JSON.stringify(props.createNewListing)}</p> */}
+                </div> 
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 Listings.propTypes = {
-    onShowListings : PropTypes.func
+    // onShowListings : PropTypes.func
 };
 
 export default Listings;

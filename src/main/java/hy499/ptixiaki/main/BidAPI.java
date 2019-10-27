@@ -59,23 +59,48 @@ public class BidAPI {
     }
 
     public String getReqHandler(Request req, Response res) throws ClassNotFoundException {
+        StringBuilder getQuery = new StringBuilder();
+        Boolean test = false;
         if (req.queryParams("BID") != null) {
-            return getABid(req, res);
-        } else if (req.queryParams("LID") != null) {
-            return getAllBidsForAListing(req, res);
-        } else if (req.queryParams("UID") != null) {
-            return getAllUserBids(req, res);
-        } else if (req.queryParams("selected") != null) {
-            return getAllSelectedBids(req, res);
-        } else if (req.queryParams("COUNT") != null) {
-            return countAllBidsForAListing(req, res);
+            getQuery.append("BID = ").append("'").append(req.queryParams("BID")).append("'");
+            test = true;
         }
+        if (req.queryParams("LID") != null) {
+            getQuery.append((test) ? " and " : "");
+            getQuery.append(" LID = ").append("'").append(req.queryParams("LID")).append("'");
+            test = true;
+        }
+        if (req.queryParams("UID") != null) {
+            getQuery.append((test) ? " and " : "");
+            getQuery.append("UID = ").append("'").append(req.queryParams("UID")).append("'");
+            test = true;
+        }
+        if (req.queryParams("selected") != null) {
+            getQuery.append((test) ? " and " : "");
+            getQuery.append(" selected = ").append(req.queryParams("selected"));
+            test = true;
+        }
+        if (req.queryParams("COUNT") != null) {
+            getQuery.append((test) ? " and " : "");
+            getQuery.append("COUNT = ").append(req.queryParams("COUNT"));
+        }
+        if (!getQuery.toString().isEmpty()) {
+            System.out.println(getQuery.toString());
+            return getQueryParamsBids(res, getQuery.toString());
+        }
+
         return getAllBids(req, res);
     }
 
     public String getAllBids(Request req, Response res) throws ClassNotFoundException {
         Map<String, Bid> bids = bidDB.getBids();
         String[] msgs = {"All Bids", "There Are No Bids"};
+        return createResponse(res, bids, msgs);
+    }
+
+    public String getQueryParamsBids(Response res, String queryParams) throws ClassNotFoundException {
+        Map<String, Bid> bids = bidDB.getBidsWithQueryParams(queryParams);
+        String[] msgs = {"All Bids where: " + queryParams, "There Are No Bids"};
         return createResponse(res, bids, msgs);
     }
 

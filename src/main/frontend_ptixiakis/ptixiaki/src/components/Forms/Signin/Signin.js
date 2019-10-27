@@ -1,6 +1,8 @@
 import React from 'react';
 import '../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
+import {Link} from 'react-router-dom'
+
 
 class Signin extends React.Component{
     async handleSignIn(event) {
@@ -64,7 +66,7 @@ class Signin extends React.Component{
                 <div className="md-form form-group border-top">
                     <p> 
                         <small>Not a member yet?  <b></b>
-                            <a href="javascript:void(0);" onClick={this.props.onChangeToSignUp}>Join Now </a>
+                            <Link to="/signup" onClick={this.props.onChangeToSignUp}> Join Now </Link>
                         </small>
                     </p>
                 </div>

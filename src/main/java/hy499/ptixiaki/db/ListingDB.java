@@ -7,6 +7,7 @@ package hy499.ptixiaki.db;
 
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.data.Professional.Locations;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -82,14 +83,21 @@ public final class ListingDB {
                     listing.setUID(res.getString("UID"));
                     listing.setTitle(res.getString("TITLE"));
                     listing.setDescription(res.getString("DESCRIPTION"));
-                    String strPics = res.getString("PICS").replaceAll("([{}])", "");
-                    listing.setPics(new ArrayList<>(Arrays.asList(strPics.split(","))));
+//                    String strPics = res.getString("PICS").replaceAll("([{}])", "");
+//                    String strPics = res.getString("PICS");
+                    Array a = res.getArray("PICS");
+                    String[][] str = (String[][]) a.getArray();
+                    System.out.println("str = " + str);
+
+//                    ArrayList<String> str = (ArrayList<String>) a.getArray();
+                    listing.setPics(new ArrayList<>(Arrays.asList(str[0])));
+
+//                    listing.setPics(new ArrayList<>(Arrays.asList(strPics.split("data:image/jpeg;base64,"))));
                     listing.setAvailable_from(res.getDate("START"));
                     listing.setAvailable_until(res.getDate("EXPIRE"));
                     listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
                     listing.setJobCategory(res.getString("CATEGORY"));
                     listing.setMax_price(res.getDouble("MAX_PRICE"));
-
 
                     listings.put(listing.getLID(), listing);
                 }
@@ -122,7 +130,7 @@ public final class ListingDB {
                         .append("'{");
 
                 for (int i = 0; i < pics.size(); i++) {
-                    insQuery.append("\"").append(pics.get(i)).append("\"");
+                    insQuery.append("{\"").append(pics.get(i)).append("\"}");
                     if (i < pics.size() - 1) {
                         insQuery.append(",");
                     }
@@ -135,7 +143,7 @@ public final class ListingDB {
                         .append("'").append(listing.getJobCategory()).append("',")
                         .append(listing.getMax_price()).append(",")
                         .append("'").append(timestamp).append("');");
-
+                System.out.println("SQL:" + insQuery.toString());
                 stmt.executeUpdate(insQuery.toString());
                 System.out.println("#ListingDB: Listing added");
 

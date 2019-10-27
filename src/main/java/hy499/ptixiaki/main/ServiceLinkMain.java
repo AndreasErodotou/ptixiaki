@@ -15,7 +15,6 @@ import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.pac4j.sparkjava.SparkWebContext;
-import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.*;
@@ -30,7 +29,7 @@ import spark.template.mustache.MustacheTemplateEngine;
  *
  * @author Andreas
  */
-public class SparkMain {
+public class ServiceLinkMain {
 
     public static String optionFunc(Request req, Response res) {
         res.status(200);
@@ -51,7 +50,7 @@ public class SparkMain {
     private final static String JWT_SALT = "12345678901234567890123456789012";
     private final static MustacheTemplateEngine templateEngine = new MustacheTemplateEngine();
 
-    private static ModelAndView jwt(final Request request, final Response response) {
+    private static String jwt(final Request request, final Response response) {
         final SparkWebContext context = new SparkWebContext(request, response);
         final ProfileManager manager = new ProfileManager(context);
         final Optional<CommonProfile> profile = manager.get(true);
@@ -66,7 +65,10 @@ public class SparkMain {
         }
         final Map map = new HashMap();
         map.put("token", token);
-        return new ModelAndView(map, "jwt.mustache");
+//        return new ModelAndView(map, "json");
+        return new Gson().toJson(new ServerResponse(ServerResponse.Status.SUCCESS,
+                "",
+                new Gson().toJsonTree(map)));
     }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
@@ -83,8 +85,9 @@ public class SparkMain {
             // diaforetika:
             // /users/*/listings/*/bids/*
 
-//            post("/login", SparkMain::jwt, templateEngine);
-            get("/jwt", SparkMain::jwt, templateEngine);
+//            post("/login", ServiceLinkMain::jwt, templateEngine);
+
+            get("/jwt", ServiceLinkMain::jwt);
 
             post("/login", (req, res) -> userApi.checkLogin(req, res));
 

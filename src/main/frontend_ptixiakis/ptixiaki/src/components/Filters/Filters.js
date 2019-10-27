@@ -1,9 +1,16 @@
 import React from 'react'
 import './Filters.css'
+import './Category'
+import Category from './Category';
 // import '../bootstrap/dist/css/bootstrap.css';
 
-const Filters = (props) =>(
-        <aside className="filters col-md-2">
+const Filters = (props) =>{
+    
+    const categories = props.categories.map( (category,indexed) => (<Category key={indexed} category={category} />));
+    const locations = props.locations.map( (location,indexed) => (<Category key={indexed} category={location} />));
+    
+    return (<div>
+        <aside className="filters ">
             
             <div className="card">
                 <article className="card-group-item">
@@ -12,24 +19,7 @@ const Filters = (props) =>(
                     </header>
                     <div className="card-body">
                         <form>
-                            <label className="form-check">
-                            <input className="form-check-input" type="checkbox" value=""/>
-                            <span className="form-check-label">
-                                Category 1
-                            </span>
-                            </label>
-                            <label className="form-check">
-                            <input className="form-check-input" type="checkbox" value=""/>
-                            <span className="form-check-label">
-                                Category 2
-                            </span>
-                            </label>  
-                            <label className="form-check">
-                            <input className="form-check-input" type="checkbox" value=""/>
-                            <span className="form-check-label">
-                                Category 3
-                            </span>
-                            </label>
+                            {categories}
                             <a href="#">Show more</a>
                         </form>
                     </div> 
@@ -41,24 +31,7 @@ const Filters = (props) =>(
                     </header>
                     <div className="card-body">
                         <form>
-                            <label className="form-check">
-                            <input className="form-check-input" type="checkbox" value=""/>
-                            <span className="form-check-label">
-                                Location 1
-                            </span>
-                            </label>
-                            <label className="form-check">
-                            <input className="form-check-input" type="checkbox" value=""/>
-                            <span className="form-check-label">
-                                Location 2
-                            </span>
-                            </label>  
-                            <label className="form-check">
-                            <input className="form-check-input" type="checkbox" value=""/>
-                            <span className="form-check-label">
-                                Location 3
-                            </span>
-                            </label> 
+                            {locations}
                             <a href="#">Show more</a>
                         </form>
                     </div> 
@@ -114,7 +87,8 @@ const Filters = (props) =>(
             </div> 
 
         </aside>
-    );
+    </div>
+    )};
 
 
 export default Filters;

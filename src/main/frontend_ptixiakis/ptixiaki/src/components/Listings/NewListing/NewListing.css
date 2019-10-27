@@ -1,5 +1,5 @@
 #nl_info{
-    padding-top: 5%;
+    padding-top: 2%;
 }
 
 #nl_pics{
@@ -7,7 +7,7 @@
 }
 
 #nl_mainPic{
-    margin-bottom: 10%;
+    margin-bottom: 2%;
 }
 
 .pic{
@@ -19,3 +19,4 @@
 img:hover{
     border-image: red;
 }
+

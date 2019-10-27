@@ -491,7 +491,7 @@ public final class BidDB {
 
                 getQuery.append("SELECT COUNT(*)")
                         .append("FROM BID ")
-                        .append("WHERE Selected = ").append("'").append(Selected).append("';");
+                        .append("WHERE Selected = ").append(Selected).append(";");
 
                 stmt.execute(getQuery.toString());
 
@@ -507,4 +507,34 @@ public final class BidDB {
 
         return listingBidsCount;
     }
+
+    public Map<String, Bid> getBidsWithQueryParams(String queryParams) throws ClassNotFoundException {
+        Map<String, Bid> bids = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM BID ")
+                        .append("WHERE ").append(queryParams).append(";");
+
+                System.out.println("BD: " + getQuery.toString());
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    Bid bid = resToBid(res);
+
+                    bids.put(bid.getBID(), bid);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return bids;
+    }
+
 }

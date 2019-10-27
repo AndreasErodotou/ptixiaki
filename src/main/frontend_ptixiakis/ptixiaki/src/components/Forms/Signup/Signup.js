@@ -4,6 +4,8 @@ import SignupSelect from './SignupSelect';
 import '../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import PropTypes from 'prop-types';
 
+import {Link} from 'react-router-dom'
+
 const Gender = [
     { label: "Male",    value: 1 },
     { label: "Female",  value: 2 }   
@@ -629,7 +631,7 @@ class Signup extends React.Component{
                 <div className="md-form form-group">
                     <p> 
                         <small>Already a member?  <b></b>
-                            <a href="javascript:void(0);" onClick={this.props.onChangeToSignIn} >Sign in </a>
+                            <Link to="/signin" onClick={this.props.onChangeToSignIn} >Sign in </Link>
                         </small>
                     </p>
                 </div>
