@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hy499.ptixiaki.main;
+package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
 import hy499.ptixiaki.data.TimetableEvent;
-import hy499.ptixiaki.response.ServerResponse;
-import hy499.ptixiaki.response.ServerResponse.Status;
+import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import hy499.ptixiaki.services.TimetableService;
 import java.util.Map;
 import spark.Request;
@@ -30,13 +30,13 @@ public class TimetableAPI {
         if (!timetableEvents.isEmpty()) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             timetableService.getTimetableMsg(),
                             new Gson().toJsonTree(timetableEvents)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.WARINING,
+                .toJson(new ServerResponseAPI(Status.WARINING,
                         timetableService.getTimetableMsg(),
                         new Gson().toJsonTree(null)));
     }
@@ -46,13 +46,13 @@ public class TimetableAPI {
         if (bool) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             timetableService.getTimetableMsg(),
                             new Gson().toJsonTree(timetableEvent)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.ERROR,
+                .toJson(new ServerResponseAPI(Status.ERROR,
                         timetableService.getTimetableMsg(),
                         new Gson().toJsonTree(null)));
     }

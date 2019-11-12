@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hy499.ptixiaki.response;
+package hy499.ptixiaki.api;
 
 import com.google.gson.JsonElement;
 
@@ -11,31 +11,42 @@ import com.google.gson.JsonElement;
  *
  * @author Andreas
  */
-public class ServerResponse {
+public class ServerResponseAPI {
     private Status status;
     private String msg;
     private JsonElement data;
     private String resourceId;
+    private String token;
 
-    public ServerResponse(Status status) {
+    public ServerResponseAPI() {
+    }
+
+    public ServerResponseAPI(Status status) {
         this.status = status;
         this.msg = "";
         this.data = null;
     }
 
-    public ServerResponse(Status status, String msg) {
+    public ServerResponseAPI(Status status, String msg) {
         this.status = status;
         this.msg = msg;
         this.data = null;
     }
 
-    public ServerResponse(Status status, String msg, JsonElement data) {
+    public ServerResponseAPI(Status status, String msg, String token) {
+        this.status = status;
+        this.msg = msg;
+        this.token = token;
+        this.data = null;
+    }
+
+    public ServerResponseAPI(Status status, String msg, JsonElement data) {
         this.status = status;
         this.msg = msg;
         this.data = data;
     }
 
-    public ServerResponse(Status status, String msg, JsonElement data, String resourceId) {
+    public ServerResponseAPI(Status status, String msg, JsonElement data, String resourceId) {
         this.status = status;
         this.msg = msg;
         this.data = data;
@@ -72,6 +83,14 @@ public class ServerResponse {
 
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public enum Status {

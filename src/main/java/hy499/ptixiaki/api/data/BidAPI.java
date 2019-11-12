@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hy499.ptixiaki.main;
+package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
 import hy499.ptixiaki.data.Bid;
 import hy499.ptixiaki.db.BidDB;
-import hy499.ptixiaki.response.ServerResponse;
-import hy499.ptixiaki.response.ServerResponse.Status;
+import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -31,13 +31,13 @@ public class BidAPI {
         if (!bids.isEmpty()) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             msg[0],
                             new Gson().toJsonTree(bids)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.WARINING,
+                .toJson(new ServerResponseAPI(Status.WARINING,
                         msg[1],
                         new Gson().toJsonTree(null)));
     }
@@ -47,13 +47,13 @@ public class BidAPI {
         if (bool) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             msg[0],
                             new Gson().toJsonTree(bid)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.ERROR,
+                .toJson(new ServerResponseAPI(Status.ERROR,
                         msg[1],
                         new Gson().toJsonTree(null)));
     }

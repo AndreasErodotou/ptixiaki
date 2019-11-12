@@ -5,8 +5,9 @@
  */
 package hy499.ptixiaki.db;
 
+import com.google.gson.Gson;
 import hy499.ptixiaki.data.Listing;
-import hy499.ptixiaki.data.Professional.Locations;
+import hy499.ptixiaki.api.ServerResponseAPI;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author Andreas
  */
-public final class ListingDB {
+public final class ListingDB implements DB<Listing> {
 
     public ListingDB() throws SQLException {
         try {
@@ -35,7 +36,7 @@ public final class ListingDB {
         }
     }
 
-    public void initListingDB() throws ClassNotFoundException, SQLException {
+    private void initListingDB() throws ClassNotFoundException, SQLException {
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
@@ -64,7 +65,19 @@ public final class ListingDB {
         }
     }
 
-    public Map<String, Listing> getListings() throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI get(String ID) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ServerResponseAPI getAll() throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
         Map<String, Listing> listings = new HashMap<>();
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
@@ -83,34 +96,32 @@ public final class ListingDB {
                     listing.setUID(res.getString("UID"));
                     listing.setTitle(res.getString("TITLE"));
                     listing.setDescription(res.getString("DESCRIPTION"));
-//                    String strPics = res.getString("PICS").replaceAll("([{}])", "");
-//                    String strPics = res.getString("PICS");
                     Array a = res.getArray("PICS");
                     String[][] str = (String[][]) a.getArray();
-                    System.out.println("str = " + str);
-
-//                    ArrayList<String> str = (ArrayList<String>) a.getArray();
                     listing.setPics(new ArrayList<>(Arrays.asList(str[0])));
 
-//                    listing.setPics(new ArrayList<>(Arrays.asList(strPics.split("data:image/jpeg;base64,"))));
                     listing.setAvailable_from(res.getDate("START"));
                     listing.setAvailable_until(res.getDate("EXPIRE"));
-                    listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
+//                    listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
                     listing.setJobCategory(res.getString("CATEGORY"));
                     listing.setMax_price(res.getDouble("MAX_PRICE"));
 
                     listings.put(listing.getLID(), listing);
                 }
             }
+            serverRes.setMsg("All Listings");
+            serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+            serverRes.setData(new Gson().toJsonTree(listings));
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return listings;
+        return serverRes;
     }
 
-    public void addListing(Listing listing) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI add(Listing listing) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
@@ -147,6 +158,10 @@ public final class ListingDB {
                 stmt.executeUpdate(insQuery.toString());
                 System.out.println("#ListingDB: Listing added");
 
+                serverRes.setMsg("Listing Added");
+                serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+                serverRes.setResourceId(listing.getLID());
+
                 stmt.close();
                 con.close();
 
@@ -154,10 +169,15 @@ public final class ListingDB {
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+            serverRes.setMsg("Invalid Data");
+            serverRes.setStatus(ServerResponseAPI.Status.ERROR);
         }
+        return serverRes;
     }
 
-    public void updateListing(Listing listing) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI edit(Listing listing) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -188,6 +208,9 @@ public final class ListingDB {
                 stmt.executeUpdate(updQuery.toString());
                 System.out.println("#ListingDB: Listing Updated, LID: " + listing.getLID());
 
+                serverRes.setMsg("Listing Edited");
+                serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+
                 stmt.close();
                 con.close();
 
@@ -195,10 +218,15 @@ public final class ListingDB {
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+            serverRes.setMsg("Invalid Data");
+            serverRes.setStatus(ServerResponseAPI.Status.ERROR);
         }
+        return serverRes;
     }
 
-    public void deleteListing(String LID) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI delete(String LID) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -211,6 +239,9 @@ public final class ListingDB {
                 stmt.executeUpdate(delQuery.toString());
                 System.out.println("#ListingDB: Listing Deleted, LID: " + LID);
 
+                serverRes.setMsg("Listing Deleted");
+                serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+
                 stmt.close();
                 con.close();
 
@@ -218,6 +249,9 @@ public final class ListingDB {
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+            serverRes.setMsg("Invalid Data");
+            serverRes.setStatus(ServerResponseAPI.Status.ERROR);
         }
+        return serverRes;
     }
 }

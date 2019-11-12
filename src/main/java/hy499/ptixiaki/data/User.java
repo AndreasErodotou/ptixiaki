@@ -38,6 +38,10 @@ public abstract class User {
         password = "";
     }
 
+    public User(AccountType accountType) {
+        this.accountType = accountType;
+    }
+
     public User(String name, String surname, String username, AccountType accountType, Gender gender, String UID, Date bday, String address, String email, String phoneNum, String password) {
         this.name = name;
         this.surname = surname;

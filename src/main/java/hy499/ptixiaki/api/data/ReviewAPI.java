@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hy499.ptixiaki.main;
+package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
 import hy499.ptixiaki.services.ReviewService;
 import hy499.ptixiaki.data.Review;
-import hy499.ptixiaki.response.ServerResponse;
-import hy499.ptixiaki.response.ServerResponse.Status;
+import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -30,13 +30,13 @@ public class ReviewAPI {
         if (!reviews.isEmpty()) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             reviewService.getReviewMsg(),
                             new Gson().toJsonTree(reviews)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.WARINING,
+                .toJson(new ServerResponseAPI(Status.WARINING,
                         reviewService.getReviewMsg(),
                         new Gson().toJsonTree(null)));
     }
@@ -46,13 +46,13 @@ public class ReviewAPI {
         if (bool) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             reviewService.getReviewMsg(),
                             new Gson().toJsonTree(review)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.ERROR,
+                .toJson(new ServerResponseAPI(Status.ERROR,
                         reviewService.getReviewMsg(),
                         new Gson().toJsonTree(null)));
     }

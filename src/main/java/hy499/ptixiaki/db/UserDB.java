@@ -89,6 +89,42 @@ public final class UserDB {
         }
     }
 
+    private User resToUser(ResultSet res) throws SQLException {
+        User user;
+        if (AccountType.valueOf(res.getString("ACCOUNT_TYPE")) == CUSTOMER) {
+            Customer cust = new Customer();
+            cust.setUID(res.getString("UID"));
+            cust.setName(res.getString("NAME"));
+            cust.setSurname(res.getString("SURNAME"));
+            cust.setUsername(res.getString("USERNAME"));
+            cust.setGender(Gender.valueOf(res.getString("GENDER")));
+            cust.setBday(res.getDate("BDAY"));
+            cust.setAddress(res.getString("ADDRESS"));
+            cust.setEmail(res.getString("EMAIL"));
+            cust.setPhoneNum(res.getString("PHONE_NUM"));
+            cust.setPassword(res.getString("PASSWORD"));
+            user = cust;
+        } else {
+            Professional prof = new Professional();
+            prof.setUID(res.getString("UID"));
+            prof.setName(res.getString("NAME"));
+            prof.setSurname(res.getString("SURNAME"));
+            prof.setUsername(res.getString("USERNAME"));
+            prof.setGender(Gender.valueOf(res.getString("GENDER")));
+            prof.setBday(res.getDate("BDAY"));
+            prof.setAddress(res.getString("ADDRESS"));
+            prof.setEmail(res.getString("EMAIL"));
+            prof.setPhoneNum(res.getString("PHONE_NUM"));
+            prof.setPassword(res.getString("PASSWORD"));
+            prof.setJobs(res.getString("JOB"));
+            prof.setWorkExperience(res.getDouble("WORK_EXP"));
+            prof.setAboutMe(res.getString("ABOUT_ME"));
+            prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
+            user = prof;
+        }
+        return user;
+    }
+
     public Map<String, User> getUsers() throws ClassNotFoundException {
         Map<String, User> users = new HashMap<>();
         try {
@@ -439,8 +475,8 @@ public final class UserDB {
         return isAvailable;
     }
 
-    public Boolean checkLogin(String email, String password) throws ClassNotFoundException {
-        Boolean authenticated = false;
+    public User checkLogin(String email, String password) throws ClassNotFoundException {
+        User authUser = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -454,10 +490,14 @@ public final class UserDB {
                         .append(" and PROFESSIONAL.PASSWORD = ").append("'").append(password).append("');");
 
                 stmt.execute(checkQuery.toString());
-                if (stmt.getResultSet().next() == true) {
-                    System.out.println("#UserDB: login successfully");
-                    authenticated = true;
+
+                ResultSet res = stmt.getResultSet();
+
+                if (res.next() == true) {
+                    authUser = resToUser(res);
                 }
+
+                System.out.println("#UserDB: login successfully");
 
                 stmt.close();
                 con.close();
@@ -466,7 +506,7 @@ public final class UserDB {
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return authenticated;
+        return authUser;
     }
 
 }

@@ -1,65 +1,76 @@
-import React from 'react'
-import './Filters.css'
-import './Category'
-import Category from './Category';
-// import '../bootstrap/dist/css/bootstrap.css';
+import React from "react";
+import "./Filters.css";
+import "./Category";
+import Category from "./Category";
 
-const Filters = (props) =>{
-    
-    const categories = props.categories.map( (category,indexed) => (<Category key={indexed} category={category} />));
-    const locations = props.locations.map( (location,indexed) => (<Category key={indexed} category={location} />));
-    
-    return (<div>
-        <aside className="filters ">
-            
-            <div className="card">
-                <article className="card-group-item">
-                    <header className="card-header">
-                        <h6 className="title">Category </h6>
-                    </header>
-                    <div className="card-body">
-                        <form>
-                            {categories}
-                            <a href="#">Show more</a>
-                        </form>
-                    </div> 
-                </article> 
+const Filters = props => {
+  const categories = props.categories.map((category, indexed) => (
+    <Category key={indexed} category={category} />
+  ));
+  const locations = props.locations.map((location, indexed) => (
+    <Category key={indexed} category={location} />
+  ));
 
-                <article className="card-group-item">
-                    <header className="card-header">
-                        <h6 className="title">Location </h6>
-                    </header>
-                    <div className="card-body">
-                        <form>
-                            {locations}
-                            <a href="#">Show more</a>
-                        </form>
-                    </div> 
-                </article> 
-                
-                <article className="card-group-item">
-                    <header className="card-header">
-                        <h6 className="title">Max Price </h6>
-                    </header>
-                        <div className="card-body">
-                            {/* <input className="custom-range" min="0" max="1000" name="" type="range"/> */}
-                            <div className="form-row">
-                                <div className="form-group col-md-6">
-                                    <label>Min (€)</label>
-                                    <input type="number" className="form-control" id="inputEmail4" placeholder=""/>
-                                </div>
-                                <div className="form-group col-md-6 text-right">
-                                    <label>Max (€)</label>
-                                    <input type="number" className="form-control" placeholder=""/>
-                                </div>
-                            </div>
-                        </div> 
-                </article> 
+  return (
+    <div>
+      <aside className="filters">
+        <div className="card">
+          <article className="card-group-item">
+            <header className="card-header">
+              <h6 className="title">Category </h6>
+            </header>
+            <div className="card-body">
+              <form>
+                {categories}
+                <a href="#">Show more</a>
+              </form>
+            </div>
+          </article>
 
-                <h4 className="pt_es">Posted Today</h4>
-                <h4 className="pt_es">Ending Soon</h4>
+          <article className="card-group-item">
+            <header className="card-header">
+              <h6 className="title">Location </h6>
+            </header>
+            <div className="card-body">
+              <form>
+                {locations}
+                <a href="#">Show more</a>
+              </form>
+            </div>
+          </article>
 
-                {/* <article className="card-group-item">
+          <article className="card-group-item">
+            <header className="card-header">
+              <h6 className="title">Max Price </h6>
+            </header>
+            <div className="card-body">
+              {/* <input className="custom-range" min="0" max="1000" name="" type="range"/> */}
+              <div className="form-row">
+                <div className="form-group col-md-6">
+                  <label>Min (€)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="inputEmail4"
+                    placeholder=""
+                  />
+                </div>
+                <div className="form-group col-md-6 text-right">
+                  <label>Max (€)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <h4 className="pt_es">Posted Today</h4>
+          <h4 className="pt_es">Ending Soon</h4>
+
+          {/* <article className="card-group-item">
                     <header className="card-header">
                         <h6 className="title">Choose type </h6>
                     </header>
@@ -84,11 +95,10 @@ const Filters = (props) =>{
                         </label>
                     </div> 
                 </article>  */}
-            </div> 
-
-        </aside>
+        </div>
+      </aside>
     </div>
-    )};
-
+  );
+};
 
 export default Filters;

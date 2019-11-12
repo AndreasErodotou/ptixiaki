@@ -24,7 +24,7 @@
             <scope>provided</scope>
         </dependency>
         
-        <!--spark, gson and postgresql dependencies...-->
+        <!--spark, gson, postgresql and jjwt dependencies...-->
         <!--======================================================-->
         <dependency>
             <groupId>com.sparkjava</groupId>
@@ -45,6 +45,24 @@
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.1-901-1.jdbc4</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.10.7</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.10.7</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.10.7</version>
+            <scope>runtime</scope>
         </dependency>
         
         <dependency>
@@ -76,89 +94,7 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.6.4</version>
         </dependency>
-        
-        <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-template-mustache</artifactId>
-            <version>2.7.1</version>
-                <exclusions>
-                        <exclusion>
-                                <groupId>com.sparkjava</groupId>
-                                <artifactId>spark-core</artifactId>
-                        </exclusion>
-                </exclusions>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>spark-pac4j</artifactId>
-                <version>${sparkPac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-core</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-oauth</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-openid</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-saml</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-cas</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-http</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-oidc</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-jwt</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-sql</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-ldap</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-kerberos</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-couch</artifactId>
-                <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.0.13</version>
-        </dependency>
-        
+               
         
         <!--======================================================-->
         

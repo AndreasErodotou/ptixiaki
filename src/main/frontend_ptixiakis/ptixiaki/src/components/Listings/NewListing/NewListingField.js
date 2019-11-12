@@ -1,17 +1,71 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
+
+import Form from "react-bootstrap/Form";
 
 const NewListingField = props => {
-    return (
-        <div className="form-group row">
-            <label className="col-form-label col-sm-3 text-right" > <h6>{props.fieldName}:</h6> </label>
-            <input className="form-control col-sm-8" type="text" id={props.fieldName} placeholder={props.fieldName} />
-        </div>
+  let tmpInput = null;
+  if (props.type === "textarea") {
+    tmpInput = (
+      <textarea
+        className="form-control col-8"
+        type={props.type}
+        id={props.fieldName}
+        placeholder={props.fieldName}
+      />
     );
+  } else if (props.type === "dropdown") {
+    tmpInput = (
+      <select
+        className="form-control col-8"
+        type={props.type}
+        id={props.fieldName}
+        placeholder={props.fieldName}
+      />
+    );
+  } else {
+    if (props.type === "date") {
+      tmpInput = (
+        <div className="col-8">
+          <input
+            className="form-control w-50"
+            type={props.type}
+            id={props.fieldName}
+            placeholder={props.fieldName}
+          />
+          <input
+            className="form-control w-50"
+            type="time"
+            id={props.fieldName}
+            placeholder={props.fieldName}
+          />
+        </div>
+      );
+    } else {
+      tmpInput = (
+        <input
+          className="form-control col-8"
+          type={props.type}
+          id={props.fieldName}
+          placeholder={props.fieldName}
+        />
+      );
+    }
+  }
+
+  return (
+    <div className="form-group row">
+      <label className="col-form-label col-sm-3">
+        <h6>{props.fieldName}:</h6>
+      </label>
+
+      {tmpInput}
+    </div>
+  );
 };
 
 NewListingField.propTypes = {
-    fieldName : PropTypes.string
+  fieldName: PropTypes.string
 };
 
 export default NewListingField;

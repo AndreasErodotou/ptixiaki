@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hy499.ptixiaki.main;
+package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,9 +11,8 @@ import hy499.ptixiaki.services.UserService;
 import hy499.ptixiaki.data.Customer;
 import hy499.ptixiaki.data.Professional;
 import hy499.ptixiaki.data.User;
-import hy499.ptixiaki.db.UserDB;
-import hy499.ptixiaki.response.ServerResponse;
-import hy499.ptixiaki.response.ServerResponse.Status;
+import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Map;
@@ -47,13 +46,13 @@ public class UserAPI {
 
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             userService.getUserMsg(),
                             new Gson().toJsonTree(users)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.WARINING,
+                .toJson(new ServerResponseAPI(Status.WARINING,
                         userService.getUserMsg(),
                         new Gson().toJsonTree(null)));
     }
@@ -63,13 +62,13 @@ public class UserAPI {
         if (bool) {
             res.status(200);
             return new Gson()
-                    .toJson(new ServerResponse(Status.SUCCESS,
+                    .toJson(new ServerResponseAPI(Status.SUCCESS,
                             userService.getUserMsg(),
                             new Gson().toJsonTree(user)));
         }
         res.status(400);
         return new Gson()
-                .toJson(new ServerResponse(Status.ERROR,
+                .toJson(new ServerResponseAPI(Status.ERROR,
                         userService.getUserMsg(),
                         new Gson().toJsonTree(null)));
     }
@@ -79,16 +78,18 @@ public class UserAPI {
         res.status(200);
 
         return new Gson()
-                .toJson(new ServerResponse(Status.SUCCESS,
+                .toJson(new ServerResponseAPI(Status.SUCCESS,
                         userService.getUserMsg(),
                         new Gson().toJsonTree(isAvailable)));
     }
 
-    public String checkLogin(Request req, Response res) throws SQLException, ClassNotFoundException {
-        UserDB userDB = new UserDB();
-        User user = gson.fromJson(req.body(), Professional.class);
-        return createResponse(res, userDB.checkLogin(user.getEmail(), user.getPassword()));
-    }
+
+//    public String checkLogin(Request req, Response res) throws SQLException, ClassNotFoundException {
+//        addHeaders(res);
+//        User user = gson.fromJson(req.body(), Professional.class);
+//
+//        return new Gson().toJson(authApi.isAuthenticated(user.getEmail(), user.getPassword()));
+//    }
 
     public String getReqQueryHandler(Request req, Response res) throws ClassNotFoundException {
         if (req.queryParams("email") != null) {

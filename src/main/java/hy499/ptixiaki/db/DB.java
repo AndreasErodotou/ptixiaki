@@ -5,16 +5,24 @@
  */
 package hy499.ptixiaki.db;
 
+import hy499.ptixiaki.api.ServerResponseAPI;
+
 /**
  *
  * @author Andreas
+ * @param <Data>
  */
-public interface DB {
+public interface DB<Data> {
 
-    void initDB();
+    ServerResponseAPI get(String ID) throws ClassNotFoundException;
 
-    //Map<String, Listing> getListings();
-    // mporo  na xrisimopoiisw generic gia na to ftia3w osa 8eloun na epistrefoun piso diaforetika maps oi tipous
-    //px Map<String, genericType> get();
+    ServerResponseAPI getQuery(String query) throws ClassNotFoundException;
 
+    ServerResponseAPI getAll() throws ClassNotFoundException;
+
+    ServerResponseAPI add(Data data) throws ClassNotFoundException;
+
+    ServerResponseAPI edit(Data data) throws ClassNotFoundException;
+
+    ServerResponseAPI delete(String ID) throws ClassNotFoundException;
 }

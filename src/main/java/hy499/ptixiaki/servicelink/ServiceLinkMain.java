@@ -1,24 +1,22 @@
-package hy499.ptixiaki.main;
+package hy499.ptixiaki.servicelink;
 
 //import java.sql.Connection;
 //import java.sql.DriverManager;
 //import java.sql.PreparedStatement;
 //import java.sql.ResultSet;
+import hy499.ptixiaki.api.data.ListingAPI;
+import hy499.ptixiaki.api.data.UserAPI;
+import hy499.ptixiaki.api.data.BidAPI;
+import hy499.ptixiaki.api.data.TimetableAPI;
+import hy499.ptixiaki.api.data.ReviewAPI;
 import com.google.gson.Gson;
-import hy499.ptixiaki.response.ServerResponse;
+import hy499.ptixiaki.api.AuthorizerApi;
+import hy499.ptixiaki.api.JwtAPI;
+import hy499.ptixiaki.api.ServerResponseAPI;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.ProfileManager;
-import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
-import org.pac4j.jwt.profile.JwtGenerator;
-import org.pac4j.sparkjava.SparkWebContext;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.*;
-import spark.template.mustache.MustacheTemplateEngine;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -31,6 +29,7 @@ import spark.template.mustache.MustacheTemplateEngine;
  */
 public class ServiceLinkMain {
 
+
     public static String optionFunc(Request req, Response res) {
         res.status(200);
 
@@ -41,35 +40,13 @@ public class ServiceLinkMain {
         res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
 
         return new Gson()
-                .toJson(new ServerResponse(ServerResponse.Status.SUCCESS,
+                .toJson(new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS,
                         "",
                         new Gson().toJsonTree("")));
 
     }
 
-    private final static String JWT_SALT = "12345678901234567890123456789012";
-    private final static MustacheTemplateEngine templateEngine = new MustacheTemplateEngine();
 
-    private static String jwt(final Request request, final Response response) {
-        final SparkWebContext context = new SparkWebContext(request, response);
-        final ProfileManager manager = new ProfileManager(context);
-        final Optional<CommonProfile> profile = manager.get(true);
-        System.out.println("context:\n" + context);
-        System.out.println("manager:\n" + manager);
-        System.out.println("profile:\n" + profile);
-        String token = "";
-        if (profile.isPresent()) {
-            JwtGenerator generator = new JwtGenerator(new SecretSignatureConfiguration(JWT_SALT));
-            token = generator.generate(profile.get());
-            System.out.println("token:\n" + token);
-        }
-        final Map map = new HashMap();
-        map.put("token", token);
-//        return new ModelAndView(map, "json");
-        return new Gson().toJson(new ServerResponse(ServerResponse.Status.SUCCESS,
-                "",
-                new Gson().toJsonTree(map)));
-    }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
 
@@ -78,22 +55,36 @@ public class ServiceLinkMain {
         BidAPI bidApi = new BidAPI();
         ListingAPI listingApi = new ListingAPI();
         TimetableAPI timetableApi = new TimetableAPI();
+        AuthorizerApi authApi = new AuthorizerApi();
 
         path("/api", () -> {
             before("/*", (req, res) -> res.type("application/json"));
+
             // /users/:UID/listings/:LID/bids/:BID
             // diaforetika:
             // /users/*/listings/*/bids/*
 
-//            post("/login", ServiceLinkMain::jwt, templateEngine);
+            // skeftome pou kai pos 8a mpoun oi elenxoi gia to authorization
+            // isos xriasti na ftia3w kenourgio class gia tin diaxirisis
+            // isos ftiaxti akoma kai gia to jwt ena class
 
-            get("/jwt", ServiceLinkMain::jwt);
-
-            post("/login", (req, res) -> userApi.checkLogin(req, res));
+            post("/login", (req, res) -> {
+                res.header("Access-Control-Allow-Origin", "*");
+                res.header("Access-Control-Allow-Credentials", "true");
+                res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+                res.header("Access-Control-Max-Age", "3600");
+                res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
+                return authApi.isAuthenticated(req, res);
+            });
 
             options("", (req, res) -> optionFunc(req, res));
 
             path("/users", () -> {
+
+                before("/*", (req, res) -> {
+                    System.out.println(req.headers());
+                    new JwtAPI().parseJWT(req.headers("test"));
+                });
 
                 path("/:UID/listings", () -> {
 
@@ -112,15 +103,15 @@ public class ServiceLinkMain {
                     });
 
                     //Listings
-                    get("", (req, res) -> listingApi.getReqHandler(req, res));
+                    get("", (req, res) -> listingApi.getQuery(req, res));
 
-                    get("/:LID", (req, res) -> listingApi.getAListing(req, res));
+                    get("/:LID", (req, res) -> listingApi.get(req, res));
 
-                    post("", (req, res) -> listingApi.addAListing(req, res));
+                    post("", (req, res) -> listingApi.add(req, res));
 
-                    put("/:LID", (req, res) -> listingApi.editAListing(req, res));
+                    put("/:LID", (req, res) -> listingApi.edit(req, res));
 
-                    delete("/:LID", (req, res) -> listingApi.deleteAListing(req, res));
+                    delete("/:LID", (req, res) -> listingApi.delete(req, res));
 
                     options("", (req, res) -> optionFunc(req, res));
 
@@ -183,10 +174,16 @@ public class ServiceLinkMain {
 
             });
 
+            before("/listings", (req, res) -> {
+                System.out.println(req.headers());
+                authApi.isAuthorized(req.headers("test"));
+            });
+
             path("/listings", () -> {
 
-                path("/:LID/bids", () -> {
 
+                path("/:LID/bids", () -> {
+                    
                     get("", (req, res) -> bidApi.getReqHandler(req, res));
 
                     post("", (req, res) -> bidApi.addABid(req, res));
@@ -199,15 +196,15 @@ public class ServiceLinkMain {
 
                 });
 
-                get("", (req, res) -> listingApi.getReqHandler(req, res));
+                get("", (req, res) -> listingApi.getQuery(req, res));
 
-                get("/:LID", (req, res) -> listingApi.getAListing(req, res));
+                get("/:LID", (req, res) -> listingApi.get(req, res));
 
-                post("", (req, res) -> listingApi.addAListing(req, res));
+                post("", (req, res) -> listingApi.add(req, res));
 
-                put("/:LID", (req, res) -> listingApi.editAListing(req, res));
+                put("/:LID", (req, res) -> listingApi.edit(req, res));
 
-                delete("/:LID", (req, res) -> listingApi.deleteAListing(req, res));
+                delete("/:LID", (req, res) -> listingApi.delete(req, res));
 
                 options("", (req, res) -> optionFunc(req, res));
 
