@@ -18,7 +18,7 @@ import spark.Response;
  *
  * @author Andreas
  */
-public class BidAPI {
+public class BidAPI implements DataApi {
 
     private final BidDB bidDB;
 
@@ -86,22 +86,19 @@ public class BidAPI {
         }
         if (!getQuery.toString().isEmpty()) {
             System.out.println(getQuery.toString());
-            return getQueryParamsBids(res, getQuery.toString());
+            return getQuery(res, getQuery.toString());
         }
 
-        return getAllBids(req, res);
+        return getAll(req, res);
     }
 
-    public String getAllBids(Request req, Response res) throws ClassNotFoundException {
-        Map<String, Bid> bids = bidDB.getBids();
-        String[] msgs = {"All Bids", "There Are No Bids"};
-        return createResponse(res, bids, msgs);
+    @Override
+    public String getAll(Request req, Response res) throws ClassNotFoundException {
+        return new Gson().toJson(bidDB.getAll());
     }
 
-    public String getQueryParamsBids(Response res, String queryParams) throws ClassNotFoundException {
-        Map<String, Bid> bids = bidDB.getBidsWithQueryParams(queryParams);
-        String[] msgs = {"All Bids where: " + queryParams, "There Are No Bids"};
-        return createResponse(res, bids, msgs);
+    public String getQuery(Response res, String queryParams) throws ClassNotFoundException {
+        return new Gson().toJson(bidDB.getQuery(queryParams));
     }
 
     public String getAllUserBids(Request req, Response res) throws ClassNotFoundException {
@@ -133,34 +130,29 @@ public class BidAPI {
         return createResponse(res, listingBids, msgs);
     }
 
-    public String getABid(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String get(Request req, Response res) throws ClassNotFoundException {
         String BID = req.queryParams("BID");
-        Bid bid = bidDB.getBid(BID);
-        String[] msgs = {"Bid With BID = " + BID, "There Is No Bid with BID = " + BID};
-        return createResponse(res, bid, bid != null, msgs);
+        return new Gson().toJson(bidDB.get(BID));
     }
 
-    public String addABid(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String add(Request req, Response res) throws ClassNotFoundException {
         Bid bid = new Gson().fromJson(req.body(), Bid.class);
-        Bid dbBid = bidDB.addBID(bid);
-        String[] msgs = {"Bid Added", "Bid Cannot Be Added"};
-        return createResponse(res, dbBid, dbBid != null, msgs);
+        return new Gson().toJson(bidDB.add(bid));
     }
 
-    public String editABid(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String edit(Request req, Response res) throws ClassNotFoundException {
         String BID = req.params(":BID");
         Bid bid = new Gson().fromJson(req.body(), Bid.class);
-        bid.setBID(BID);
-        Bid editedBid = bidDB.updateBid(bid);
-        String[] msgs = {"Bid Edited", "Bid Cannot Be Edited"};
-        return createResponse(res, editedBid, editedBid != null, msgs);
+        return new Gson().toJson(bidDB.edit(bid));
     }
 
-    public String deleteABid(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String delete(Request req, Response res) throws ClassNotFoundException {
         String BID = req.params(":BID");
-        Boolean deleted = bidDB.deleteBid(BID);
-        String[] msgs = {"Bid Deleted", "Bid Cannot Be Deleted"};
-        return createResponse(res, null, deleted, msgs);
+        return new Gson().toJson(bidDB.delete(BID));
     }
 
     public String deleteAllUserBids(Request req, Response res) throws ClassNotFoundException {
@@ -198,6 +190,11 @@ public class BidAPI {
         int userBids = bidDB.countSelectedBids(selected);
         String[] msgs = {"Selected Bids", "There Are No Selected Bids"};
         return createResponse(res, null, true, msgs);
+    }
+
+    @Override
+    public String getQuery(Request req, Response res) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

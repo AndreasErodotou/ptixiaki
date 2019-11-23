@@ -21,6 +21,13 @@ class Signin extends React.Component {
 
     if (isAuthenticated.token) {
       this.props.onSignIn(isAuthenticated.token);
+      console.log(
+        "kanw set sto local storage to token: " + isAuthenticated.token
+      );
+      localStorage.setItem("myJwtToken", isAuthenticated.token);
+
+      let jwtToken = localStorage.getItem("myJwtToken");
+      console.log("pernw apo to local storage to token: " + jwtToken);
     } else {
       this.props.onLoginError();
     }

@@ -58,7 +58,14 @@ public class ServiceLinkMain {
         AuthorizerApi authApi = new AuthorizerApi();
 
         path("/api", () -> {
-            before("/*", (req, res) -> res.type("application/json"));
+            before("/*", (req, res) -> {
+                res.header("Access-Control-Allow-Origin", "*");
+                res.header("Access-Control-Allow-Credentials", "true");
+                res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+                res.header("Access-Control-Max-Age", "3600");
+                res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
+                res.type("application/json");
+            });
 
             // /users/:UID/listings/:LID/bids/:BID
             // diaforetika:
@@ -68,14 +75,7 @@ public class ServiceLinkMain {
             // isos xriasti na ftia3w kenourgio class gia tin diaxirisis
             // isos ftiaxti akoma kai gia to jwt ena class
 
-            post("/login", (req, res) -> {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Access-Control-Allow-Credentials", "true");
-                res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-                res.header("Access-Control-Max-Age", "3600");
-                res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
-                return authApi.isAuthenticated(req, res);
-            });
+            post("/login", (req, res) -> authApi.isAuthenticated(req, res));
 
             options("", (req, res) -> optionFunc(req, res));
 
@@ -92,11 +92,11 @@ public class ServiceLinkMain {
 
                         get("", (req, res) -> bidApi.getReqHandler(req, res));
 
-                        post("", (req, res) -> bidApi.addABid(req, res));
+                        post("", (req, res) -> bidApi.add(req, res));
 
-                        put("/:BID", (req, res) -> bidApi.editABid(req, res));
+                        put("/:BID", (req, res) -> bidApi.edit(req, res));
 
-                        delete("/:BID", (req, res) -> bidApi.deleteABid(req, res));
+                        delete("/:BID", (req, res) -> bidApi.delete(req, res));
 
                         options("", (req, res) -> optionFunc(req, res));
 
@@ -119,42 +119,42 @@ public class ServiceLinkMain {
 
                 path("/:UID/reviews", () -> {
 
-                    get("", (req, res) -> reviewApi.getReqHandler(req, res));
+                    get("", (req, res) -> reviewApi.getQuery(req, res));
 
-                    post("", (req, res) -> reviewApi.addAReview(req, res));
+                    post("", (req, res) -> reviewApi.add(req, res));
 
-                    put("/:RID", (req, res) -> reviewApi.editAReview(req, res));
+                    put("/:RID", (req, res) -> reviewApi.edit(req, res));
 
-                    delete("/:RID", (req, res) -> reviewApi.deleteAReview(req, res));
-
-                    options("", (req, res) -> optionFunc(req, res));
-
-                });
-
-                path("/:UID/timetable_events", () -> {
-
-                    get("", (req, res) -> timetableApi.getReqHandler(req, res));
-
-                    post("", (req, res) -> timetableApi.addATimetableEvent(req, res));
-
-                    put("/:LID", (req, res) -> timetableApi.editATimetableEvent(req, res));
-
-                    delete("/:LID", (req, res) -> timetableApi.deleteATimetableEvent(req, res));
+                    delete("/:RID", (req, res) -> reviewApi.delete(req, res));
 
                     options("", (req, res) -> optionFunc(req, res));
 
                 });
+
+//                path("/:UID/timetable_events", () -> {
+//
+//                    get("", (req, res) -> timetableApi.getReqHandler(req, res));
+//
+//                    post("", (req, res) -> timetableApi.addATimetableEvent(req, res));
+//
+//                    put("/:LID", (req, res) -> timetableApi.editATimetableEvent(req, res));
+//
+//                    delete("/:LID", (req, res) -> timetableApi.deleteATimetableEvent(req, res));
+//
+//                    options("", (req, res) -> optionFunc(req, res));
+//
+//                });
 
                 //Users
-                get("", (req, res) -> userApi.getReqQueryHandler(req, res));
+                get("", (req, res) -> userApi.getQuery(req, res));
 
                 get("/:UID", (req, res) -> userApi.getReqPathHandler(req, res));
 
-                post("", (req, res) -> userApi.addUser(req, res));
+                post("", (req, res) -> userApi.add(req, res));
 
-                put("/:UID", (req, res) -> userApi.editUser(req, res));
+                put("/:UID", (req, res) -> userApi.edit(req, res));
 
-                delete("/:UID", (req, res) -> userApi.deleteUser(req, res));
+                delete("/:UID", (req, res) -> userApi.delete(req, res));
 
                 options("", (req, res) -> optionFunc(req, res));
 
@@ -162,21 +162,24 @@ public class ServiceLinkMain {
 
             path("/reviews", () -> {
 
-                get("", (req, res) -> reviewApi.getReqHandler(req, res));
+                get("", (req, res) -> reviewApi.getQuery(req, res));
 
-                post("", (req, res) -> reviewApi.addAReview(req, res));
+                post("", (req, res) -> reviewApi.add(req, res));
 
-                put("/:RID", (req, res) -> reviewApi.editAReview(req, res));
+                put("/:RID", (req, res) -> reviewApi.edit(req, res));
 
-                delete("/:RID", (req, res) -> reviewApi.deleteAReview(req, res));
+                delete("/:RID", (req, res) -> reviewApi.delete(req, res));
 
                 options("", (req, res) -> optionFunc(req, res));
 
             });
 
             before("/listings", (req, res) -> {
-                System.out.println(req.headers());
-                authApi.isAuthorized(req.headers("test"));
+                if (!authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING)) {
+                    System.out.println("halting...");
+                    res.body(new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.ERROR, "You Are Unauthorized")));
+                    halt(403, "You Are Unauthorized");
+                }
             });
 
             path("/listings", () -> {
@@ -186,11 +189,11 @@ public class ServiceLinkMain {
                     
                     get("", (req, res) -> bidApi.getReqHandler(req, res));
 
-                    post("", (req, res) -> bidApi.addABid(req, res));
+                    post("", (req, res) -> bidApi.add(req, res));
 
-                    put("/:BID", (req, res) -> bidApi.editABid(req, res));
+                    put("/:BID", (req, res) -> bidApi.edit(req, res));
 
-                    delete("/:BID", (req, res) -> bidApi.deleteABid(req, res));
+                    delete("/:BID", (req, res) -> bidApi.delete(req, res));
 
                     options("", (req, res) -> optionFunc(req, res));
 
@@ -214,25 +217,11 @@ public class ServiceLinkMain {
 
                 get("", (req, res) -> bidApi.getReqHandler(req, res));
 
-                post("", (req, res) -> bidApi.addABid(req, res));
+                post("", (req, res) -> bidApi.add(req, res));
 
-                put("/:BID", (req, res) -> bidApi.editABid(req, res));
+                put("/:BID", (req, res) -> bidApi.edit(req, res));
 
-                delete("/:BID", (req, res) -> bidApi.deleteABid(req, res));
-
-                options("", (req, res) -> optionFunc(req, res));
-
-            });
-
-            path("/timetable_events", () -> {
-
-                get("", (req, res) -> timetableApi.getReqHandler(req, res));
-
-                post("", (req, res) -> timetableApi.addATimetableEvent(req, res));
-
-                put("/:LID", (req, res) -> timetableApi.editATimetableEvent(req, res));
-
-                delete("/:LID", (req, res) -> timetableApi.deleteATimetableEvent(req, res));
+                delete("/:BID", (req, res) -> bidApi.delete(req, res));
 
                 options("", (req, res) -> optionFunc(req, res));
 

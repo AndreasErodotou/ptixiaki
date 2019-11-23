@@ -6,11 +6,8 @@
 package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
-import hy499.ptixiaki.services.ReviewService;
 import hy499.ptixiaki.data.Review;
-import hy499.ptixiaki.api.ServerResponseAPI;
-import hy499.ptixiaki.api.ServerResponseAPI.Status;
-import java.util.Map;
+import hy499.ptixiaki.db.ReviewDB;
 import spark.Request;
 import spark.Response;
 
@@ -18,106 +15,78 @@ import spark.Response;
  *
  * @author Andreas
  */
-public class ReviewAPI {
-    ReviewService reviewService;
+public class ReviewAPI implements DataApi {
+    ReviewDB reviewDB;
 
     public ReviewAPI() throws ClassNotFoundException {
-        reviewService = new ReviewService();
+        reviewDB = new ReviewDB();
     }
 
-    public String createResponse(Response res, Map<String, Review> reviews) {
-        res.header("Access-Control-Allow-Origin", "*");
-        if (!reviews.isEmpty()) {
-            res.status(200);
-            return new Gson()
-                    .toJson(new ServerResponseAPI(Status.SUCCESS,
-                            reviewService.getReviewMsg(),
-                            new Gson().toJsonTree(reviews)));
-        }
-        res.status(400);
-        return new Gson()
-                .toJson(new ServerResponseAPI(Status.WARINING,
-                        reviewService.getReviewMsg(),
-                        new Gson().toJsonTree(null)));
-    }
+//    public String getReqHandler(Request req, Response res) throws ClassNotFoundException {
+//        if (req.queryParams("RID") != null) {
+//            return getAReview(req, res);
+//        } else if (req.queryParams("UID") != null) {
+//            if (req.queryParams("TO_UID") != null) {
+//                return getAllUserReviewsToAUser(req, res);
+//            }
+//            return getAllUserReviews(req, res);
+//        } else if (req.queryParams("TO_UID") != null) {
+//            return getAllReviewsMadeForAUser(req, res);
+//        }
+//        return new Gson().toJson(reviewDB.getAll());
+//    }
 
-    public String createResponse(Response res, Review review, Boolean bool) {
-        res.header("Access-Control-Allow-Origin", "*");
-        if (bool) {
-            res.status(200);
-            return new Gson()
-                    .toJson(new ServerResponseAPI(Status.SUCCESS,
-                            reviewService.getReviewMsg(),
-                            new Gson().toJsonTree(review)));
-        }
-        res.status(400);
-        return new Gson()
-                .toJson(new ServerResponseAPI(Status.ERROR,
-                        reviewService.getReviewMsg(),
-                        new Gson().toJsonTree(null)));
-    }
+//    public String getAllUserReviews(Request req, Response res) {
+//        String UID = req.queryParams("UID");
+//        return new Gson().toJson(reviewDB.get());
+//    }
 
-    public String getReqHandler(Request req, Response res) {
-        if (req.queryParams("RID") != null) {
-            return getAReview(req, res);
-        } else if (req.queryParams("UID") != null) {
-            if (req.queryParams("TO_UID") != null) {
-                return getAllUserReviewsToAUser(req, res);
-            }
-            return getAllUserReviews(req, res);
-        } else if (req.queryParams("TO_UID") != null) {
-            return getAllReviewsMadeForAUser(req, res);
-        }
-        return getAllReviews(req, res);
-    }
+//    public String getAllUserReviewsToAUser(Request req, Response res) {
+//        String UID = req.queryParams("UID");
+//        String TO_UID = req.queryParams("TO_UID");
+//        Map<String, Review> reviews = reviewService.getReviewsFromAUserToAnotherUser(UID, TO_UID);
+//        return createResponse(res, reviews);
+//    }
 
-    public String getAllReviews(Request req, Response res) {
+//    public String getAllReviewsMadeForAUser(Request req, Response res) {
+//        String TO_UID = req.queryParams("TO_UID");
+//        Map<String, Review> reviews = reviewService.getReviewsToAUser(TO_UID);
+//        return createResponse(res, reviews);
+//    }
 
-        Map<String, Review> reviews = reviewService.getReviews();
-        return createResponse(res, reviews);
-    }
-
-    public String getAllUserReviews(Request req, Response res) {
-        String UID = req.queryParams("UID");
-        Map<String, Review> reviews = reviewService.getReviewsFromAUser(UID);
-        return createResponse(res, reviews);
-    }
-
-    public String getAllUserReviewsToAUser(Request req, Response res) {
-        String UID = req.queryParams("UID");
-        String TO_UID = req.queryParams("TO_UID");
-        Map<String, Review> reviews = reviewService.getReviewsFromAUserToAnotherUser(UID, TO_UID);
-        return createResponse(res, reviews);
-    }
-
-    public String getAllReviewsMadeForAUser(Request req, Response res) {
-        String TO_UID = req.queryParams("TO_UID");
-        Map<String, Review> reviews = reviewService.getReviewsToAUser(TO_UID);
-        return createResponse(res, reviews);
-    }
-
-    public String getAReview(Request req, Response res) {
+    @Override
+    public String get(Request req, Response res) throws ClassNotFoundException {
         String RID = req.queryParams("RID");
-        Review review = reviewService.getReview(RID);
-        return createResponse(res, review, review != null);
+        return new Gson().toJson(reviewDB.get(RID));
     }
 
-    public String addAReview(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String getQuery(Request req, Response res) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAll(Request req, Response res) throws ClassNotFoundException {
+        return new Gson().toJson(reviewDB.getAll());
+    }
+
+    @Override
+    public String add(Request req, Response res) throws ClassNotFoundException {
         Review review = new Gson().fromJson(req.body(), Review.class);
-        return createResponse(res, review, reviewService.addReview(review));
+        return new Gson().toJson(reviewDB.add(review));
     }
 
-    public String editAReview(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String edit(Request req, Response res) throws ClassNotFoundException {
         String RID = req.params(":RID");
         Review review = new Gson().fromJson(req.body(), Review.class);
         review.setRID(RID);
-        Review editedReview = reviewService.editReview(review);
-        return createResponse(res, editedReview, editedReview != null);
+        return new Gson().toJson(reviewDB.edit(review));
     }
 
-    public String deleteAReview(Request req, Response res) throws ClassNotFoundException {
+    @Override
+    public String delete(Request req, Response res) throws ClassNotFoundException {
         String RID = req.params(":RID");
-        Review review = reviewService.deleteReview(RID);
-        return createResponse(res, review, review != null);
+        return new Gson().toJson(reviewDB.delete(RID));
     }
 }

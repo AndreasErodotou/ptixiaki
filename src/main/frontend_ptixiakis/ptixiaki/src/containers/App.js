@@ -11,6 +11,8 @@ import ListingsApi from "./ListingsApi/ListingsApi";
 import { Route } from "react-router-dom";
 
 import NewListing from "../components/Listings/NewListing/NewListing";
+
+import AnaliticsPage from "../components/Analitics/AnaliticsPage";
 // import Modal from 'react-bootstrap/Modal';
 // import Button from 'react-bootstrap/Button';
 // import ModalDialog from 'react-bootstrap/ModalDialog';
@@ -181,7 +183,22 @@ class App extends Component {
           )}
         />
 
-        <Route exact path="/" render={() => homepage} />
+        {/* <Route exact path="/" render={() => homepage} /> */}
+        <Route
+          exact
+          path="/statistics"
+          render={() => (
+            <div>
+              <NavBar
+                key="navbar"
+                onCreateYourOwnListingClicked={this.createYourOwnListingClickedHandler.bind(
+                  this
+                )}
+              />
+              <AnaliticsPage></AnaliticsPage>
+            </div>
+          )}
+        />
       </div>
     );
   }

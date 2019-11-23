@@ -8,10 +8,8 @@ package hy499.ptixiaki.api;
 import hy499.ptixiaki.data.Token;
 import hy499.ptixiaki.data.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
@@ -56,7 +54,7 @@ public class JwtAPI {
             claims = Jwts.parser()
                     .setSigningKey(key)
                     .parseClaimsJws(token).getBody();
-        } catch (MalformedJwtException | ExpiredJwtException e) {
+        } catch (/*MalformedJwtException | ExpiredJwtException*/Exception e) {
             System.out.println(e.getMessage());
             return null;
         }

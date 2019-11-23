@@ -5,6 +5,9 @@
  */
 package hy499.ptixiaki.db;
 
+import com.google.gson.Gson;
+import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import hy499.ptixiaki.data.Customer;
 import hy499.ptixiaki.data.Professional;
 import hy499.ptixiaki.data.Professional.Locations;
@@ -27,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Andreas
  */
-public final class UserDB {
+public final class UserDB implements DB<User> {
 
     public UserDB() throws SQLException {
         try {
@@ -125,8 +128,9 @@ public final class UserDB {
         return user;
     }
 
-    public Map<String, User> getUsers() throws ClassNotFoundException {
-        Map<String, User> users = new HashMap<>();
+    public ServerResponseAPI getCustomers() throws ClassNotFoundException {
+        Map<String, Customer> customers = new HashMap<>();
+        ServerResponseAPI serverRes = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
@@ -139,19 +143,213 @@ public final class UserDB {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    User cust = new Customer();
-                    cust.setUID(res.getString("UID"));
-                    cust.setName(res.getString("NAME"));
-                    cust.setSurname(res.getString("SURNAME"));
-                    cust.setUsername(res.getString("USERNAME"));
-                    cust.setAccountType(AccountType.valueOf(res.getString("ACCOUNT_TYPE")));
-                    cust.setGender(Gender.valueOf(res.getString("GENDER")));
-                    cust.setBday(res.getDate("BDAY"));
-                    cust.setAddress(res.getString("ADDRESS"));
-                    cust.setEmail(res.getString("EMAIL"));
-                    cust.setPhoneNum(res.getString("PHONE_NUM"));
-                    cust.setPassword(res.getString("PASSWORD"));
+                    Customer cust = (Customer) resToUser(res);
+                    customers.put(cust.getUID(), cust);
+                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Customers", new Gson().toJsonTree(customers));
 
+                stmt.close();
+                con.close();
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
+    }
+
+    public ServerResponseAPI getProfessionals() throws ClassNotFoundException {
+        Map<String, Professional> professionals = new HashMap<>();
+        ServerResponseAPI serverRes = null;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM PROFESSIONAL").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    Professional prof = (Professional) resToUser(res);
+                    professionals.put(prof.getUID(), prof);
+                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Professionals", new Gson().toJsonTree(professionals));
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
+    }
+
+    public ServerResponseAPI checkEmail(String email) throws ClassNotFoundException {
+        boolean isAvailable = false;
+        ServerResponseAPI serverRes = null;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder checkQuery = new StringBuilder();
+
+                checkQuery.append("SELECT * FROM CUSTOMER ")
+                        .append(" WHERE EMAIL = ").append("'").append(email).append("';");
+
+                stmt.execute(checkQuery.toString());
+                if (stmt.getResultSet().next() == true) {
+                    System.out.println("#UserDB: email: " + email + " already exists");
+                } else {
+                    isAvailable = true;
+                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "Username is " + ((isAvailable) ? "" : "un") + "available");
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return serverRes;
+    }
+
+    public ServerResponseAPI checkUsername(String username) throws ClassNotFoundException {
+        boolean isAvailable = false;
+        ServerResponseAPI serverRes;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder checkQuery = new StringBuilder();
+
+                checkQuery.append("SELECT * FROM CUSTOMER ")
+                        .append(" WHERE USERNAME = ").append("'").append(username).append("';");
+
+                stmt.execute(checkQuery.toString());
+                if (stmt.getResultSet().next() == true) {
+                    System.out.println("#UserDB: username: " + username + " already exists");
+                } else {
+                    isAvailable = true;
+                }
+
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "Username is " + ((isAvailable) ? "" : "un") + "available");
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            serverRes = new ServerResponseAPI(Status.ERROR, "SQL Error");
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return serverRes;
+    }
+
+    public User checkLogin(String email, String password) throws ClassNotFoundException {
+        User authUser = null;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection();
+                    Statement stmt = con.createStatement()) {
+
+                StringBuilder checkQuery = new StringBuilder();
+
+                checkQuery.append("SELECT * FROM CUSTOMER, PROFESSIONAL ")
+                        .append(" WHERE (CUSTOMER.EMAIL = ").append("'").append(email).append("'")
+                        .append(" and CUSTOMER.PASSWORD = ").append("'").append(password).append("')")
+                        .append(" or (PROFESSIONAL.EMAIL = ").append("'").append(email).append("'")
+                        .append(" and PROFESSIONAL.PASSWORD = ").append("'").append(password).append("');");
+
+                stmt.execute(checkQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                if (res.next() == true) {
+                    authUser = resToUser(res);
+                }
+
+                System.out.println("#UserDB: login successfully");
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return authUser;
+    }
+
+    @Override
+    public ServerResponseAPI get(String UID) throws ClassNotFoundException {
+        User user = null;
+        ServerResponseAPI serverRes;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM CUSTOMER")
+                        .append("WHERE ").append("UID = ").append("'").append(UID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                user = resToUser(res);
+
+                if (user == null) {
+                    getQuery = new StringBuilder();
+
+                    getQuery.append("SELECT * FROM PROFESSIONAL")
+                            .append("WHERE ").append("UID = ").append("'").append(UID).append("';");
+
+                    stmt.execute(getQuery.toString());
+
+                    res = stmt.getResultSet();
+                    user = resToUser(res);
+                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "User", new Gson().toJsonTree(user));
+
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            serverRes = new ServerResponseAPI(Status.ERROR, "User", new Gson().toJsonTree(user));
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
+    }
+
+    @Override
+    public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ServerResponseAPI getAll() throws ClassNotFoundException {
+        Map<String, User> users = new HashMap<>();
+        ServerResponseAPI serverRes;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM CUSTOMER").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    User cust = resToUser(res);
                     users.put(cust.getUID(), cust);
                 }
 
@@ -164,123 +362,26 @@ public final class UserDB {
                 res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Professional prof = new Professional();
-                    prof.setUID(res.getString("UID"));
-                    prof.setName(res.getString("NAME"));
-                    prof.setSurname(res.getString("SURNAME"));
-                    prof.setUsername(res.getString("USERNAME"));
-                    prof.setAccountType(AccountType.valueOf(res.getString("ACCOUNT_TYPE")));
-                    prof.setGender(Gender.valueOf(res.getString("GENDER")));
-                    prof.setBday(res.getDate("BDAY"));
-                    prof.setAddress(res.getString("ADDRESS"));
-                    prof.setEmail(res.getString("EMAIL"));
-                    prof.setPhoneNum(res.getString("PHONE_NUM"));
-                    prof.setPassword(res.getString("PASSWORD"));
-                    prof.setJobs(res.getString("JOB"));
-                    prof.setWorkExperience(res.getDouble("WORK_EXP"));
-                    prof.setAboutMe(res.getString("ABOUT_ME"));
-                    prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
-
+                    User prof = resToUser(res);
                     users.put(prof.getUID(), prof);
                 }
-                stmt.close();
-                con.close();
-            }
 
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return users;
-    }
-
-    public Map<String, User> getCustomers() throws ClassNotFoundException {
-        Map<String, User> users = new HashMap<>();
-        try {
-            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
-
-                StringBuilder getQuery = new StringBuilder();
-
-                getQuery.append("SELECT * FROM CUSTOMER").append(";");
-
-                stmt.execute(getQuery.toString());
-
-                ResultSet res = stmt.getResultSet();
-
-                while (res.next() == true) {
-                    User cust = new Customer();
-                    cust.setUID(res.getString("UID"));
-                    cust.setName(res.getString("NAME"));
-                    cust.setSurname(res.getString("SURNAME"));
-                    cust.setUsername(res.getString("USERNAME"));
-                    cust.setAccountType(AccountType.valueOf(res.getString("ACCOUNT_TYPE")));
-                    cust.setGender(Gender.valueOf(res.getString("GENDER")));
-                    cust.setBday(res.getDate("BDAY"));
-                    cust.setAddress(res.getString("ADDRESS"));
-                    cust.setEmail(res.getString("EMAIL"));
-                    cust.setPhoneNum(res.getString("PHONE_NUM"));
-                    cust.setPassword(res.getString("PASSWORD"));
-
-                    users.put(cust.getUID(), cust);
-                }
-                stmt.close();
-                con.close();
-
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return users;
-    }
-
-    public Map<String, User> getProfessionals() throws ClassNotFoundException {
-        Map<String, User> users = new HashMap<>();
-        try {
-            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
-
-                StringBuilder getQuery = new StringBuilder();
-
-                getQuery.append("SELECT * FROM PROFESSIONAL").append(";");
-
-                stmt.execute(getQuery.toString());
-
-                ResultSet res = stmt.getResultSet();
-
-                while (res.next() == true) {
-                    Professional prof = new Professional();
-                    prof.setUID(res.getString("UID"));
-                    prof.setName(res.getString("NAME"));
-                    prof.setSurname(res.getString("SURNAME"));
-                    prof.setUsername(res.getString("USERNAME"));
-                    prof.setAccountType(AccountType.valueOf(res.getString("ACCOUNT_TYPE")));
-                    prof.setGender(Gender.valueOf(res.getString("GENDER")));
-                    prof.setBday(res.getDate("BDAY"));
-                    prof.setAddress(res.getString("ADDRESS"));
-                    prof.setEmail(res.getString("EMAIL"));
-                    prof.setPhoneNum(res.getString("PHONE_NUM"));
-                    prof.setPassword(res.getString("PASSWORD"));
-                    prof.setJobs(res.getString("JOB"));
-                    prof.setWorkExperience(res.getDouble("WORK_EXP"));
-                    prof.setAboutMe(res.getString("ABOUT_ME"));
-//                    prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
-
-                    users.put(prof.getUID(), prof);
-                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Users", new Gson().toJsonTree(users));
                 stmt.close();
                 con.close();
             }
 
         } catch (SQLException ex) {
+            serverRes = new ServerResponseAPI(Status.ERROR, "All Users SQL Error");
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return users;
+        return serverRes;
     }
 
-    public void addUser(User user) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI add(User user) throws ClassNotFoundException {
+        ServerResponseAPI serverRes;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -335,17 +436,23 @@ public final class UserDB {
                 stmt.executeUpdate(insQuery.toString());
                 System.out.println("#UserDB: User added");
 
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "User Added");
+                serverRes.setResourceId(user.getUID());
                 stmt.close();
                 con.close();
 
             }
 
         } catch (SQLException ex) {
+            serverRes = new ServerResponseAPI(Status.SUCCESS, "User Add Error");
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return serverRes;
     }
 
-    public void updateUser(User user) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI edit(User user) throws ClassNotFoundException {
+        ServerResponseAPI serverRes;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -362,7 +469,6 @@ public final class UserDB {
                             .append(" ADDRESS = ").append("'").append(cust.getAddress()).append("',")
                             .append(" PASSWORD = ").append("'").append(cust.getPassword()).append("'")
                             .append(" WHERE UID = ").append("'").append(cust.getUID()).append("';");
-
 
                 } else {
                     Professional prof = (Professional) user;
@@ -382,131 +488,46 @@ public final class UserDB {
                 stmt.executeUpdate(updQuery.toString());
                 System.out.println("#UserDB: User Updated, UID: " + user.getUID());
 
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "User Edited");
                 stmt.close();
                 con.close();
             }
 
         } catch (SQLException ex) {
+            serverRes = new ServerResponseAPI(Status.ERROR, "User Edit Error");
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return serverRes;
     }
 
-
-
-    public void deleteUser(String UID, AccountType accType) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI delete(String UID) throws ClassNotFoundException {
+        ServerResponseAPI serverRes;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
-
                 StringBuilder delQuery = new StringBuilder();
-                if (accType == CUSTOMER) {
+//                if (accType == CUSTOMER) {
                     delQuery.append("DELETE FROM CUSTOMER ")
                             .append(" WHERE UID = ").append("'").append(UID).append("';");
-                } else {
+//                } else {
                     delQuery.append("DELETE FROM PROFESSIONAL ")
                             .append(" WHERE UID = ").append("'").append(UID).append("';");
-                }
+//                }
                 stmt.executeUpdate(delQuery.toString());
                 System.out.println("#UserDB: User Deleted, UID: " + UID);
 
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "User Deleted");
                 stmt.close();
                 con.close();
 
             }
 
         } catch (SQLException ex) {
+            serverRes = new ServerResponseAPI(Status.ERROR, "There Are No Such User");
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public boolean checkEmail(String email) throws ClassNotFoundException {
-        boolean isAvailable = false;
-        try {
-            try (Connection con = ConnectionDB.getDatabaseConnection();
-                    Statement stmt = con.createStatement()) {
-
-                StringBuilder checkQuery = new StringBuilder();
-
-                checkQuery.append("SELECT * FROM CUSTOMER ")
-                        .append(" WHERE EMAIL = ").append("'").append(email).append("';");
-
-                stmt.execute(checkQuery.toString());
-                if (stmt.getResultSet().next() == true) {
-                    System.out.println("#UserDB: email: " + email + " already exists");
-                } else {
-                    isAvailable = true;
-                }
-
-                stmt.close();
-                con.close();
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return isAvailable;
-    }
-
-    public boolean checkUsername(String username) throws ClassNotFoundException {
-        boolean isAvailable = false;
-        try {
-            try (Connection con = ConnectionDB.getDatabaseConnection();
-                    Statement stmt = con.createStatement()) {
-
-                StringBuilder checkQuery = new StringBuilder();
-
-                checkQuery.append("SELECT * FROM CUSTOMER ")
-                        .append(" WHERE USERNAME = ").append("'").append(username).append("';");
-
-                stmt.execute(checkQuery.toString());
-                if (stmt.getResultSet().next() == true) {
-                    System.out.println("#UserDB: username: " + username + " already exists");
-                } else {
-                    isAvailable = true;
-                }
-
-                stmt.close();
-                con.close();
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return isAvailable;
-    }
-
-    public User checkLogin(String email, String password) throws ClassNotFoundException {
-        User authUser = null;
-        try {
-            try (Connection con = ConnectionDB.getDatabaseConnection();
-                    Statement stmt = con.createStatement()) {
-
-                StringBuilder checkQuery = new StringBuilder();
-
-                checkQuery.append("SELECT * FROM CUSTOMER, PROFESSIONAL ")
-                        .append(" WHERE (CUSTOMER.EMAIL = ").append("'").append(email).append("'")
-                        .append(" and CUSTOMER.PASSWORD = ").append("'").append(password).append("')")
-                        .append(" or (PROFESSIONAL.EMAIL = ").append("'").append(email).append("'")
-                        .append(" and PROFESSIONAL.PASSWORD = ").append("'").append(password).append("');");
-
-                stmt.execute(checkQuery.toString());
-
-                ResultSet res = stmt.getResultSet();
-
-                if (res.next() == true) {
-                    authUser = resToUser(res);
-                }
-
-                System.out.println("#UserDB: login successfully");
-
-                stmt.close();
-                con.close();
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return authUser;
+        return serverRes;
     }
 
 }

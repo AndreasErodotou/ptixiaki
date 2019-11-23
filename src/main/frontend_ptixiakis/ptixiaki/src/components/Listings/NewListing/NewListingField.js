@@ -26,15 +26,15 @@ const NewListingField = props => {
   } else {
     if (props.type === "date") {
       tmpInput = (
-        <div className="col-8">
+        <div className="d-flex col-8">
           <input
-            className="form-control w-50"
+            className="form-control col-6 mr-3"
             type={props.type}
             id={props.fieldName}
             placeholder={props.fieldName}
           />
           <input
-            className="form-control w-50"
+            className="form-control col-6"
             type="time"
             id={props.fieldName}
             placeholder={props.fieldName}

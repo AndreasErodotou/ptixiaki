@@ -5,6 +5,9 @@
  */
 package hy499.ptixiaki.db;
 
+import com.google.gson.Gson;
+import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import hy499.ptixiaki.data.Review;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -21,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author Andreas
  */
-public final class ReviewDB {
+public final class ReviewDB implements DB<Review> {
 
     public ReviewDB() {
         try {
@@ -55,8 +58,21 @@ public final class ReviewDB {
         }
     }
 
-    public Map<String, Review> getReviews() throws ClassNotFoundException {
+
+    @Override
+    public ServerResponseAPI get(String ID) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ServerResponseAPI getAll() throws ClassNotFoundException {
         Map<String, Review> reviews = new HashMap<>();
+        ServerResponseAPI serverRes = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
@@ -79,17 +95,21 @@ public final class ReviewDB {
 
                     reviews.put(review.getRID(), review);
                 }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews", new Gson().toJsonTree(reviews));
+                stmt.close();
+                con.close();
             }
-
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return reviews;
+        return serverRes;
     }
 
-    public void addReview(Review review) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI add(Review review) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -112,6 +132,7 @@ public final class ReviewDB {
                 stmt.executeUpdate(insQuery.toString());
                 System.out.println("#ReviewDB: Review added, RID: " + review.getRID());
 
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "Review Added");
                 stmt.close();
                 con.close();
 
@@ -120,9 +141,12 @@ public final class ReviewDB {
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return serverRes;
     }
 
-    public void updateReview(Review review) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI edit(Review review) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -138,6 +162,7 @@ public final class ReviewDB {
                 stmt.executeUpdate(updQuery.toString());
                 System.out.println("#ReviewDB: Review Updated, RID: " + review.getRID());
 
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "Review Edited");
                 stmt.close();
                 con.close();
 
@@ -146,9 +171,12 @@ public final class ReviewDB {
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return serverRes;
     }
 
-    public void deleteReview(String RID) throws ClassNotFoundException {
+    @Override
+    public ServerResponseAPI delete(String RID) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection();
                     Statement stmt = con.createStatement()) {
@@ -161,6 +189,7 @@ public final class ReviewDB {
                 stmt.executeUpdate(delQuery.toString());
                 System.out.println("#ReviewDB: Review Deleted, RID: " + RID);
 
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "Review Deleted");
                 stmt.close();
                 con.close();
 
@@ -169,6 +198,7 @@ public final class ReviewDB {
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return serverRes;
     }
 
 }
