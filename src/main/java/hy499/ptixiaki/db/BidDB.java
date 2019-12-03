@@ -61,16 +61,21 @@ public final class BidDB implements DB<Bid> {
         }
     }
 
-    private Bid resToBid(ResultSet res) throws SQLException {
+    @Override
+    public Bid resToType(ResultSet res) {
         Bid bid = new Bid();
-        bid.setBID(res.getString("BID"));
-        bid.setUID(res.getString("UID"));
-        bid.setLID(res.getString("LID"));
-        bid.setSolution_decription(res.getString("SOLUTION_DESCR"));
-        bid.setPrice(res.getDouble("PRICE"));
-        bid.setTime_to_fix(res.getDouble("TIME_TO_FIX"));
-        bid.setWhen(res.getDate("WHEN_P"));
-        bid.setSelected(res.getBoolean("SELECTED"));
+        try {
+            bid.setBID(res.getString("BID"));
+            bid.setUID(res.getString("UID"));
+            bid.setLID(res.getString("LID"));
+            bid.setSolution_decription(res.getString("SOLUTION_DESCR"));
+            bid.setPrice(res.getDouble("PRICE"));
+            bid.setTime_to_fix(res.getDouble("TIME_TO_FIX"));
+            bid.setWhen(res.getDate("WHEN_P"));
+            bid.setSelected(res.getBoolean("SELECTED"));
+        } catch (SQLException ex) {
+            Logger.getLogger(BidDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return bid;
     }
 
@@ -89,7 +94,7 @@ public final class BidDB implements DB<Bid> {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    Bid bid = resToBid(res);
+                    Bid bid = resToType(res);
 
                     bids.put(bid.getBID(), bid);
                 }
@@ -117,7 +122,7 @@ public final class BidDB implements DB<Bid> {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    Bid bid = resToBid(res);
+                    Bid bid = resToType(res);
                     bids.put(bid.getBID(), bid);
                 }
             }
@@ -143,7 +148,7 @@ public final class BidDB implements DB<Bid> {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    Bid bid = resToBid(res);
+                    Bid bid = resToType(res);
                     bids.put(bid.getBID(), bid);
                 }
             }
@@ -170,7 +175,7 @@ public final class BidDB implements DB<Bid> {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    Bid bid = resToBid(res);
+                    Bid bid = resToType(res);
                     bids.put(bid.getBID(), bid);
                 }
             }
@@ -379,7 +384,7 @@ public final class BidDB implements DB<Bid> {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    bid = resToBid(res);
+                    bid = resToType(res);
                 }
 
                 serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new Gson().toJsonTree(bid));
@@ -411,7 +416,7 @@ public final class BidDB implements DB<Bid> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Bid bid = resToBid(res);
+                    Bid bid = resToType(res);
 
                     bids.put(bid.getBID(), bid);
                 }
@@ -444,7 +449,7 @@ public final class BidDB implements DB<Bid> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Bid bid = resToBid(res);
+                    Bid bid = resToType(res);
 
                     bids.put(bid.getBID(), bid);
                 }

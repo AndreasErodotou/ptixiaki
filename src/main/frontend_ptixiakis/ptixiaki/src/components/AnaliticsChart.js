@@ -4,7 +4,7 @@ import Chart from "react-google-charts";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
-const Analitics = ({ name, ...dim }) => {
+const Analitics = ({ name, checked, ...dim }) => {
   const months = [
     "January",
     "February",
@@ -19,8 +19,12 @@ const Analitics = ({ name, ...dim }) => {
     "November",
     "December"
   ];
+
+  let style = "p-2 border rounded";
+  checked ? (style += " border-primary ") : (style += " border-secondary");
+
   return (
-    <div className="p-2 border border-primary rounded">
+    <div className={style}>
       <div className="d-flex justify-content-between">
         <h4>{name}</h4>
         <DropdownButton

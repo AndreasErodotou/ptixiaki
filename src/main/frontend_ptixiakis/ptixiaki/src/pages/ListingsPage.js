@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import Listing from "./Listing/Listing";
-import FullListing from "./FullListing/FullListing.js";
-import NewListing from "./NewListing/NewListing";
-import "./Listings.css";
-import CardGroup from "react-bootstrap/CardGroup";
+import Listing from "../components/Listings/Listing";
+import FullListing from "../components/Listings/FullListing.js";
+import NewListing from "./NewListingPage";
+
+// import CardGroup from "react-bootstrap/CardGroup";
 
 const Listings = props => {
   // console.log("state: "+JSON.stringify(this.state.listings["f48e2c2d-1506-4f5a-b75d-5254a4104e30"]));
@@ -75,11 +75,11 @@ const Listings = props => {
 
   return (
     <div>
-      <div id="listingsContainer">
+      <div>
         <div className="row mx-0 px-0">{listings}</div>
 
         {props.showFullListing ? (
-          <div id="fullListing">
+          <div>
             <FullListing
               listing={props.listingClicked}
               onHide={handlefullLClose}
@@ -88,7 +88,7 @@ const Listings = props => {
           </div>
         ) : null}
 
-        <div id="newListing">
+        <div>
           {/* {content} */}
           <NewListing
             createNewListing={props.createNewListing}

@@ -66,8 +66,54 @@ public final class ListingDB implements DB<Listing> {
     }
 
     @Override
+    public Listing resToType(ResultSet res) {
+        Listing listing = new Listing();
+        try {
+            listing.setLID(res.getString("LID"));
+            listing.setUID(res.getString("UID"));
+            listing.setTitle(res.getString("TITLE"));
+            listing.setDescription(res.getString("DESCRIPTION"));
+            Array a = res.getArray("PICS");
+            String[][] str = (String[][]) a.getArray();
+            listing.setPics(new ArrayList<>(Arrays.asList(str[0])));
+            listing.setAvailable_from(res.getDate("START"));
+            listing.setAvailable_until(res.getDate("EXPIRE"));
+            //      listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
+            listing.setJobCategory(res.getString("CATEGORY"));
+            listing.setMax_price(res.getDouble("MAX_PRICE"));
+        } catch (SQLException ex) {
+            Logger.getLogger(ListingDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listing;
+    }
+
+    @Override
     public ServerResponseAPI get(String ID) throws ClassNotFoundException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ServerResponseAPI serverRes = new ServerResponseAPI();
+        Listing listing = new Listing();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM LISTING").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    listing = resToType(res);
+                }
+            }
+            serverRes.setMsg("All Listings");
+            serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+            serverRes.setData(new Gson().toJsonTree(listing));
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return serverRes;
     }
 
     @Override
@@ -91,27 +137,13 @@ public final class ListingDB implements DB<Listing> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Listing listing = new Listing();
-                    listing.setLID(res.getString("LID"));
-                    listing.setUID(res.getString("UID"));
-                    listing.setTitle(res.getString("TITLE"));
-                    listing.setDescription(res.getString("DESCRIPTION"));
-                    Array a = res.getArray("PICS");
-                    String[][] str = (String[][]) a.getArray();
-                    listing.setPics(new ArrayList<>(Arrays.asList(str[0])));
-
-                    listing.setAvailable_from(res.getDate("START"));
-                    listing.setAvailable_until(res.getDate("EXPIRE"));
-//                    listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
-                    listing.setJobCategory(res.getString("CATEGORY"));
-                    listing.setMax_price(res.getDouble("MAX_PRICE"));
-
+                    Listing listing = resToType(res);
                     listings.put(listing.getLID(), listing);
                 }
             }
             serverRes.setMsg("All Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new Gson().toJsonTree(listings));
+            serverRes.setData(new Gson().toJsonTree(listings.values()).getAsJsonArray());
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);

@@ -2,10 +2,33 @@
   text-align: center;
 }
 
-.blue{
-  border-color: #17A2B8;
+.blue {
+  border-color: #17a2b8;
 }
 
-.onHover:hover{
+.onHover:hover {
+  cursor: pointer;
+}
+
+.line {
+  /* position: absolute; */
+  width: 0px;
+  height: 15px;
+
+  border: 2px solid #17a2b8;
+  /* transform: rotate(90deg); */
+}
+
+.onHoverBluePointer:hover {
+  color: #17a2b8;
+  cursor: pointer;
+}
+
+.p-1 {
+  padding-top: 0.2rem !important;
+}
+
+.onHoverBackroundColor:hover {
+  background-color: #f8f9fa;
   cursor: pointer;
 }

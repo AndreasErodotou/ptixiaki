@@ -59,6 +59,7 @@ public class BidAPI implements DataApi {
     }
 
     public String getReqHandler(Request req, Response res) throws ClassNotFoundException {
+        System.out.println("Listings: getReqHandler");
         StringBuilder getQuery = new StringBuilder();
         Boolean test = false;
         if (req.queryParams("BID") != null) {

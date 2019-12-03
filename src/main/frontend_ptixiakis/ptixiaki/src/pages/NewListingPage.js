@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import NewListingField from "./NewListingField";
-import "./NewListing.css";
-import PickyDateTime from "react-picky-date-time";
+import NewListingField from "../components/Listings/NewListingField";
+import Image from "react-bootstrap/Image";
 
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+// import PickyDateTime from "react-picky-date-time";
+// import Modal from "react-bootstrap/Modal";
+// import Button from "react-bootstrap/Button";
 
 class NewListing extends Component {
   constructor(props) {
@@ -172,31 +172,39 @@ class NewListing extends Component {
         if (index === 0) {
           return (
             <div>
-              <p style={{ color: "red" }}>
+              {/* <p style={{ color: "red" }}>
                 (To delete a picture just click on it)
-              </p>
-              <img
+              </p> */}
+              {/* &times; */}
+              {/* <span>
+                <button type="button" class="close">
+                  <span aria-hidden="true">×</span>
+                  <span class="sr-only">Close</span>
+                </button> */}
+              <Image
                 onClick={() => this.removePicHandler(index)}
-                className="img-responsive pic col-sm-12 form-control-file"
-                id="nl_mainPic"
+                className="img-responsive pic col-sm-12 form-control-file mb-2"
                 src={pic}
                 key={index}
                 alt="Select A Picture"
-              ></img>
+              ></Image>
+              {/* </span> */}
             </div>
           );
         } else {
           return (
-            <img
+            <Image
               onClick={() => this.removePicHandler(index)}
               className="img-responsive pic col-sm-3"
               src={pic}
               key={index}
               alt="Select A Picture"
-            ></img>
+            ></Image>
           );
         }
       });
+
+      let extraPadding = selectedPics.length < 5 ? " px-5" : "";
 
       NewListingForm = (
         // <><Modal size="lg" show={this.props.show} onHide={this.props.onHide} >
@@ -204,30 +212,32 @@ class NewListing extends Component {
         //     <Modal.Title>Create Your Own Listing</Modal.Title>
         //     </Modal.Header>
         //     <Modal.Body >
-        <div className="border border-info row m-4" id="fullListing">
-          <div className="border-right border-info col-sm-5" id="nl_pics">
-            <div className="row" id="nl_allPicsdiv">
+        <div className="border border-info row mx-3 mt-3">
+          <div className="border-right border-info col-sm-5 p-4">
+            <div className={"row d-flex justify-content-center" + extraPadding}>
               {selectedPics}
 
-              <form className="md-form">
-                <div className="file-field">
-                  <div className="btn btn-outline-info btn-rounded btn-block my-3 waves-effect z-depth-0">
-                    <label>Select Pictures</label>
-                    <span>
-                      <input
-                        className="custom-file-input"
-                        id="test"
-                        type="file"
-                        multiple
-                        onChange={event => this.picSelectedHandler(event)}
-                      />
-                    </span>
+              {selectedPics.length < 5 ? (
+                <form className="my-3">
+                  <div className="file-field">
+                    <div className="btn btn-outline-info ">
+                      <label>Select Pictures</label>
+                      <span>
+                        <input
+                          className="custom-file-input"
+                          id="test"
+                          type="file"
+                          multiple
+                          onChange={event => this.picSelectedHandler(event)}
+                        />
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              ) : null}
             </div>
           </div>
-          <div className="col-sm-7" id="nl_info">
+          <div className="col-sm-7 pt-4">
             <form className="form" onSubmit={this.postHandler.bind(this)}>
               <NewListingField fieldName="Title" type="text" />
               <NewListingField fieldName="Description" type="textarea" />
@@ -237,15 +247,10 @@ class NewListing extends Component {
               <NewListingField fieldName="Available From" type="date" />
               <NewListingField fieldName="Available Until" type="date" />
 
-              <div className="form-row">
-                <div className="col-md-9"></div>
-                <div className="col-md-3">
-                  <div className="form-group">
-                    <button className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0">
-                      Post
-                    </button>
-                  </div>
-                </div>
+              <div className="d-flex justify-content-end">
+                <button className="w-25 btn btn-outline-info btn-rounded btn-block my-3 waves-effect z-depth-0 mt-0">
+                  Post
+                </button>
               </div>
             </form>
           </div>

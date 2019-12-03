@@ -1,20 +1,15 @@
 package hy499.ptixiaki.servicelink;
 
-//import java.sql.Connection;
-//import java.sql.DriverManager;
-//import java.sql.PreparedStatement;
-//import java.sql.ResultSet;
+import com.google.gson.Gson;
 import hy499.ptixiaki.api.data.ListingAPI;
 import hy499.ptixiaki.api.data.UserAPI;
 import hy499.ptixiaki.api.data.BidAPI;
 import hy499.ptixiaki.api.data.TimetableAPI;
 import hy499.ptixiaki.api.data.ReviewAPI;
-import com.google.gson.Gson;
 import hy499.ptixiaki.api.AuthorizerApi;
 import hy499.ptixiaki.api.JwtAPI;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import java.sql.SQLException;
-import spark.Request;
 import spark.Response;
 import static spark.Spark.*;
 
@@ -30,23 +25,14 @@ import static spark.Spark.*;
 public class ServiceLinkMain {
 
 
-    public static String optionFunc(Request req, Response res) {
+    public static void addHeaders(Response res) {
         res.status(200);
 
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Credentials", "true");
-        res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        res.header("Access-Control-Max-Age", "3600");
-        res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
-
-        return new Gson()
-                .toJson(new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS,
-                        "",
-                        new Gson().toJsonTree("")));
-
+        res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me, Authorization, token");
     }
-
-
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
 
@@ -57,33 +43,22 @@ public class ServiceLinkMain {
         TimetableAPI timetableApi = new TimetableAPI();
         AuthorizerApi authApi = new AuthorizerApi();
 
+        options("/*", (req, res) -> {
+            return new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "cors headers added"));
+        });
+
+        after("/*", (req, res) -> addHeaders(res));
+
         path("/api", () -> {
-            before("/*", (req, res) -> {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Access-Control-Allow-Credentials", "true");
-                res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-                res.header("Access-Control-Max-Age", "3600");
-                res.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
-                res.type("application/json");
-            });
 
-            // /users/:UID/listings/:LID/bids/:BID
-            // diaforetika:
-            // /users/*/listings/*/bids/*
-
-            // skeftome pou kai pos 8a mpoun oi elenxoi gia to authorization
-            // isos xriasti na ftia3w kenourgio class gia tin diaxirisis
-            // isos ftiaxti akoma kai gia to jwt ena class
 
             post("/login", (req, res) -> authApi.isAuthenticated(req, res));
-
-            options("", (req, res) -> optionFunc(req, res));
 
             path("/users", () -> {
 
                 before("/*", (req, res) -> {
                     System.out.println(req.headers());
-                    new JwtAPI().parseJWT(req.headers("test"));
+                    new JwtAPI().parseJWT(req.headers("token"));
                 });
 
                 path("/:UID/listings", () -> {
@@ -98,7 +73,6 @@ public class ServiceLinkMain {
 
                         delete("/:BID", (req, res) -> bidApi.delete(req, res));
 
-                        options("", (req, res) -> optionFunc(req, res));
 
                     });
 
@@ -113,8 +87,6 @@ public class ServiceLinkMain {
 
                     delete("/:LID", (req, res) -> listingApi.delete(req, res));
 
-                    options("", (req, res) -> optionFunc(req, res));
-
                 });
 
                 path("/:UID/reviews", () -> {
@@ -126,8 +98,6 @@ public class ServiceLinkMain {
                     put("/:RID", (req, res) -> reviewApi.edit(req, res));
 
                     delete("/:RID", (req, res) -> reviewApi.delete(req, res));
-
-                    options("", (req, res) -> optionFunc(req, res));
 
                 });
 
@@ -156,8 +126,6 @@ public class ServiceLinkMain {
 
                 delete("/:UID", (req, res) -> userApi.delete(req, res));
 
-                options("", (req, res) -> optionFunc(req, res));
-
             });
 
             path("/reviews", () -> {
@@ -170,17 +138,25 @@ public class ServiceLinkMain {
 
                 delete("/:RID", (req, res) -> reviewApi.delete(req, res));
 
-                options("", (req, res) -> optionFunc(req, res));
-
             });
 
-            before("/listings", (req, res) -> {
-                if (!authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING)) {
-                    System.out.println("halting...");
-                    res.body(new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.ERROR, "You Are Unauthorized")));
-                    halt(403, "You Are Unauthorized");
-                }
-            });
+//            before("/listings", (req, res) -> {
+//                authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING);
+//                if (!authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING)) {
+//                    System.out.println("halting...");
+//                    res.body(new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.ERROR, "You Are Unauthorized")));
+//                    halt(403, "You Are Unauthorized");
+//                }
+//            });
+
+//            options("/listings", (req, res) -> {
+//                return new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "cors headers added"));
+//            });
+
+//            after("/listings", (req, res) -> {
+//                System.out.println("listings: headers added");
+//                addHeaders(res);
+//            });
 
             path("/listings", () -> {
 
@@ -195,8 +171,6 @@ public class ServiceLinkMain {
 
                     delete("/:BID", (req, res) -> bidApi.delete(req, res));
 
-                    options("", (req, res) -> optionFunc(req, res));
-
                 });
 
                 get("", (req, res) -> listingApi.getQuery(req, res));
@@ -209,7 +183,6 @@ public class ServiceLinkMain {
 
                 delete("/:LID", (req, res) -> listingApi.delete(req, res));
 
-                options("", (req, res) -> optionFunc(req, res));
 
             });
 
@@ -223,7 +196,6 @@ public class ServiceLinkMain {
 
                 delete("/:BID", (req, res) -> bidApi.delete(req, res));
 
-                options("", (req, res) -> optionFunc(req, res));
 
             });
 

@@ -58,6 +58,21 @@ public final class ReviewDB implements DB<Review> {
         }
     }
 
+    @Override
+    public Review resToType(ResultSet res) {
+        Review review = new Review();
+        try {
+            review.setRID(res.getString("RID"));
+            review.setUID(res.getString("UID"));
+            review.setTO_UID(res.getString("TO_UID"));
+            review.setLID(res.getString("LID"));
+            review.setRating(res.getDouble("RATING"));
+            review.setComments(res.getString("COMMENTS"));
+        } catch (SQLException ex) {
+            Logger.getLogger(ReviewDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return review;
+    }
 
     @Override
     public ServerResponseAPI get(String ID) throws ClassNotFoundException {
@@ -85,14 +100,7 @@ public final class ReviewDB implements DB<Review> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Review review = new Review();
-                    review.setRID(res.getString("RID"));
-                    review.setUID(res.getString("UID"));
-                    review.setTO_UID(res.getString("TO_UID"));
-                    review.setLID(res.getString("LID"));
-                    review.setRating(res.getDouble("RATING"));
-                    review.setComments(res.getString("COMMENTS"));
-
+                    Review review = resToType(res);
                     reviews.put(review.getRID(), review);
                 }
                 serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews", new Gson().toJsonTree(reviews));

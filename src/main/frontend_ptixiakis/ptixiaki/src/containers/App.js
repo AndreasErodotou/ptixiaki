@@ -1,18 +1,19 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 import React, { Component } from "react";
-import Signin from "../components/Forms/Signin/Signin";
-import Signup from "../components/Forms/Signup/Signup";
-import Listings from "../components/Listings/Listings";
+import Signin from "../pages/SigninPage";
+import Signup from "../pages/SignupPage";
+import Listings from "../pages/ListingsPage";
 import NavBar from "../components/NavBar";
 import Filters from "../components/Filters/Filters";
 import ListingsApi from "./ListingsApi/ListingsApi";
+import BidsPage from "../pages/BidsPage";
 
 import { Route } from "react-router-dom";
 
-import NewListing from "../components/Listings/NewListing/NewListing";
+import NewListing from "../pages/NewListingPage";
 
-import AnaliticsPage from "../components/Analitics/AnaliticsPage";
+import AnaliticsPage from "../pages/AnaliticsPage";
 // import Modal from 'react-bootstrap/Modal';
 // import Button from 'react-bootstrap/Button';
 // import ModalDialog from 'react-bootstrap/ModalDialog';
@@ -183,7 +184,6 @@ class App extends Component {
           )}
         />
 
-        {/* <Route exact path="/" render={() => homepage} /> */}
         <Route
           exact
           path="/statistics"
@@ -199,6 +199,10 @@ class App extends Component {
             </div>
           )}
         />
+
+        <Route exact path="/" render={() => homepage} />
+
+        <Route exact path="/bids" render={() => <BidsPage />} />
       </div>
     );
   }

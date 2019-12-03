@@ -92,7 +92,8 @@ public final class UserDB implements DB<User> {
         }
     }
 
-    private User resToUser(ResultSet res) throws SQLException {
+    @Override
+    public User resToType(ResultSet res) throws SQLException {
         User user;
         if (AccountType.valueOf(res.getString("ACCOUNT_TYPE")) == CUSTOMER) {
             Customer cust = new Customer();
@@ -143,7 +144,7 @@ public final class UserDB implements DB<User> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Customer cust = (Customer) resToUser(res);
+                    Customer cust = (Customer) resToType(res);
                     customers.put(cust.getUID(), cust);
                 }
                 serverRes = new ServerResponseAPI(Status.SUCCESS, "All Customers", new Gson().toJsonTree(customers));
@@ -175,7 +176,7 @@ public final class UserDB implements DB<User> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    Professional prof = (Professional) resToUser(res);
+                    Professional prof = (Professional) resToType(res);
                     professionals.put(prof.getUID(), prof);
                 }
                 serverRes = new ServerResponseAPI(Status.SUCCESS, "All Professionals", new Gson().toJsonTree(professionals));
@@ -270,7 +271,7 @@ public final class UserDB implements DB<User> {
                 ResultSet res = stmt.getResultSet();
 
                 if (res.next() == true) {
-                    authUser = resToUser(res);
+                    authUser = resToType(res);
                 }
 
                 System.out.println("#UserDB: login successfully");
@@ -301,7 +302,7 @@ public final class UserDB implements DB<User> {
 
                 ResultSet res = stmt.getResultSet();
 
-                user = resToUser(res);
+                user = resToType(res);
 
                 if (user == null) {
                     getQuery = new StringBuilder();
@@ -312,7 +313,7 @@ public final class UserDB implements DB<User> {
                     stmt.execute(getQuery.toString());
 
                     res = stmt.getResultSet();
-                    user = resToUser(res);
+                    user = resToType(res);
                 }
                 serverRes = new ServerResponseAPI(Status.SUCCESS, "User", new Gson().toJsonTree(user));
 
@@ -349,7 +350,7 @@ public final class UserDB implements DB<User> {
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    User cust = resToUser(res);
+                    User cust = resToType(res);
                     users.put(cust.getUID(), cust);
                 }
 
@@ -362,7 +363,7 @@ public final class UserDB implements DB<User> {
                 res = stmt.getResultSet();
 
                 while (res.next() == true) {
-                    User prof = resToUser(res);
+                    User prof = resToType(res);
                     users.put(prof.getUID(), prof);
                 }
 

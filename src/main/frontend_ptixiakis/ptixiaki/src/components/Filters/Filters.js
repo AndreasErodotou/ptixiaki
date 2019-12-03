@@ -1,7 +1,6 @@
 import React from "react";
-import "./Filters.css";
-import "./Category";
-import Category from "./Category";
+import "./FilterCategory";
+import Category from "./FilterCategory";
 
 const Filters = props => {
   const categories = props.categories.map((category, indexed) => (
@@ -67,8 +66,8 @@ const Filters = props => {
             </div>
           </article>
 
-          <h4 className="pt_es">Posted Today</h4>
-          <h4 className="pt_es">Ending Soon</h4>
+          <h4 className="onHoverBluePointer">Posted Today</h4>
+          <h4 className="onHoverBluePointer">Ending Soon</h4>
 
           {/* <article className="card-group-item">
                     <header className="card-header">

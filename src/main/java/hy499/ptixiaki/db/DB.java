@@ -6,6 +6,8 @@
 package hy499.ptixiaki.db;
 
 import hy499.ptixiaki.api.ServerResponseAPI;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -14,15 +16,17 @@ import hy499.ptixiaki.api.ServerResponseAPI;
  */
 public interface DB<Data> {
 
-    ServerResponseAPI get(String ID) throws ClassNotFoundException;
+    public Data resToType(ResultSet res) throws SQLException;
 
-    ServerResponseAPI getQuery(String query) throws ClassNotFoundException;
+    public ServerResponseAPI get(String ID) throws ClassNotFoundException;
 
-    ServerResponseAPI getAll() throws ClassNotFoundException;
+    public ServerResponseAPI getQuery(String query) throws ClassNotFoundException;
 
-    ServerResponseAPI add(Data data) throws ClassNotFoundException;
+    public ServerResponseAPI getAll() throws ClassNotFoundException;
 
-    ServerResponseAPI edit(Data data) throws ClassNotFoundException;
+    public ServerResponseAPI add(Data data) throws ClassNotFoundException;
 
-    ServerResponseAPI delete(String ID) throws ClassNotFoundException;
+    public ServerResponseAPI edit(Data data) throws ClassNotFoundException;
+
+    public ServerResponseAPI delete(String ID) throws ClassNotFoundException;
 }
