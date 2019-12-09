@@ -10,6 +10,8 @@ const Category = props => {
   );
 };
 
-Category.propTypes = {};
+Category.propTypes = {
+  category: PropTypes.string
+};
 
 export default Category;

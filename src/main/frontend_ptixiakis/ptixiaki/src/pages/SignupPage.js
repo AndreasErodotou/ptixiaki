@@ -101,11 +101,11 @@ class Signup extends React.Component {
     }
 
     if (allFieldsAreValid) {
-      alert("checking email and username...");
+      // alert("checking email and username...");
       this.checkEmailAndUsername(event);
     } else {
       warnings = warnings.substring(0, warnings.length - 2);
-      alert("warning: " + warnings);
+      // alert("warning: " + warnings);
       event.preventDefault();
     }
   }
@@ -147,7 +147,7 @@ class Signup extends React.Component {
       if (allFieldsAreValid) {
         this.addUserToDB();
         alert("You Have Signed Up Successfully");
-        this.setState({ goToSignin: true });
+        event.preventDefault();
       } else {
         alert(warnings);
         event.preventDefault();
@@ -156,7 +156,7 @@ class Signup extends React.Component {
   }
 
   addUserToDB() {
-    fetch("http://localhost:4567/management/users", {
+    fetch("http://localhost:4567/api/users", {
       method: "post",
       body: JSON.stringify(this.state.user)
     })
@@ -397,16 +397,9 @@ class Signup extends React.Component {
   }
 
   render() {
-    let goToSignin = false;
-    if (this.state.goToSignin) {
-      goToSignin = true;
-      alert("go to sign up page..");
-      // this.props.onChangeToSignIn();
-    }
-
     let signUpjsx = (
       <div className="container my-5 p-4 shadow p-3 mb-5 bg-white w-50">
-        <form className="form pt-4" onSubmit={this.handleSignup.bind(this)}>
+        <form className="form pt-4">
           <div className="form-group row justify-content-center">
             <h4>ServiceLink</h4>
           </div>
@@ -557,7 +550,8 @@ class Signup extends React.Component {
               <div className="form-group">
                 <button
                   className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0"
-                  type="submit"
+                  type="btn"
+                  onClick={this.handleSignup}
                 >
                   Sign up
                 </button>
@@ -565,22 +559,12 @@ class Signup extends React.Component {
             </div>
           </div>
 
-          {/* <div className="form-row">
-                <div className="col-md-3">
-                    <div className="form-group">
-                        <button onClick={this.handleSignup.bind(this)} className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" type="button">Test</button>
-                    </div>
-                </div>
-            </div> */}
-
           <div className="form-row border-top mx-5">
             <div className="md-form form-group">
               <p>
                 <small>
                   Already a member? <b></b>
-                  <Link to="/signin" onClick={this.props.onChangeToSignIn}>
-                    Sign in{" "}
-                  </Link>
+                  <Link to="/signin">Sign in </Link>
                 </small>
               </p>
             </div>
@@ -589,11 +573,7 @@ class Signup extends React.Component {
       </div>
     );
 
-    return (
-      <div>
-        {this.state.user.goToSignin ? this.props.onChangeToSignIn() : signUpjsx}
-      </div>
-    );
+    return <div>{signUpjsx}</div>;
   }
 }
 

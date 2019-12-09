@@ -79,10 +79,7 @@ class Signin extends React.Component {
             <p>
               <small>
                 Not a member yet? <b></b>
-                <Link to="/signup" onClick={this.props.onChangeToSignUp}>
-                  {" "}
-                  Join Now{" "}
-                </Link>
+                <Link to="/signup"> Join Now </Link>
               </small>
             </p>
           </div>

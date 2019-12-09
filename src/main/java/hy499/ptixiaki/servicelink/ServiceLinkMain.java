@@ -7,8 +7,8 @@ import hy499.ptixiaki.api.data.BidAPI;
 import hy499.ptixiaki.api.data.TimetableAPI;
 import hy499.ptixiaki.api.data.ReviewAPI;
 import hy499.ptixiaki.api.AuthorizerApi;
-import hy499.ptixiaki.api.JwtAPI;
 import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.api.StatisticsAPI;
 import java.sql.SQLException;
 import spark.Response;
 import static spark.Spark.*;
@@ -41,6 +41,7 @@ public class ServiceLinkMain {
         BidAPI bidApi = new BidAPI();
         ListingAPI listingApi = new ListingAPI();
         TimetableAPI timetableApi = new TimetableAPI();
+        StatisticsAPI statisticsApi = new StatisticsAPI();
         AuthorizerApi authApi = new AuthorizerApi();
 
         options("/*", (req, res) -> {
@@ -49,6 +50,11 @@ public class ServiceLinkMain {
 
         after("/*", (req, res) -> addHeaders(res));
 
+//        before("/*", (req, res) -> {
+//            addHeaders(res);
+//            authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING);
+//        });
+
         path("/api", () -> {
 
 
@@ -56,10 +62,10 @@ public class ServiceLinkMain {
 
             path("/users", () -> {
 
-                before("/*", (req, res) -> {
-                    System.out.println(req.headers());
-                    new JwtAPI().parseJWT(req.headers("token"));
-                });
+//                before("/*", (req, res) -> {
+//                    System.out.println(req.headers());
+//                    new JwtAPI().parseJWT(req.headers("token"));
+//                });
 
                 path("/:UID/listings", () -> {
 
@@ -199,6 +205,11 @@ public class ServiceLinkMain {
 
             });
 
+            path("/statistics", () -> {
+
+                get("/:UID", (req, res) -> statisticsApi.getAll(req, res));
+
+            });
         });
 
     }

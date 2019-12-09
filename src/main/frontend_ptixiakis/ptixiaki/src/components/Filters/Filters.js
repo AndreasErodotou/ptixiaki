@@ -1,17 +1,24 @@
 import React from "react";
 import "./FilterCategory";
 import Category from "./FilterCategory";
+import PropTypes from "prop-types";
 
 const Filters = props => {
-  const categories = props.categories.map((category, indexed) => (
-    <Category key={indexed} category={category} />
-  ));
-  const locations = props.locations.map((location, indexed) => (
-    <Category key={indexed} category={location} />
-  ));
+  let categories = null;
+  let locations = null;
+  if (props.categories !== null) {
+    categories = props.categories.map((category, indexed) => (
+      <Category key={indexed} category={category} />
+    ));
+  }
+  if (props.locations !== null) {
+    locations = props.locations.map((location, indexed) => (
+      <Category key={indexed} category={location} />
+    ));
+  }
 
   return (
-    <div>
+    <div className="sticky-top">
       <aside className="filters">
         <div className="card">
           <article className="card-group-item">
@@ -43,7 +50,6 @@ const Filters = props => {
               <h6 className="title">Max Price </h6>
             </header>
             <div className="card-body">
-              {/* <input className="custom-range" min="0" max="1000" name="" type="range"/> */}
               <div className="form-row">
                 <div className="form-group col-md-6">
                   <label>Min (€)</label>
@@ -68,36 +74,15 @@ const Filters = props => {
 
           <h4 className="onHoverBluePointer">Posted Today</h4>
           <h4 className="onHoverBluePointer">Ending Soon</h4>
-
-          {/* <article className="card-group-item">
-                    <header className="card-header">
-                        <h6 className="title">Choose type </h6>
-                    </header>
-                    <div className="card-body">
-                        <label className="form-check">
-                        <input className="form-check-input" type="radio" name="exampleRadio" value=""/>
-                        <span className="form-check-label">
-                            First hand items
-                        </span>
-                        </label>
-                        <label className="form-check">
-                        <input className="form-check-input" type="radio" name="exampleRadio" value=""/>
-                        <span className="form-check-label">
-                            Brand new items
-                        </span>
-                        </label>
-                        <label className="form-check">
-                        <input className="form-check-input" type="radio" name="exampleRadio" value=""/>
-                        <span className="form-check-label">
-                            Some other option
-                        </span>
-                        </label>
-                    </div> 
-                </article>  */}
         </div>
       </aside>
     </div>
   );
+};
+
+Filters.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.string),
+  locations: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default Filters;

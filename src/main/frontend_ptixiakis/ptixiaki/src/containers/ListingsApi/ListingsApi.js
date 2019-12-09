@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Listings from "../../pages/ListingsPage";
-import PropTypes from "prop-types";
-import { Redirect } from "react-router-dom";
+// import PropTypes from "prop-types";
+// import { Redirect } from "react-router-dom";
 
 class ListingsApi extends Component {
   constructor(props) {
@@ -70,7 +70,7 @@ class ListingsApi extends Component {
   }
 
   searchClickedHandler(event) {
-    const searchListings = event.target.value;
+    // const searchListings = event.target.value;
   }
 
   categoryClickedHandler() {}

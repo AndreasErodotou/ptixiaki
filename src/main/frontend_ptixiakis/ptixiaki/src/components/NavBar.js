@@ -7,21 +7,34 @@ import UserIcon from "../assets/User.svg";
 import AddIcon from "../assets/Add.svg";
 
 import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
+
+import "./NavBar.css";
+
+// import { LinkContainer } from "react-router-bootstrap";
+
+// import {
+//   Navbar,
+//   NavItem,
+//   Form,
+//   FormControl,
+//   Button,
+//   Nav,
+//   NavDropdown
+// } from "react-bootstrap";
+
+// import { Button } from "reactstrap";
 
 import "./NavBar.css";
 
 const NavBar = props => (
-  <div style={{ backgroundColor: "#E8F6F8" }} className="border">
+  <div
+    style={{ backgroundColor: "#E8F6F8" }}
+    className="border position-sticky fixed-top"
+  >
     <nav className="px-3 py-1">
       <form className=" form-inline">
         <Link to="/" className="col-md-2 col-6 order-sm-2 order-md-1">
-          <h5
-            className="font-weight-bold pt_es onHover "
-            onClick={props.onLogoClicked}
-          >
-            ServiceLink
-          </h5>
+          <h5 className="font-weight-bold pt_es onHover ">ServiceLink</h5>
         </Link>
         <div className="col-md-5  col-12 order-sm-3 order-md-3 justify-content-md-end">
           <input
@@ -31,12 +44,12 @@ const NavBar = props => (
             aria-label="Search"
           ></input>
           <Link to="/search">
-            <button
-              className="btn p-1 ml-1 blue searchBox"
-              type="submit"
-              onClick={props.onSearch}
-            >
-              <img className="img-responsive" src={SearchIcon}></img>
+            <button className="btn p-1 ml-1 blue searchBox" type="submit">
+              <img
+                className="img-responsive"
+                src={SearchIcon}
+                alt="SearchIcon"
+              ></img>
             </button>
           </Link>
         </div>
@@ -44,18 +57,16 @@ const NavBar = props => (
           <img
             className="img-responsive onHover"
             src={AddIcon}
-            onClick={props.onCreateYourOwnListingClicked}
+            alt="AddIcon"
           ></img>
-          <Link to="/create" onClick={props.onCreateYourOwnListingClicked}>
+
+          <Link
+            to="listings/create"
+            onClick={props.onCreateYourOwnListingClicked}
+          >
             Create Your Own Listing
           </Link>
         </div>
-        {/* <div className="icontext col-1">
-                                <div className="icon-wrap icon-xs bg-primary round text-light">
-                                    <i className="fa fa-envelope"></i>
-                                    <span className="notify">1</span>
-                                </div>
-                            </div> */}
 
         <div className="col-md-1 col-2 order-sm-1 order-md-4">
           <img
@@ -89,31 +100,48 @@ const NavBar = props => (
             </li>
           </ul>
         </div>
-
-        {/* <ul className="nav nav-list dropdown-menu">
-                                <li className="active"><a href="#"><i className="icon-fixed-width icon-home"></i> Home</a></li>
-                                <li><a href="#"><i className="icon-fixed-width icon-book"></i> Library</a></li>
-                                <li><a href="#"><i className="icon-fixed-width icon-pencil"></i> Applications</a></li>
-                                <li><a href="#"><i className="icon-fixed-width icon-cogs"></i> Settings</a></li>
-                            </ul> */}
-
-        {/* <button className="btn" 
-                            style={
-                                {
-                                    'background-color': 'DodgerBlue',
-                                    'border': 'none',
-                                    'color': 'white',
-                                    'padding': '12px 16px',
-                                    'width':'30px',
-                                    'font-size': '20px',
-                                    'cursor': 'pointer'
-                                }
-                            }
-                            ><i className="fa fa-user icon-4x"></i></button> */}
       </form>
     </nav>
   </div>
 );
+
+// const NavBar = props => (
+//   <Navbar bg="light" expand="lg">
+//     <Navbar.Brand to="/search" href="#home">
+//       ServiceLink
+//     </Navbar.Brand>
+//     <Navbar.Toggle aria-controls="basic-navbar-nav" />
+//     <Navbar.Collapse id="basic-navbar-nav">
+//       <Nav className="mr-auto">
+//         <Nav.Link
+//           href="/listings"
+//           activeStyle={{
+//             color: "white"
+//           }}
+//         >
+//           Listings
+//         </Nav.Link>
+//         <Nav.Link href="/bids">Bids</Nav.Link>
+//         <Nav.Link to="/reviews" href="/reviews">
+//           reviews
+//         </Nav.Link>
+//         <Nav.Link href="/timetable">Timetable</Nav.Link>
+//         <Nav.Link href="/statistics">Statistics</Nav.Link>
+//         <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+//           <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+//           <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
+//           <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+//           <NavDropdown.Divider />
+//           <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+//         </NavDropdown>
+//       </Nav>
+//       <Form inline>
+//         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+//         <Button variant="outline-success">Search</Button>
+//       </Form>
+//     </Navbar.Collapse>
+//   </Navbar>
+// );
 
 NavBar.propTypes = {
   onCreateYourOwnListingClicked: PropTypes.func,

@@ -1,111 +1,111 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 import Listing from "../components/Listings/Listing";
 import FullListing from "../components/Listings/FullListing.js";
-import NewListing from "./NewListingPage";
+import Template from "./TemplatePage";
+import { Redirect } from "react-router-dom";
 
-// import CardGroup from "react-bootstrap/CardGroup";
+class Listings extends React.Component {
+  constructor(props) {
+    super(props);
 
-const Listings = props => {
-  // console.log("state: "+JSON.stringify(this.state.listings["f48e2c2d-1506-4f5a-b75d-5254a4104e30"]));
+    this.state = {
+      showFullListing: false,
+      listingClicked: [],
+      listings: [],
 
-  const [fullLShow, setFullLShow] = React.useState(false);
-  const handlefullLClose = () => setFullLShow(false);
-  const handlefullLShow = () => setFullLShow(true);
+      filterCategories: ["Electrician", "Hydraulic", "Engineer"],
+      filterLocations: ["Nicosia", "Heraklion", "Athens"]
+    };
+  }
 
-  const [newLShow, setNewLShow] = React.useState(false);
-  const handleNewLClose = () => {
-    setNewLShow(false);
-    props.disableCNL();
-  };
-  const handleNewLShow = () => setNewLShow(true);
+  componentDidMount() {
+    let jwtToken = localStorage.getItem("myJwtToken");
+    console.log("to token einai: " + jwtToken);
+    fetch("http://localhost:4567/api/listings", {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Authorization: jwtToken
+      }
+    })
+      .then(response => {
+        // console.log("Get Listings Status: " + response.status);
+        if (response.status >= 400) {
+          return response.json().then(errorMsg => {
+            let error;
+            error.statusCode = response.status;
+            error.msg = errorMsg;
+            throw error;
+          });
+        }
+        return response.json();
+      })
+      .then(resJson => {
+        this.setState({
+          ...this.state,
+          listings: resJson.data
+        });
+        console.log(resJson.data);
+      })
+      .catch(error => {
+        console.log("ERROR: " + error.msg);
+        if (error.statusCode === 403) {
+          return this.props.history.push("/signin");
+        }
+      });
+  }
 
-  var content;
+  listingClickedModalHandler(LID) {
+    this.setState({
+      ...this.state,
+      showFullListing: true,
+      listingClicked: this.state.listings.filter(listing => {
+        return listing.LID === LID;
+      })
+    });
+  }
 
-  useEffect(() => {
-    // console.log("useEffect:"+props.createNewListing);
-    if (props.createNewListing) {
-      handleNewLShow();
-    }
-  }, [props.createNewListing]);
+  handlefullLClose() {
+    this.setState({
+      ...this.state,
+      showFullListing: false
+    });
+  }
 
-  let listingClickedModalHandler = LID => {
-    props.listingClickedHandler(LID);
-    handlefullLShow();
-  };
+  render() {
+    let listings = this.state.listings.map(listing => {
+      return (
+        <Listing
+          key={listing.LID}
+          title={listing.title}
+          imgsrc={listing.pics}
+          descr={listing.description}
+          listingClicked={() => this.listingClickedModalHandler(listing.LID)}
+        />
+      );
+    });
 
-  // let NewListingClickedModalHander = () => {
-  //     handleNewLShow();
-  // }
-
-  var listings = props.listings.map(listing => {
-    return (
-      <Listing
-        key={listing.LID}
-        title={listing.title}
-        imgsrc={listing.pics}
-        descr={listing.description}
-        listingClicked={() => listingClickedModalHandler(listing.LID)}
-      />
-    );
-  });
-
-  if (props.createNewListing) {
-    // content =   <NewListing
-    //                 createNewListing={props.createNewListing}
-    //                 onHide = {handleNewLClose}
-    //                 show = {newLShow}
-    //             />
-  } else if (props.listingClickedId) {
-    content = (
+    const fullListing = this.state.showFullListing ? (
       <FullListing
-        key={props.listingClickedId}
-        listing={props.listingClicked}
-        onHide={handlefullLClose}
-        show={fullLShow}
+        key="FullListing"
+        listing={this.state.listingClicked}
+        onHide={this.handlefullLClose.bind(this)}
+        show={true}
+      />
+    ) : null;
+
+    let content = [];
+    content.push(listings);
+    content.push(fullListing);
+
+    return (
+      <Template
+        categories={this.state.filterCategories}
+        locations={this.state.filterLocations}
+        content={content}
       />
     );
   }
-
-  // console.log("listings:listing: " + JSON.stringify(props.listingClicked));
-
-  // if(props.createNewListing){
-  //     handleNewLShow();
-  // }
-
-  return (
-    <div>
-      <div>
-        <div className="row mx-0 px-0">{listings}</div>
-
-        {props.showFullListing ? (
-          <div>
-            <FullListing
-              listing={props.listingClicked}
-              onHide={handlefullLClose}
-              show={fullLShow}
-            />
-          </div>
-        ) : null}
-
-        <div>
-          {/* {content} */}
-          <NewListing
-            createNewListing={props.createNewListing}
-            onHide={handleNewLClose}
-            show={newLShow}
-            // modalHandler = {NewListingClickedModalHander}
-            close={handleNewLShow}
-          />
-          {/* <p>Listings: {JSON.stringify(props.createNewListing)}</p> */}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-Listings.propTypes = {
-  // onShowListings : PropTypes.func
-};
+}
 
 export default Listings;
