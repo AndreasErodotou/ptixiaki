@@ -6,6 +6,10 @@
   border-color: #17a2b8;
 }
 
+.blue-color {
+  color: #17a2b8;
+}
+
 .line {
   /* position: absolute; */
   width: 0px;
@@ -31,4 +35,8 @@
 .onHoverBackroundColor:hover {
   background-color: #f8f9fa;
   cursor: pointer;
+}
+
+.bold {
+  font-weight: bold;
 }

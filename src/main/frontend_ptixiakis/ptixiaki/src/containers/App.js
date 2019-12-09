@@ -1,4 +1,4 @@
-// import $ from "jquery";
+import $ from "jquery";
 import "./App.css";
 import React, { Component } from "react";
 

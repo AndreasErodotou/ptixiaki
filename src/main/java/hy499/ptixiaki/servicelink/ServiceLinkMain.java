@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import hy499.ptixiaki.api.data.ListingAPI;
 import hy499.ptixiaki.api.data.UserAPI;
 import hy499.ptixiaki.api.data.BidAPI;
-import hy499.ptixiaki.api.data.TimetableAPI;
+import hy499.ptixiaki.api.TimetableAPI;
 import hy499.ptixiaki.api.data.ReviewAPI;
 import hy499.ptixiaki.api.AuthorizerApi;
 import hy499.ptixiaki.api.ServerResponseAPI;
@@ -107,10 +107,10 @@ public class ServiceLinkMain {
 
                 });
 
-//                path("/:UID/timetable_events", () -> {
-//
-//                    get("", (req, res) -> timetableApi.getReqHandler(req, res));
-//
+                path("/:UID/events", () -> {
+
+                    get("", (req, res) -> timetableApi.getAll(req, res));
+
 //                    post("", (req, res) -> timetableApi.addATimetableEvent(req, res));
 //
 //                    put("/:LID", (req, res) -> timetableApi.editATimetableEvent(req, res));
@@ -118,8 +118,7 @@ public class ServiceLinkMain {
 //                    delete("/:LID", (req, res) -> timetableApi.deleteATimetableEvent(req, res));
 //
 //                    options("", (req, res) -> optionFunc(req, res));
-//
-//                });
+                });
 
                 //Users
                 get("", (req, res) -> userApi.getQuery(req, res));
@@ -208,6 +207,12 @@ public class ServiceLinkMain {
             path("/statistics", () -> {
 
                 get("/:UID", (req, res) -> statisticsApi.getAll(req, res));
+
+            });
+
+            path("/events", () -> {
+
+                get("/:UID", (req, res) -> timetableApi.getAll(req, res));
 
             });
         });
