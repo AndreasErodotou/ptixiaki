@@ -1,4 +1,4 @@
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import React, { Component } from "react";
 import SimpleTemplate from "./SimpleTemplatePage";
@@ -50,16 +50,7 @@ class TimetablePage extends Component {
   }
 
   render() {
-    // "UID": "UserID",
-    // "date": "Apr 5, 2019",
-    // "LID": "9badd118-ef1f-4f23-b33f-b29b065947bb",
-    // "duration": 50,
-    // "wonBID": "336a6f6b-7904-427c-b2a7-2a03c714e2a1",
-    // "title": "test",
-    // "descr": "test"
-
     console.log(`events: ${JSON.stringify(this.state.events)}`);
-    // if (this.state.events !== null) {
     const userEvents = this.state.events.map(event => {
       const startDate = new Date(event.date);
       const endDate = new Date(startDate.getTime() + event.duration * 60000); // 1 min = 60000ms
@@ -69,36 +60,8 @@ class TimetablePage extends Component {
         allDay: false,
         start: startDate,
         end: endDate
-        // start: new Date(),
-        // end: new Date()
       };
     });
-    console.log(`userEvents: ${JSON.stringify(userEvents)}`);
-
-    if (this.state.events[0] !== undefined) {
-      const date1 = new Date().getTime();
-      const date2 = date1 + 60000;
-
-      console.log(`date1: ${new Date(date1)}`);
-      console.log(`date2: ${new Date(date2)}`);
-    }
-    // }
-
-    // [
-    //   {
-    //     id: 0,
-    //     title: "All Day Event very long title",
-    //     allDay: true,
-    //     start: new Date("December 17, 2019 03:24:00"),
-    //     end: new Date("December 17, 2019 04:24:00")
-    //   },
-    //   {
-    //     id: 1,
-    //     title: "Long Event",
-    //     start: new Date("December 15, 2019 03:24:00"),
-    //     end: new Date("December 16, 2019 03:24:00")
-    //   }
-    // ];
 
     const localizer = momentLocalizer(moment);
 

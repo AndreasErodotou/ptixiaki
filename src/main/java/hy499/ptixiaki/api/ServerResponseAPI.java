@@ -40,6 +40,13 @@ public class ServerResponseAPI {
         this.data = null;
     }
 
+    public ServerResponseAPI(Status status, String msg, String token, JsonElement data) {
+        this.status = status;
+        this.msg = msg;
+        this.token = token;
+        this.data = data;
+    }
+
     public ServerResponseAPI(Status status, String msg, JsonElement data) {
         this.status = status;
         this.msg = msg;

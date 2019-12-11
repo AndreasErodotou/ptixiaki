@@ -5,6 +5,7 @@
  */
 package hy499.ptixiaki.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -13,10 +14,10 @@ import java.util.Date;
  */
 public class Professional extends User {
 
-    private String jobs;
+    private ArrayList<String> jobs;
     private Double workExperience;
     private String aboutMe;
-    private Locations servedLoc;
+    private ArrayList<Locations> servedLoc;
 
     Professional(String name, String surname, String username, User.AccountType accountType, User.Gender gender, String UID, Date bday, String address, String email, String phoneNum, String password) {
         super(name, surname, username, accountType, gender, UID, bday, address, email, phoneNum, password);
@@ -24,21 +25,21 @@ public class Professional extends User {
 
     public Professional() {
         super(AccountType.PROFESSIONAL);
-        jobs = "";
+        jobs = null;
         workExperience = -1.0;
         aboutMe = "";
         servedLoc = null;
     }
 
     public enum Locations {
-        HERAKLION, NICOSIA, LARNAKA
+        HERAKLION, NICOSIA, LARNAKA, LIMASSOL, PAPHOS, CHANIA, RETHIMNO, ATHENS
     };
 
-    public String getJobs() {
+    public ArrayList<String> getJobs() {
         return jobs;
     }
 
-    public void setJobs(String jobs) {
+    public void setJobs(ArrayList<String> jobs) {
         this.jobs = jobs;
     }
 
@@ -58,11 +59,11 @@ public class Professional extends User {
         this.aboutMe = aboutMe;
     }
 
-    public Locations getsLocations() {
+    public ArrayList<Locations> getsLocations() {
         return servedLoc;
     }
 
-    public void setsLocations(Locations sLocations) {
+    public void setsLocations(ArrayList<Locations> sLocations) {
         this.servedLoc = sLocations;
     }
 

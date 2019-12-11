@@ -28,7 +28,7 @@ const Filters = props => {
             <div className="card-body">
               <form>
                 {categories}
-                <a href="#">Show more</a>
+                <a href="#show-more">Show more</a>
               </form>
             </div>
           </article>
@@ -40,7 +40,7 @@ const Filters = props => {
             <div className="card-body">
               <form>
                 {locations}
-                <a href="#">Show more</a>
+                <a href="#show-more">Show more</a>
               </form>
             </div>
           </article>

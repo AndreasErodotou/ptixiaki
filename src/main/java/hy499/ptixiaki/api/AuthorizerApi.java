@@ -19,6 +19,8 @@ import hy499.ptixiaki.db.ListingDB;
 import hy499.ptixiaki.db.ReviewDB;
 import hy499.ptixiaki.db.UserDB;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.halt;
@@ -46,29 +48,24 @@ public class AuthorizerApi {
     }
 
     public Boolean isAuthorized(Request req) throws SQLException, ClassNotFoundException {
-        String jwtToken = req.headers("Access-Control-Request-Headers");
-
+        String jwtToken = req.headers("Authorization");
+        System.out.println("jwtToken = " + jwtToken);
+        System.out.println("request method:" + req.requestMethod());
+        System.out.println("request contextPath:" + req.contextPath());
+        System.out.println("request contextPath:" + req.pathInfo());
+        if ("OPTIONS".equals(req.requestMethod())
+                || "/api/login".equals(req.pathInfo()) && "POST".equals(req.requestMethod())
+                || "/api/users".equals(req.pathInfo()) && "POST".equals(req.requestMethod())) {
+            System.out.println("ok");
+            return true;
+        }
         return isTokenValid(jwtToken);
     }
 
     public Boolean isAuthorized(Request req, Response res, AuthType authType) throws SQLException, ClassNotFoundException {
-//        String jwtToken = req.headers("Access-Control-Request-Headers");
-//        String jwtToken1 = req.headers("token");
         String jwtToken = req.headers("Authorization");
 
         System.out.println("jwtToken = " + jwtToken);
-//        System.out.println("jwtToken1 = " + jwtToken1);
-
-        System.out.println("headers = " + req.headers());
-
-//        Map<String, String> headers = new HashMap<>(req.headers().size());
-//        req.headers().forEach((header) -> {
-//            headers.put(header, req.headers(header));
-//        });
-//
-//        System.out.println("map headers" + headers);
-//        System.out.println("map headers" + headers.keySet());
-//        System.out.println("map headers" + headers.values());
 
         if (isTokenValid(jwtToken)) {
             Token parsedToken = jwtApi.parseJWT(jwtToken);
@@ -109,11 +106,20 @@ public class AuthorizerApi {
     }
 
     public String isAuthenticated(Request req, Response res) throws SQLException, ClassNotFoundException {
+        System.out.println("request method:" + req.requestMethod());
+        if ("OPTIONS".equals(req.requestMethod())) {
+            System.out.println("ok");
+            return "true";
+        }
         User user = new Gson().fromJson(req.body(), Professional.class);
         User authUser = new UserDB().checkLogin(user.getEmail(), user.getPassword());
         if (authUser != null) {
-            String token = jwtApi.createJwt(authUser.getUID(), authUser.getUsername(), User.AccountType.CUSTOMER);
-            return new Gson().toJson(new ServerResponseAPI(Status.SUCCESS, "Login Success", token));
+            String token = jwtApi.createJwt(authUser.getUID(), authUser.getUsername(), authUser.getAccountType());
+            Map<String, String> userDetails = new HashMap<>();
+            userDetails.put("userId", authUser.getUID());
+            userDetails.put("username", authUser.getUsername());
+            userDetails.put("accountType", authUser.getAccountType().toString());
+            return new Gson().toJson(new ServerResponseAPI(Status.SUCCESS, "Login Success", token, new Gson().toJsonTree(userDetails)));
         }
         return new Gson().toJson(new ServerResponseAPI(Status.ERROR, "User Athentication Fail!!!"));
     }

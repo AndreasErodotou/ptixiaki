@@ -8,10 +8,13 @@ package hy499.ptixiaki.api;
 import hy499.ptixiaki.data.Token;
 import hy499.ptixiaki.data.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Date;
 
@@ -24,7 +27,11 @@ public class JwtAPI {
     private final Key key;
 
     public JwtAPI() {
-        key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+//        key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        String str = "javax.crypto.spec.SecretKeySpec@fa77c6ceServiceLinkKey";
+        byte[] tmp = str.getBytes();
+        key = Keys.hmacShaKeyFor(tmp);
+
     }
 
     public String createJwt(String authUserId, String username, User.AccountType type) {
@@ -39,9 +46,8 @@ public class JwtAPI {
 
         JwtBuilder builder = Jwts.builder().setId(authUserId)
                 .setIssuedAt(now)
-                .setSubject(username)
+                .setIssuer(username)
                 .setExpiration(exp)
-                .claim("name", username)
                 .claim("accountType", type.toString())
                 .signWith(key);
 
@@ -54,11 +60,11 @@ public class JwtAPI {
             claims = Jwts.parser()
                     .setSigningKey(key)
                     .parseClaimsJws(token).getBody();
-        } catch (/*MalformedJwtException | ExpiredJwtException*/Exception e) {
+        } catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SignatureException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return null;
         }
-        return new Token(token, claims.getId(), User.AccountType.valueOf(String.valueOf(claims.get("accountType"))), claims.getExpiration());
+        return new Token(token, claims.getId(), claims.getIssuer(), User.AccountType.valueOf(String.valueOf(claims.get("accountType"))), claims.getExpiration(), claims.getIssuedAt());
     }
 
 }

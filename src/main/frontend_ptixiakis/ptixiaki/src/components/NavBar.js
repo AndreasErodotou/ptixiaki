@@ -78,6 +78,7 @@ const NavBar = props => {
               id="dropdown-basic-button"
               src={UserIcon}
               onClick={() => setShow(!show)}
+              alt="UserIcon"
             ></img>
 
             <ul className={menuClass} role="menu" aria-labelledby="menu1">

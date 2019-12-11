@@ -1,4 +1,3 @@
-import $ from "jquery";
 import "./App.css";
 import React, { Component } from "react";
 
@@ -30,45 +29,13 @@ class App extends Component {
     };
   }
 
-  signIn(jwtToken) {
-    this.setState({
-      ...this.state,
-      token: jwtToken
-    });
-  }
-
   render() {
     console.log(JSON.stringify(this.state));
 
     return (
       <div>
-        <Route
-          exact
-          path="/signin"
-          render={({ history }) => (
-            <SigninPage
-              onSignIn={() => {
-                this.signIn.bind(this);
-                this.history.push("/");
-              }}
-              error={this.state.loginError}
-            />
-          )}
-        />
-
-        <Route
-          exact
-          path="/signup"
-          render={() => (
-            <SignupPage
-              onSignup={() => {
-                this.history.push("/signin");
-              }}
-            />
-          )}
-        />
-
-        {/* <Route exact path="/signup" component={SignupPage} /> */}
+        <Route exact path="/signin" component={SigninPage} />
+        <Route exact path="/signup" component={SignupPage} />
         <Route exact path="/statistics" component={AnaliticsPage} />
 
         <Route exact path="/" component={ListingsPage} />

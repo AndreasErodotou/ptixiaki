@@ -49,7 +49,7 @@ const SignupField = ({
           />
         ) : (
           <textarea
-            class="form-control"
+            className="form-control"
             ref={ref}
             onChange={onChange}
             id={field}

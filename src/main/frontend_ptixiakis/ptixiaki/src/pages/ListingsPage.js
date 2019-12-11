@@ -2,7 +2,8 @@ import React from "react";
 import Listing from "../components/Listings/Listing";
 import FullListing from "../components/Listings/FullListing.js";
 import Template from "./TemplatePage";
-import { Redirect } from "react-router-dom";
+
+import axios from "axios";
 
 class Listings extends React.Component {
   constructor(props) {
@@ -20,38 +21,23 @@ class Listings extends React.Component {
 
   componentDidMount() {
     let jwtToken = localStorage.getItem("myJwtToken");
-    console.log("to token einai: " + jwtToken);
-    fetch("http://localhost:4567/api/listings", {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Authorization: jwtToken
-      }
-    })
-      .then(response => {
-        // console.log("Get Listings Status: " + response.status);
-        if (response.status >= 400) {
-          return response.json().then(errorMsg => {
-            let error;
-            error.statusCode = response.status;
-            error.msg = errorMsg;
-            throw error;
-          });
+    axios
+      .get("http://localhost:4567/api/listings", {
+        headers: {
+          Authorization: jwtToken
         }
-        return response.json();
       })
-      .then(resJson => {
+      .then(response => {
+        console.log(response);
         this.setState({
-          ...this.state,
-          listings: resJson.data
+          listings: response.data.data
         });
-        console.log(resJson.data);
       })
       .catch(error => {
-        console.log("ERROR: " + error.msg);
-        if (error.statusCode === 403) {
+        if (error.response === undefined) {
           return this.props.history.push("/signin");
         }
+        console.log(`error:${JSON.stringify(error)}`);
       });
   }
 

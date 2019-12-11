@@ -1,6 +1,5 @@
 import React from "react";
 import NavBar from "../components/NavBar";
-import Filters from "../components/Filters/Filters";
 
 const TemplatePage = props => {
   return (

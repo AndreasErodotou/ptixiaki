@@ -15,11 +15,14 @@ import hy499.ptixiaki.data.User;
 import hy499.ptixiaki.data.User.AccountType;
 import static hy499.ptixiaki.data.User.AccountType.CUSTOMER;
 import hy499.ptixiaki.data.User.Gender;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,10 +78,10 @@ public final class UserDB implements DB<User> {
                         .append(" EMAIL         VARCHAR(50)    NOT NULL, ")
                         .append(" PHONE_NUM     VARCHAR(15)    NOT NULL, ")
                         .append(" PASSWORD      VARCHAR(30)    NOT NULL, ")
-                        .append(" JOB           VARCHAR(50)    NOT NULL, ")
+                        .append(" JOB           TEXT[]         NOT NULL, ")
                         .append(" WORK_EXP      INT            NOT NULL, ")
                         .append(" ABOUT_ME      TEXT           NOT NULL, ")
-                        .append(" SERVE_LOC     VARCHAR(50)    NOT NULL, ")
+                        .append(" SERVE_LOC     TEXT[]         NOT NULL, ")
                         .append(" CREATED       TIMESTAMP)");
                 stmt.executeUpdate(createProfQuery.toString());
                 System.out.println("#UserDB: Table Professional Created");
@@ -120,10 +123,21 @@ public final class UserDB implements DB<User> {
             prof.setEmail(res.getString("EMAIL"));
             prof.setPhoneNum(res.getString("PHONE_NUM"));
             prof.setPassword(res.getString("PASSWORD"));
-            prof.setJobs(res.getString("JOB"));
+            Array jobsArray = res.getArray("JOB");
+            String[] jobs = (String[]) jobsArray.getArray();
+            prof.setJobs(new ArrayList<>(Arrays.asList(jobs)));
+            System.out.println("Get jobs Array: " + Arrays.toString(jobs));
             prof.setWorkExperience(res.getDouble("WORK_EXP"));
             prof.setAboutMe(res.getString("ABOUT_ME"));
-            prof.setsLocations(Locations.valueOf(res.getString("SERVE_LOC")));
+
+            Array locsArray = res.getArray("SERVE_LOC");
+            String[] locsStr = (String[]) locsArray.getArray();
+            ArrayList<Locations> locsEnum = new ArrayList<>();
+            for (String str : locsStr) {
+                locsEnum.add(Locations.valueOf(str));
+            }
+            prof.setsLocations(locsEnum);
+            System.out.println("Get locs Array: " + locsEnum);
             user = prof;
         }
         return user;
@@ -209,7 +223,7 @@ public final class UserDB implements DB<User> {
                 } else {
                     isAvailable = true;
                 }
-                serverRes = new ServerResponseAPI(Status.SUCCESS, "Username is " + ((isAvailable) ? "" : "un") + "available");
+                serverRes = new ServerResponseAPI((isAvailable) ? Status.SUCCESS : Status.WARINING, "email is " + ((isAvailable) ? "" : "un") + "available");
                 stmt.close();
                 con.close();
             }
@@ -239,7 +253,7 @@ public final class UserDB implements DB<User> {
                     isAvailable = true;
                 }
 
-                serverRes = new ServerResponseAPI(Status.SUCCESS, "Username is " + ((isAvailable) ? "" : "un") + "available");
+                serverRes = new ServerResponseAPI((isAvailable) ? Status.SUCCESS : Status.WARINING, "Username is " + ((isAvailable) ? "" : "un") + "available");
 
                 stmt.close();
                 con.close();
@@ -295,25 +309,28 @@ public final class UserDB implements DB<User> {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT * FROM CUSTOMER")
+                getQuery.append("SELECT * FROM CUSTOMER ")
                         .append("WHERE ").append("UID = ").append("'").append(UID).append("';");
 
                 stmt.execute(getQuery.toString());
 
                 ResultSet res = stmt.getResultSet();
 
-                user = resToType(res);
-
+                if (res.next()) {
+                    user = resToType(res);
+                }
                 if (user == null) {
                     getQuery = new StringBuilder();
 
-                    getQuery.append("SELECT * FROM PROFESSIONAL")
+                    getQuery.append("SELECT * FROM PROFESSIONAL ")
                             .append("WHERE ").append("UID = ").append("'").append(UID).append("';");
 
                     stmt.execute(getQuery.toString());
 
                     res = stmt.getResultSet();
-                    user = resToType(res);
+                    if (res.next()) {
+                        user = resToType(res);
+                    }
                 }
                 serverRes = new ServerResponseAPI(Status.SUCCESS, "User", new Gson().toJsonTree(user));
 
@@ -331,7 +348,36 @@ public final class UserDB implements DB<User> {
 
     @Override
     public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ServerResponseAPI serverRes = null;
+        Map<String, User> users = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM CUSTOMER ")
+                        .append("WHERE ").append(query).append(";");
+
+                System.out.println("BD: " + getQuery.toString());
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    User user = resToType(res);
+                    users.put(user.getUID(), user);
+                }
+
+                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "User", new Gson().toJsonTree(users));
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
     }
 
     @Override
@@ -411,6 +457,31 @@ public final class UserDB implements DB<User> {
                             .append("'").append(timestamp).append("');");
                 } else {
                     Professional prof = (Professional) user;
+
+                    String jobsStr = "{";
+                    ArrayList<String> jobs = prof.getJobs();
+                    for (int i = 0; i < jobs.size(); i++) {
+                        jobsStr += jobs.get(i);
+                        if (i < (jobs.size() - 1)) {
+                            jobsStr += ",";
+                        }
+                    }
+                    jobsStr += "}";
+
+                    System.out.println("jobs: " + jobsStr);
+
+                    String locsStr = "{";
+                    ArrayList<Locations> locs = prof.getsLocations();
+                    for (int i = 0; i < locs.size(); i++) {
+                        locsStr += locs.get(i).toString();
+                        if (i < (locs.size() - 1)) {
+                            locsStr += ",";
+                        }
+                    }
+                    locsStr += "}";
+
+                    System.out.println("locations: " + locsStr);
+
                     insQuery.append("INSERT INTO ")
                             .append(" PROFESSIONAL ( UID, NAME, SURNAME, USERNAME, ACCOUNT_TYPE, GENDER, BDAY, ADDRESS, ")
                             .append("EMAIL, PHONE_NUM, PASSWORD, JOB, WORK_EXP, ABOUT_ME, SERVE_LOC, CREATED) ")
@@ -426,10 +497,10 @@ public final class UserDB implements DB<User> {
                             .append("'").append(prof.getEmail()).append("',")
                             .append("'").append(prof.getPhoneNum()).append("',")
                             .append("'").append(prof.getPassword()).append("',")
-                            .append("'").append(prof.getJobs()).append("',")
+                            .append("'").append(jobsStr).append("',")
                             .append(prof.getWorkExperience()).append(",")
                             .append("'").append(prof.getAboutMe()).append("',")
-                            .append("'").append(prof.getsLocations()).append("',")
+                            .append("'").append(locsStr).append("',")
                             .append("'").append(timestamp).append("');");
 
                 }

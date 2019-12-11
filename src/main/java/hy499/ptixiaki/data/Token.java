@@ -16,8 +16,10 @@ public class Token {
 
     private String token;
     private String UserId;
+    private String Username;
     private AccountType accountType;
     private Date expiration;
+    private Date issuedAt;
 
     public Token() {
     }
@@ -27,6 +29,15 @@ public class Token {
         this.UserId = UserId;
         this.accountType = accountType;
         this.expiration = expiration;
+    }
+
+    public Token(String token, String UserId, String Username, AccountType accountType, Date expiration, Date issuedAt) {
+        this.token = token;
+        this.UserId = UserId;
+        this.Username = Username;
+        this.accountType = accountType;
+        this.expiration = expiration;
+        this.issuedAt = issuedAt;
     }
 
     public String getToken() {
@@ -60,5 +71,22 @@ public class Token {
     public void setExpiration(Date expiration) {
         this.expiration = expiration;
     }
+
+    public String getUsername() {
+        return Username;
+    }
+
+    public void setUsername(String Username) {
+        this.Username = Username;
+    }
+
+    public Date getIssuedAt() {
+        return issuedAt;
+    }
+
+    public void setIssuedAt(Date issuedAt) {
+        this.issuedAt = issuedAt;
+    }
+
 
 }

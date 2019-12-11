@@ -50,10 +50,9 @@ public class ServiceLinkMain {
 
         after("/*", (req, res) -> addHeaders(res));
 
-//        before("/*", (req, res) -> {
-//            addHeaders(res);
-//            authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING);
-//        });
+        before("/*", (req, res) -> {
+            authApi.isAuthorized(req);
+        });
 
         path("/api", () -> {
 
@@ -61,11 +60,6 @@ public class ServiceLinkMain {
             post("/login", (req, res) -> authApi.isAuthenticated(req, res));
 
             path("/users", () -> {
-
-//                before("/*", (req, res) -> {
-//                    System.out.println(req.headers());
-//                    new JwtAPI().parseJWT(req.headers("token"));
-//                });
 
                 path("/:UID/listings", () -> {
 
@@ -78,7 +72,6 @@ public class ServiceLinkMain {
                         put("/:BID", (req, res) -> bidApi.edit(req, res));
 
                         delete("/:BID", (req, res) -> bidApi.delete(req, res));
-
 
                     });
 
@@ -123,7 +116,7 @@ public class ServiceLinkMain {
                 //Users
                 get("", (req, res) -> userApi.getQuery(req, res));
 
-                get("/:UID", (req, res) -> userApi.getReqPathHandler(req, res));
+                get("/:UID", (req, res) -> userApi.get(req, res));
 
                 post("", (req, res) -> userApi.add(req, res));
 
@@ -161,6 +154,9 @@ public class ServiceLinkMain {
 //            after("/listings", (req, res) -> {
 //                System.out.println("listings: headers added");
 //                addHeaders(res);
+//            });
+//            before("/listings", (req, res) -> {
+//                authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING);
 //            });
 
             path("/listings", () -> {

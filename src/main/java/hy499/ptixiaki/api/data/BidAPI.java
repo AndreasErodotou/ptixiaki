@@ -11,6 +11,7 @@ import hy499.ptixiaki.db.BidDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import hy499.ptixiaki.api.ServerResponseAPI.Status;
 import java.util.Map;
+import java.util.UUID;
 import spark.Request;
 import spark.Response;
 
@@ -140,6 +141,7 @@ public class BidAPI implements DataApi {
     @Override
     public String add(Request req, Response res) throws ClassNotFoundException {
         Bid bid = new Gson().fromJson(req.body(), Bid.class);
+        bid.setBID(UUID.randomUUID().toString());
         return new Gson().toJson(bidDB.add(bid));
     }
 

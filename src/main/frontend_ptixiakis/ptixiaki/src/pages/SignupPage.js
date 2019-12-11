@@ -1,7 +1,10 @@
 import React from "react";
 import SignupField from "../components/Signup/SignupField";
 import SignupSelect from "../components/Signup/SignupSelect";
-import PropTypes from "prop-types";
+import axios from "axios";
+import SuccessSignupAlert from "../components/Signup/SuccessSignupAlert";
+
+// import PropTypes from "prop-types";
 
 import { Link } from "react-router-dom";
 
@@ -29,7 +32,8 @@ const ServedLocations = [
   { label: "Nicosia", value: 4 },
   { label: "Limassol", value: 5 },
   { label: "Larnaca", value: 6 },
-  { label: "Paphos", value: 7 }
+  { label: "Paphos", value: 7 },
+  { label: "Athens", value: 8 }
 ];
 
 class Signup extends React.Component {
@@ -48,8 +52,8 @@ class Signup extends React.Component {
         phoneNum: "",
         gender: "",
         accountType: "",
-        jobs: "",
-        servedLoc: "",
+        jobs: [],
+        servedLoc: [],
         jobExp: "",
         aboutMe: ""
       },
@@ -69,18 +73,20 @@ class Signup extends React.Component {
         jobExp: false,
         aboutMe: false
       },
-      goToSignin: false
+      signupSuccess: false
     };
-
-    this.jobExpRef = React.createRef();
   }
 
-  handleSignup(event) {
-    let allFieldsAreValid = true;
+  onSignup = () => {
+    this.history.push("/signin");
+  };
 
+  handleSignup(event) {
+    event.preventDefault();
+    let allFieldsAreValid = true;
     let isValidFields = { ...this.state.isValid };
     let keys = Object.keys(isValidFields);
-    let warnings = "";
+    let warnings;
 
     //check all the fields
     for (let key in keys) {
@@ -101,67 +107,90 @@ class Signup extends React.Component {
     }
 
     if (allFieldsAreValid) {
-      // alert("checking email and username...");
-      this.checkEmailAndUsername(event);
+      this.checkEmailAndUsername();
     } else {
       warnings = warnings.substring(0, warnings.length - 2);
-      // alert("warning: " + warnings);
-      event.preventDefault();
+      // console.log("warning: " + warnings);
     }
   }
 
-  async checkEmailAndUsername(event) {
+  checkEmailAndUsername() {
     let allFieldsAreValid = true;
     let warnings = "";
-
+    let jwtToken = localStorage.getItem("myJwtToken");
+    let email;
+    let username;
     if (this.state.isValid.email) {
-      let resEmail = await fetch(
-        "http://localhost:4567/management/users?email=" + this.state.user.email
-      );
-      let resJsonEmail = await resEmail.json();
+      axios
+        .get(`http://localhost:4567/api/users?email=${this.state.user.email}`, {
+          headers: {
+            Authorization: jwtToken
+          }
+        })
+        .then(response => {
+          email = response.data;
 
-      console.log(resJsonEmail);
+          if (email.status !== "SUCCESS") {
+            warnings = +email.msg;
+            allFieldsAreValid = false;
+          }
 
-      if (!resJsonEmail.data) {
-        alert(resJsonEmail.msg);
-        warnings = +resJsonEmail.msg;
-        allFieldsAreValid = false;
-      }
-    }
+          //send a request to check if there is anyone else with this username
+          if (this.state.isValid.username) {
+            axios
+              .get(
+                `http://localhost:4567/api/users?username=${this.state.user.username}`,
+                {
+                  headers: {
+                    Authorization: jwtToken
+                  }
+                }
+              )
+              .then(response => {
+                username = response.data;
 
-    //send a request to check if there is anyone else with this username
-    if (this.state.isValid.username) {
-      let resUsername = await fetch(
-        "http://localhost:4567/management/users?username=andreaserodotou@gmail.com"
-      );
-      let resJsonUsername = await resUsername.json();
-
-      console.log(resJsonUsername);
-
-      if (!resJsonUsername.data) {
-        alert(resJsonUsername.msg);
-        warnings = +resJsonUsername.msg;
-        allFieldsAreValid = false;
-      }
-
-      if (allFieldsAreValid) {
-        this.addUserToDB();
-        alert("You Have Signed Up Successfully");
-        event.preventDefault();
-      } else {
-        alert(warnings);
-        event.preventDefault();
-      }
+                if (username.status !== "SUCCESS") {
+                  warnings = +username.msg;
+                  allFieldsAreValid = false;
+                }
+              });
+          }
+        })
+        .then(() => {
+          if (allFieldsAreValid) {
+            this.addUserToDB();
+            this.setState({
+              signupSuccess: true
+            });
+          } else {
+            alert(warnings);
+            this.setState({
+              isValid: {
+                ...this.state.isValid,
+                email:
+                  email !== undefined && email.status === "SUCCESS"
+                    ? true
+                    : false,
+                username:
+                  username !== undefined && username.status === "SUCCESS"
+                    ? true
+                    : false
+              }
+            });
+          }
+        });
     }
   }
 
   addUserToDB() {
-    fetch("http://localhost:4567/api/users", {
-      method: "post",
-      body: JSON.stringify(this.state.user)
-    })
-      .then(response => response.json())
-      .then(myJson => console.log(myJson.msg));
+    axios
+      .post("http://localhost:4567/api/users", this.state.user)
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.log(`Error:${error}`);
+      });
   }
 
   nameChanged(event) {
@@ -329,40 +358,40 @@ class Signup extends React.Component {
   }
 
   jobsChanged(jobs) {
-    let allJobs = "";
+    let allJobs = [];
     if (jobs !== null) {
       allJobs = jobs.map(job => {
-        return job.label + ", ";
+        return job.label;
       });
     }
-    console.log("jobs:" + jobs);
+    // console.log("jobs:" + jobs);
     this.setState({
       user: {
         ...this.state.user,
-        jobs: allJobs
+        jobs: [...allJobs]
       },
       isValid: {
         ...this.state.isValid,
-        jobs: !allJobs.isEmpty ? true : false
+        jobs: allJobs.length > 0 ? true : false
       }
     });
   }
 
   servedLocChanged(locations) {
-    let allLocations = "";
+    let allLocations = [];
     if (locations !== null) {
       allLocations = locations.map(location => {
-        return location.label + ", ";
+        return location.label.toUpperCase();
       });
     }
     this.setState({
       user: {
         ...this.state.user,
-        servedLoc: allLocations
+        servedLoc: [...allLocations]
       },
       isValid: {
         ...this.state.isValid,
-        servedLoc: !allLocations.isEmpty ? true : false
+        servedLoc: allLocations.length > 0 ? true : false
       }
     });
   }
@@ -399,177 +428,180 @@ class Signup extends React.Component {
   render() {
     let signUpjsx = (
       <div className="container my-5 p-4 shadow p-3 mb-5 bg-white w-50">
-        <form className="form pt-4">
-          <div className="form-group row justify-content-center">
-            <h4>ServiceLink</h4>
-          </div>
+        {!this.state.signupSuccess ? (
+          <form className="form pt-4" onSubmit={this.handleSignup.bind(this)}>
+            <div className="form-group row justify-content-center">
+              <h4>ServiceLink</h4>
+            </div>
 
-          <div className="form-row mx-5">
-            <SignupField
-              field="Name"
-              type="text"
-              onChange={this.nameChanged.bind(this)}
-              stateNow={this.state.user.name}
-              isValid={this.state.isValid.name}
-            />
+            <div className="form-row mx-5">
+              <SignupField
+                field="Name"
+                type="text"
+                onChange={this.nameChanged.bind(this)}
+                stateNow={this.state.user.name}
+                isValid={this.state.isValid.name}
+              />
 
-            <SignupField
-              field="Surname"
-              type="text"
-              onChange={this.surnameChanged.bind(this)}
-              stateNow={this.state.user.surname}
-              isValid={this.state.isValid.surname}
-            />
+              <SignupField
+                field="Surname"
+                type="text"
+                onChange={this.surnameChanged.bind(this)}
+                stateNow={this.state.user.surname}
+                isValid={this.state.isValid.surname}
+              />
 
-            <SignupField
-              field="Email"
-              type="email"
-              onChange={this.emailChanged.bind(this)}
-              stateNow={this.state.user.email}
-              isValid={this.state.isValid.email}
-            />
+              <SignupField
+                field="Email"
+                type="email"
+                onChange={this.emailChanged.bind(this)}
+                stateNow={this.state.user.email}
+                isValid={this.state.isValid.email}
+              />
 
-            <SignupField
-              field="Password"
-              type="password"
-              onChange={this.passwordChanged.bind(this)}
-              stateNow={
-                this.state.user.password.length > 0
-                  ? this.state.user.password.length + " (characters)"
-                  : ""
-              }
-              isValid={this.state.isValid.password}
-            />
-          </div>
+              <SignupField
+                field="Password"
+                type="password"
+                onChange={this.passwordChanged.bind(this)}
+                stateNow={
+                  this.state.user.password.length > 0
+                    ? this.state.user.password.length + " (characters)"
+                    : ""
+                }
+                isValid={this.state.isValid.password}
+              />
+            </div>
 
-          <div className="form-row mx-5">
-            <SignupField
-              field="Username"
-              type="text"
-              onChange={this.usernameChanged.bind(this)}
-              stateNow={this.state.user.username}
-              isValid={this.state.isValid.username}
-            />
+            <div className="form-row mx-5">
+              <SignupField
+                field="Username"
+                type="text"
+                onChange={this.usernameChanged.bind(this)}
+                stateNow={this.state.user.username}
+                isValid={this.state.isValid.username}
+              />
 
-            <SignupField
-              field="birthday"
-              type="text"
-              placeholder="2000-04-25"
-              onChange={this.bdayChanged.bind(this)}
-              stateNow={this.state.user.bday}
-              isValid={this.state.isValid.bday}
-            />
+              <SignupField
+                field="birthday"
+                type="text"
+                placeholder="2000-04-25"
+                onChange={this.bdayChanged.bind(this)}
+                stateNow={this.state.user.bday}
+                isValid={this.state.isValid.bday}
+              />
 
-            <SignupField
-              field="Address"
-              type="text"
-              onChange={this.addressChanged.bind(this)}
-              stateNow={this.state.user.address}
-              isValid={this.state.isValid.address}
-            />
+              <SignupField
+                field="Address"
+                type="text"
+                onChange={this.addressChanged.bind(this)}
+                stateNow={this.state.user.address}
+                isValid={this.state.isValid.address}
+              />
 
-            <SignupField
-              field="Phone Number"
-              type="text"
-              onChange={this.phoneNumChanged.bind(this)}
-              stateNow={this.state.user.phoneNum}
-              isValid={this.state.isValid.phoneNum}
-            />
-          </div>
+              <SignupField
+                field="Phone Number"
+                type="text"
+                onChange={this.phoneNumChanged.bind(this)}
+                stateNow={this.state.user.phoneNum}
+                isValid={this.state.isValid.phoneNum}
+              />
+            </div>
 
-          <div className="form-row mx-5">
-            <SignupSelect
-              field="Gender"
-              options={Gender}
-              onChange={this.genderChanged.bind(this)}
-              stateNow={this.state.user.gender}
-              isValid={this.state.isValid.gender}
-            />
+            <div className="form-row mx-5">
+              <SignupSelect
+                field="Gender"
+                options={Gender}
+                onChange={this.genderChanged.bind(this)}
+                stateNow={this.state.user.gender}
+                isValid={this.state.isValid.gender}
+              />
 
-            <SignupSelect
-              field="Account Type"
-              options={AccountType}
-              onChange={this.accountTypeChanged.bind(this)}
-              stateNow={this.state.user.accountType}
-              isValid={this.state.isValid.accountType}
-            />
-          </div>
+              <SignupSelect
+                field="Account Type"
+                options={AccountType}
+                onChange={this.accountTypeChanged.bind(this)}
+                stateNow={this.state.user.accountType}
+                isValid={this.state.isValid.accountType}
+              />
+            </div>
 
-          {this.state.user.accountType === "PROFESSIONAL" ? (
-            <div>
-              <div className="form-row mx-5">
-                <SignupSelect
-                  field="Jobs"
-                  options={Jobs}
-                  onChange={this.jobsChanged.bind(this)}
-                  // className="col-md-6"
-                  isMulti="isMulti"
-                  stateNow={this.state.user.jobs}
-                  isValid={this.state.isValid.jobs}
-                />
+            {this.state.user.accountType === "PROFESSIONAL" ? (
+              <div>
+                <div className="form-row mx-5">
+                  <SignupSelect
+                    field="Jobs"
+                    options={Jobs}
+                    onChange={this.jobsChanged.bind(this)}
+                    // className="col-md-6"
+                    isMulti="isMulti"
+                    stateNow={this.state.user.jobs.join(", ")}
+                    isValid={this.state.isValid.jobs}
+                  />
 
-                <SignupSelect
-                  field="Served Locations"
-                  options={ServedLocations}
-                  onChange={this.servedLocChanged.bind(this)}
-                  // className="col-md-6"
-                  isMulti="isMulti"
-                  stateNow={this.state.user.servedLoc}
-                  isValid={this.state.isValid.servedLoc}
-                />
+                  <SignupSelect
+                    field="Served Locations"
+                    options={ServedLocations}
+                    onChange={this.servedLocChanged.bind(this)}
+                    // className="col-md-6"
+                    isMulti="isMulti"
+                    stateNow={this.state.user.servedLoc.join(", ")}
+                    isValid={this.state.isValid.servedLoc}
+                  />
+                </div>
+
+                <div className="form-row mx-5">
+                  <SignupField
+                    field="Job Experience"
+                    type="text"
+                    onChange={this.jobExpChanged.bind(this)}
+                    placeholder="Years"
+                    stateNow={this.state.user.jobExp}
+                    isValid={this.state.isValid.jobExp}
+                  />
+
+                  <SignupField
+                    field="About Me"
+                    type="textarea"
+                    onChange={this.aboutMeChanged.bind(this)}
+                    placeholder="About me..."
+                    // className="col-md-9"
+                    stateNow={this.state.user.aboutMe}
+                    isValid={this.state.isValid.aboutMe}
+                  />
+                </div>
               </div>
+            ) : (
+              <div></div>
+            )}
 
-              <div className="form-row mx-5">
-                <SignupField
-                  field="Job Experience"
-                  type="text"
-                  onChange={this.jobExpChanged.bind(this)}
-                  placeholder="Years"
-                  stateNow={this.state.user.jobExp}
-                  isValid={this.state.isValid.jobExp}
-                  // ref={this.jobExpRef}
-                />
-
-                <SignupField
-                  field="About Me"
-                  type="textarea"
-                  onChange={this.aboutMeChanged.bind(this)}
-                  placeholder="About me..."
-                  // className="col-md-9"
-                  stateNow={this.state.user.aboutMe}
-                  isValid={this.state.isValid.aboutMe}
-                />
+            <div className="form-row mx-5 d-flex justify-content-start">
+              <div className="col-md-3">
+                <div className="form-group">
+                  <button
+                    className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0"
+                    type="submit"
+                    // onClick={() => this.handleSignup()}
+                  >
+                    Sign up
+                  </button>
+                </div>
               </div>
             </div>
-          ) : (
-            <div></div>
-          )}
 
-          <div className="form-row mx-5 d-flex justify-content-start">
-            <div className="col-md-3">
-              <div className="form-group">
-                <button
-                  className="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0"
-                  type="btn"
-                  onClick={this.handleSignup}
-                >
-                  Sign up
-                </button>
+            <div className="form-row border-top mx-5">
+              <div className="md-form form-group">
+                <p>
+                  <small>
+                    Already a member? <b></b>
+                    <Link to="/signin">Sign in </Link>
+                  </small>
+                </p>
               </div>
             </div>
-          </div>
-
-          <div className="form-row border-top mx-5">
-            <div className="md-form form-group">
-              <p>
-                <small>
-                  Already a member? <b></b>
-                  <Link to="/signin">Sign in </Link>
-                </small>
-              </p>
-            </div>
-          </div>
-        </form>
+          </form>
+        ) : (
+          <SuccessSignupAlert show={true} />
+        )}
       </div>
     );
 
@@ -577,9 +609,6 @@ class Signup extends React.Component {
   }
 }
 
-Signup.propTypes = {
-  onChangeToSignIn: PropTypes.func
-  // onSignup         : PropTypes.func
-};
+Signup.propTypes = {};
 
 export default Signup;

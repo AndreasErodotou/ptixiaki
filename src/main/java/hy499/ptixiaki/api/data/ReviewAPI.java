@@ -8,6 +8,7 @@ package hy499.ptixiaki.api.data;
 import com.google.gson.Gson;
 import hy499.ptixiaki.data.Review;
 import hy499.ptixiaki.db.ReviewDB;
+import java.util.UUID;
 import spark.Request;
 import spark.Response;
 
@@ -73,6 +74,7 @@ public class ReviewAPI implements DataApi {
     @Override
     public String add(Request req, Response res) throws ClassNotFoundException {
         Review review = new Gson().fromJson(req.body(), Review.class);
+        review.setRID(UUID.randomUUID().toString());
         return new Gson().toJson(reviewDB.add(review));
     }
 

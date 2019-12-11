@@ -10,6 +10,7 @@ import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.db.ListingDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import java.sql.SQLException;
+import java.util.UUID;
 import spark.Request;
 import spark.Response;
 
@@ -54,6 +55,7 @@ public class ListingAPI implements DataApi {
     @Override
     public String add(Request req, Response res) throws ClassNotFoundException {
         Listing listing = new Gson().fromJson(req.body(), Listing.class);
+        listing.setLID(UUID.randomUUID().toString());
         ServerResponseAPI serverRes = listingDB.add(listing);
         return new Gson().toJson(serverRes);
     }

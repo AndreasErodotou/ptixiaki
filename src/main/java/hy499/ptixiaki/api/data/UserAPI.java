@@ -12,6 +12,8 @@ import hy499.ptixiaki.data.Professional;
 import hy499.ptixiaki.data.User;
 import hy499.ptixiaki.db.UserDB;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.UUID;
 import spark.Request;
 import spark.Response;
 
@@ -27,6 +29,7 @@ public class UserAPI implements DataApi {
     }
 
     public String getReqPathHandler(Request req, Response res) throws ClassNotFoundException {
+        System.out.println("req splat: " + Arrays.toString(req.splat()));
         String param = req.splat()[0];
         if (param.equals("customers")) {
             return getAllCustomers(req, res);
@@ -75,7 +78,7 @@ public class UserAPI implements DataApi {
 
     @Override
     public String get(Request req, Response res) throws ClassNotFoundException {
-        String UID = req.splat()[0];
+        String UID = req.params(":UID");
         return new Gson().toJson(userDB.get(UID));
     }
 
@@ -103,6 +106,7 @@ public class UserAPI implements DataApi {
         } else {
             user = gson.fromJson(req.body(), Professional.class);
         }
+        user.setUID(UUID.randomUUID().toString());
         return new Gson().toJson(userDB.add(user));
     }
 

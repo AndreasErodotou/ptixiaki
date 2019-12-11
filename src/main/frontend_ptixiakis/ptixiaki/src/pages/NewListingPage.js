@@ -45,6 +45,7 @@ class NewListing extends Component {
       } else {
         alert("You Can't Select Up To 5 Pictures!!");
       }
+      return "ok";
     });
   };
 

@@ -2,52 +2,103 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
+import AuthContext from "../context/auth-context";
+
 class Signin extends React.Component {
-  async handleSignIn(event) {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      errors: false
+    };
+  }
+
+  static contextType = AuthContext;
+
+  componentDidMount() {
+    let jwtToken = localStorage.getItem("myJwtToken");
+    fetch("http://localhost:4567/api/listings", {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Authorization: jwtToken
+      }
+    })
+      .then(response => {
+        // console.log("Get Listings Status: " + response.status);
+        if (response.status >= 400) {
+          return response.json().then(errorMsg => {
+            let error;
+            error.statusCode = response.status;
+            error.msg = errorMsg;
+            throw error;
+          });
+        }
+        return response.json();
+      })
+      .then(resJson => {
+        this.setState({
+          ...this.state,
+          listings: resJson.data
+        });
+        this.props.history.push("/");
+        console.log(resJson.data);
+      })
+      .catch(error => {
+        if (error.statusCode === 403) {
+          return this.props.history.push("/signin");
+        }
+      });
+  }
+
+  onLoginError() {
+    this.setState({
+      error: true
+    });
+  }
+
+  handleSignIn(event) {
     event.preventDefault();
     let email = this.refs.email.value;
     let password = this.refs.password.value;
 
     let user = { email: email, password: password };
 
-    let response = await fetch("http://localhost:4567/api/login", {
+    fetch("http://localhost:4567/api/login", {
       method: "post",
       body: JSON.stringify(user)
-    });
-    let isAuthenticated = await response.json();
-
-    console.log("isAuthenticated? " + JSON.stringify(isAuthenticated));
-
-    if (isAuthenticated.token) {
-      this.props.onSignIn(isAuthenticated.token);
-      console.log(
-        "kanw set sto local storage to token: " + isAuthenticated.token
-      );
-      localStorage.setItem("myJwtToken", isAuthenticated.token);
-
-      let jwtToken = localStorage.getItem("myJwtToken");
-      console.log("pernw apo to local storage to token: " + jwtToken);
-    } else {
-      this.props.onLoginError();
-    }
+    })
+      .then(response => response.json())
+      .then(isAuthenticated => {
+        if (isAuthenticated.token) {
+          console.log("success");
+          localStorage.setItem("myJwtToken", isAuthenticated.token);
+          this.context.token = isAuthenticated.token;
+          this.context.isAuthenticated = true;
+          this.context.userId = isAuthenticated.data.userId;
+          this.context.accountType = isAuthenticated.data.accountType;
+          this.context.username = isAuthenticated.data.username;
+          console.log(`context:${JSON.stringify(this.context)}`);
+          this.props.history.push("/");
+        } else {
+          this.onLoginError();
+        }
+      });
   }
 
   render() {
-    let error = null;
-
-    if (this.props.error) {
-      console.log("login error...");
-      const style = { color: "red" };
-      error = <p style={style}>Login failed, please try again</p>;
+    let errorMsg;
+    if (this.state.error) {
+      errorMsg = <p className="redColor">Signin Failed, Please Try Again</p>;
     }
 
     return (
       <div className="container my-5 border border-light rounded p-4 w-25 h-50 shadow p-3 mb-5 bg-white rounded">
         <form className="form" onSubmit={this.handleSignIn.bind(this)}>
           <div className="form-group row justify-content-center">
-            <h4>ServiceLink</h4>
+            <h4 className="blue-color bold">ServiceLink</h4>
           </div>
-          <div className="text-center">{error}</div>
+          <div className="text-center">{errorMsg}</div>
           <div className="md-form form-group">
             <label className="control-label"> Email: </label>
             <input
