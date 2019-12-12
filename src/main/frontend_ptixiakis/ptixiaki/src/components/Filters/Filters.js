@@ -20,7 +20,7 @@ const Filters = props => {
   return (
     <div className="sticky-top">
       <aside className="filters">
-        <div className="card">
+        <div className="card" style={{ borderRadius: "0rem" }}>
           <article className="card-group-item">
             <header className="card-header">
               <h6 className="title">Category </h6>

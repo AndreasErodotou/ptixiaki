@@ -8,6 +8,7 @@ package hy499.ptixiaki.db;
 import com.google.gson.Gson;
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.api.ServerResponseAPI;
+import hy499.ptixiaki.data.Professional.Locations;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -78,7 +79,7 @@ public final class ListingDB implements DB<Listing> {
             listing.setPics(new ArrayList<>(Arrays.asList(str[0])));
             listing.setAvailable_from(res.getDate("START"));
             listing.setAvailable_until(res.getDate("EXPIRE"));
-            //      listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
+            listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
             listing.setJobCategory(res.getString("CATEGORY"));
             listing.setMax_price(res.getDouble("MAX_PRICE"));
         } catch (SQLException ex) {
