@@ -5,8 +5,6 @@
  */
 package hy499.ptixiaki.data;
 
-import java.util.Date;
-
 /**
  *
  * @author Andreas
@@ -18,7 +16,6 @@ public class Review {
     private String RID;
     private Double rating;
     private String comments;
-    private Date created; //8imame na kanw tis allages kai stin vasi...
 
     public Review() {
         UID = "";

@@ -63,7 +63,7 @@ public class ReviewAPI implements DataApi {
 
     @Override
     public String getQuery(Request req, Response res) throws ClassNotFoundException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getAll(req, res);
     }
 
     @Override

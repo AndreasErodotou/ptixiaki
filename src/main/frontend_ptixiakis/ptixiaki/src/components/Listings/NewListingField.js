@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-
+import Select from "react-select";
 // import Form from "react-bootstrap/Form";
 
 const NewListingField = props => {
@@ -16,11 +16,13 @@ const NewListingField = props => {
     );
   } else if (props.type === "dropdown") {
     tmpInput = (
-      <select
-        className="form-control col-8"
+      <Select
+        className="form-control col-8 m-0 p-0"
         type={props.type}
+        options={props.options}
         id={props.fieldName}
         placeholder={props.fieldName}
+        onChange={props.onChange}
       />
     );
   } else {
@@ -32,6 +34,7 @@ const NewListingField = props => {
             type={props.type}
             id={props.fieldName}
             placeholder={props.fieldName}
+            onChange={props.onChange}
           />
           <input
             className="form-control col-6"

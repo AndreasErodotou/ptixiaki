@@ -103,7 +103,7 @@ public final class ReviewDB implements DB<Review> {
                     Review review = resToType(res);
                     reviews.put(review.getRID(), review);
                 }
-                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews", new Gson().toJsonTree(reviews));
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews", new Gson().toJsonTree(reviews.values()).getAsJsonArray());
                 stmt.close();
                 con.close();
             }

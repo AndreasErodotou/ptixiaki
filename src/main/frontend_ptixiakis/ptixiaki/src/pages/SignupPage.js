@@ -110,7 +110,7 @@ class Signup extends React.Component {
       this.checkEmailAndUsername();
     } else {
       warnings = warnings.substring(0, warnings.length - 2);
-      // console.log("warning: " + warnings);
+      console.log("warning: " + warnings);
     }
   }
 
@@ -483,7 +483,7 @@ class Signup extends React.Component {
 
               <SignupField
                 field="birthday"
-                type="text"
+                type="date"
                 placeholder="2000-04-25"
                 onChange={this.bdayChanged.bind(this)}
                 stateNow={this.state.user.bday}

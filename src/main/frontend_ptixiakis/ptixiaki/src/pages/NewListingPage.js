@@ -3,10 +3,29 @@ import PropTypes from "prop-types";
 import NewListingField from "../components/Listings/NewListingField";
 import Image from "react-bootstrap/Image";
 import SimpleTemplatePage from "./SimpleTemplatePage";
+import axios from "axios";
 
 // import PickyDateTime from "react-picky-date-time";
 // import Modal from "react-bootstrap/Modal";
 // import Button from "react-bootstrap/Button";
+
+const categories = [
+  { label: "electrician", value: 1 },
+  { label: "plumber", value: 2 },
+  { label: "car mechanic", value: 3 },
+  { label: "painter", value: 4 }
+];
+
+const locations = [
+  { label: "Heraklion", value: 1 },
+  { label: "Chania", value: 2 },
+  { label: "Rethimno", value: 3 },
+  { label: "Nicosia", value: 4 },
+  { label: "Limassol", value: 5 },
+  { label: "Larnaca", value: 6 },
+  { label: "Paphos", value: 7 },
+  { label: "Athens", value: 8 }
+];
 
 class NewListing extends Component {
   constructor(props) {
@@ -72,75 +91,20 @@ class NewListing extends Component {
   };
 
   postHandler = event => {
-    let warnings = "";
-    let newListing = {};
-    if (document.getElementById("Title").value === "") {
-      warnings += "Please Fill The Title Field \n";
-    } else {
-      newListing.title = document.getElementById("Title").value;
-    }
-    if (document.getElementById("Description").value === "") {
-      warnings += "Please Fill The Description Field \n";
-    } else {
-      newListing.description = document.getElementById("Description").value;
-    }
-    if (document.getElementById("Location").value === "") {
-      warnings += "Please Fill The Location Field \n";
-    } else {
-      newListing.location = document.getElementById("Location").value;
-    }
-    if (document.getElementById("Category").value === "") {
-      warnings += "Please Fill The Category Field \n";
-    } else {
-      newListing.jobCategory = document.getElementById("Category").value;
-    }
-    if (document.getElementById("Max Price").value === "") {
-      warnings += "Please Fill The Max Price Field \n";
-    } else {
-      newListing.max_price = document.getElementById("Max Price").value;
-    }
-    if (document.getElementById("Available From").value === "") {
-      warnings += "Please Fill The Available From Field \n";
-    } else {
-      newListing.available_from = document.getElementById(
-        "Available From"
-      ).value;
-    }
-    if (document.getElementById("Available Until").value === "") {
-      warnings += "Please Fill The Available Until Field \n";
-    } else {
-      newListing.available_until = document.getElementById(
-        "Available Until"
-      ).value;
-    }
-    if (this.state.newListing.pics.length === 0) {
-      warnings += "Please Add Some Photos";
-    } else {
-      newListing.pics = [...this.state.newListing.pics];
-    }
-
-    if (warnings !== "") {
-      event.preventDefault();
-      alert(warnings);
-    } else {
-      event.preventDefault();
-      // console.log("new listing before setState:"+JSON.stringify(newListing));
-      this.setState({
-        ...this.state.picsLoaded,
-        newListing: {
-          UID: "test",
-          title: newListing.title,
-          description: newListing.description,
-          pics: [...this.state.newListing.pics],
-          available_from: newListing.available_from,
-          available_until: newListing.available_until,
-          location: newListing.location,
-          jobCategory: newListing.jobCategory,
-          max_price: newListing.max_price
-        },
-        post: true
-      });
-    }
+    event.preventDefault();
+    // console.log("new listing before setState:"+JSON.stringify(newListing));
+    this.setState({
+      newListing: {
+        UID: "test",
+        title: document.getElementById("Title").value,
+        description: document.getElementById("Description").value,
+        pics: [...this.state.newListing.pics],
+        available_from: document.getElementById("Available From").value,
+        available_until: document.getElementById("Available Until").value,
+        max_price: document.getElementById("Max Price").value
+      },
+      post: true
+    });
   };
 
   componentDidUpdate() {
@@ -158,12 +122,60 @@ class NewListing extends Component {
   }
 
   addListingToDB() {
-    fetch("http://localhost:4567/api/listings", {
-      method: "post",
-      body: JSON.stringify(this.state.newListing)
-    })
-      .then(response => response.json())
-      .then(myJson => console.log(myJson.msg));
+    let jwtToken = localStorage.getItem("myJwtToken");
+    axios
+      .post("http://localhost:4567/api/listings", this.state.newListing, {
+        headers: {
+          Authorization: jwtToken
+        }
+      })
+      .then(response => {
+        console.log(response.data);
+        alert("Listing Posted");
+      })
+      .catch(error => {
+        console.log(`Error:${error}`);
+      });
+  }
+
+  onLocChange(location) {
+    this.setState({
+      newListing: {
+        ...this.state.newListing,
+        location: location.label.toUpperCase()
+      }
+    });
+  }
+
+  onCategChange(category) {
+    this.setState({
+      newListing: {
+        ...this.state.newListing,
+        jobCategory: category.label
+      }
+    });
+  }
+
+  availableFromChanged(event) {
+    let availableFrom = event.target.value;
+    console.log(`available from: ${availableFrom}`);
+    this.setState({
+      newListing: {
+        ...this.state.newListing,
+        available_from: availableFrom
+      }
+    });
+  }
+
+  availableUntilChanged(event) {
+    let availableUntil = event.target.value;
+    console.log(`available Until: ${availableUntil}`);
+    this.setState({
+      newListing: {
+        ...this.state.newListing,
+        available_until: availableUntil
+      }
+    });
   }
 
   render() {
@@ -172,10 +184,10 @@ class NewListing extends Component {
     let selectedPics = this.state.newListing.pics.map((pic, index) => {
       if (index === 0) {
         return (
-          <div>
-            {/* <p style={{ color: "red" }}>
-                (To delete a picture just click on it)
-              </p> */}
+          <div key={index}>
+            <p style={{ color: "red" }}>
+              (To delete a picture just click on it)
+            </p>
             {/* &times; */}
             {/* <span>
                 <button type="button" class="close">
@@ -186,7 +198,6 @@ class NewListing extends Component {
               onClick={() => this.removePicHandler(index)}
               className="img-responsive pic col-sm-12 form-control-file mb-2"
               src={pic}
-              key={index}
               alt="Select A Picture"
             ></Image>
             {/* </span> */}
@@ -208,11 +219,6 @@ class NewListing extends Component {
     let extraPadding = selectedPics.length < 5 ? " px-5" : "";
 
     NewListingForm = (
-      // <><Modal size="lg" show={this.props.show} onHide={this.props.onHide} >
-      //     <Modal.Header closeButton>
-      //     <Modal.Title>Create Your Own Listing</Modal.Title>
-      //     </Modal.Header>
-      //     <Modal.Body >
       <div className="border border-info row mx-3 mt-3">
         <div className="border-right border-info col-sm-5 p-4">
           <div className={"row d-flex justify-content-center" + extraPadding}>
@@ -242,11 +248,29 @@ class NewListing extends Component {
           <form className="form" onSubmit={this.postHandler.bind(this)}>
             <NewListingField fieldName="Title" type="text" />
             <NewListingField fieldName="Description" type="textarea" />
-            <NewListingField fieldName="Location" type="dropdown" />
-            <NewListingField fieldName="Category" type="dropdown" />
+            <NewListingField
+              fieldName="Location"
+              type="dropdown"
+              options={locations}
+              onChange={this.onLocChange.bind(this)}
+            />
+            <NewListingField
+              fieldName="Category"
+              type="dropdown"
+              options={categories}
+              onChange={this.onCategChange.bind(this)}
+            />
             <NewListingField fieldName="Max Price" type="number" />
-            <NewListingField fieldName="Available From" type="date" />
-            <NewListingField fieldName="Available Until" type="date" />
+            <NewListingField
+              fieldName="Available From"
+              type="date"
+              onChange={this.availableFromChanged.bind(this)}
+            />
+            <NewListingField
+              fieldName="Available Until"
+              type="date"
+              onChange={this.availableUntilChanged.bind(this)}
+            />
 
             <div className="d-flex justify-content-end">
               <button className="w-25 btn btn-outline-info btn-rounded btn-block my-3 waves-effect z-depth-0 mt-0">
@@ -256,17 +280,13 @@ class NewListing extends Component {
           </form>
         </div>
       </div>
-      //     </Modal.Body>
-      // </Modal>
-      // </>
     );
 
     return <SimpleTemplatePage content={NewListingForm} />;
   }
 }
 
-NewListing.propTypes = {
-  createNewListing: PropTypes.bool
-};
+// NewListing.propTypes = {
+// };
 
 export default NewListing;
