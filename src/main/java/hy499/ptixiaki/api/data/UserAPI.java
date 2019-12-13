@@ -13,7 +13,6 @@ import hy499.ptixiaki.data.User;
 import hy499.ptixiaki.db.UserDB;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.UUID;
 import spark.Request;
 import spark.Response;
 
@@ -106,7 +105,8 @@ public class UserAPI implements DataApi {
         } else {
             user = gson.fromJson(req.body(), Professional.class);
         }
-        user.setUID(UUID.randomUUID().toString());
+//        user.setUID(UUID.randomUUID().toString());
+        user.setUID(user.getUsername());
         return new Gson().toJson(userDB.add(user));
     }
 

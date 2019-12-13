@@ -54,10 +54,14 @@ public class ReviewAPI implements DataApi {
 //        Map<String, Review> reviews = reviewService.getReviewsToAUser(TO_UID);
 //        return createResponse(res, reviews);
 //    }
+    public String getUserRating(Request req, Response res) throws ClassNotFoundException {
+        String UID = req.params(":UID");
+        return new Gson().toJson(reviewDB.getUserRating(UID));
+    }
 
     @Override
     public String get(Request req, Response res) throws ClassNotFoundException {
-        String RID = req.queryParams("RID");
+        String RID = req.params(":RID");
         return new Gson().toJson(reviewDB.get(RID));
     }
 

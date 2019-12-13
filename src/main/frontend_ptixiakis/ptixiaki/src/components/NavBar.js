@@ -26,6 +26,10 @@ import "./NavBar.css";
 
 import "./NavBar.css";
 
+const deleteToken = () => {
+  localStorage.removeItem("token");
+};
+
 const NavBar = props => {
   const [show, setShow] = useState(false);
   const menuClass = `dropdown-menu ${show ? " show" : ""}`;
@@ -89,7 +93,7 @@ const NavBar = props => {
                   tabIndex="-1"
                   to="/user/profile"
                 >
-                  My Profile
+                  Profile
                 </Link>
               </li>
               <li role="presentation">
@@ -99,7 +103,7 @@ const NavBar = props => {
                   tabIndex="-1"
                   to="/user/listings"
                 >
-                  My Listings
+                  Listings
                 </Link>
               </li>
               <li role="presentation">
@@ -112,6 +116,26 @@ const NavBar = props => {
                   Reviews
                 </Link>
               </li>
+              <li role="presentation">
+                <Link
+                  className="link"
+                  role="menuitem"
+                  tabIndex="-1"
+                  to="/user/statistics"
+                >
+                  Statistics
+                </Link>
+              </li>
+              <li role="presentation">
+                <Link
+                  className="link"
+                  role="menuitem"
+                  tabIndex="-1"
+                  to="/user/timetable"
+                >
+                  Timetable
+                </Link>
+              </li>
               <li role="presentation" className="divider blue"></li>
               <li role="presentation">
                 <Link
@@ -119,6 +143,7 @@ const NavBar = props => {
                   role="menuitem"
                   tabIndex="-1"
                   to="/signin"
+                  onClick={() => deleteToken()}
                 >
                   logout
                 </Link>

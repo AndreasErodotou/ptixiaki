@@ -16,7 +16,8 @@ class Signin extends React.Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    let jwtToken = localStorage.getItem("myJwtToken");
+    let jwtToken = localStorage.getItem("token");
+    console.log(`contex in login:${JSON.stringify(this.context)}`);
     fetch("http://localhost:4567/api/listings", {
       method: "GET",
       mode: "cors",
@@ -72,13 +73,7 @@ class Signin extends React.Component {
       .then(isAuthenticated => {
         if (isAuthenticated.token) {
           console.log("success");
-          localStorage.setItem("myJwtToken", isAuthenticated.token);
-          this.context.token = isAuthenticated.token;
-          this.context.isAuthenticated = true;
-          this.context.userId = isAuthenticated.data.userId;
-          this.context.accountType = isAuthenticated.data.accountType;
-          this.context.username = isAuthenticated.data.username;
-          console.log(`context:${JSON.stringify(this.context)}`);
+          localStorage.setItem("token", isAuthenticated.token);
           this.props.history.push("/");
         } else {
           this.onLoginError();

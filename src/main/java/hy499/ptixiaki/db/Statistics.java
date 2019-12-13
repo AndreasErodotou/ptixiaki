@@ -38,7 +38,6 @@ public class Statistics {
                     System.out.println("year: " + res.getInt("y") + "month: " + res.getString("m") + "count: " + res.getInt("c"));
                     data.put(res.getString("m"), res.getInt("c"));
                 }
-//                serverRes = new ServerResponseAPI(Status.SUCCESS, new Gson().toJson(data));
             }
 
         } catch (SQLException ex) {

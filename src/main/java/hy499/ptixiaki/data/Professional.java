@@ -26,7 +26,7 @@ public class Professional extends User {
     public Professional() {
         super(AccountType.PROFESSIONAL);
         jobs = null;
-        workExperience = -1.0;
+        workExperience = 0.0;
         aboutMe = "";
         servedLoc = null;
     }

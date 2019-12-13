@@ -33,7 +33,7 @@ public class ListingAPI implements DataApi {
 
     @Override
     public String get(Request req, Response res) throws ClassNotFoundException {
-        String LID = req.queryParams("LID");
+        String LID = req.params(":LID");
         return new Gson().toJson(listingDB.get(LID));
     }
 

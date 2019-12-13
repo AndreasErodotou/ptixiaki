@@ -90,6 +90,8 @@ public class ServiceLinkMain {
 
                 path("/:UID/reviews", () -> {
 
+                    get("/rating/:UID", (req, res) -> reviewApi.getUserRating(req, res));
+
                     get("", (req, res) -> reviewApi.getQuery(req, res));
 
                     post("", (req, res) -> reviewApi.add(req, res));
@@ -127,6 +129,8 @@ public class ServiceLinkMain {
             });
 
             path("/reviews", () -> {
+
+                get("/rating/:UID", (req, res) -> reviewApi.getUserRating(req, res));
 
                 get("", (req, res) -> reviewApi.getQuery(req, res));
 

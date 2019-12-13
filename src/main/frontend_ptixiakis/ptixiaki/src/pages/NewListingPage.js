@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import NewListingField from "../components/Listings/NewListingField";
 import Image from "react-bootstrap/Image";
 import SimpleTemplatePage from "./SimpleTemplatePage";
+import AuthContext from "../context/auth-context";
 import axios from "axios";
 
 // import PickyDateTime from "react-picky-date-time";
@@ -46,6 +47,21 @@ class NewListing extends Component {
       picsLoaded: false,
       post: false
     };
+  }
+
+  static contextType = AuthContext;
+
+  componentDidMount() {
+    if (this.context.userId) {
+      this.setState({
+        newListing: {
+          ...this.state.newListing,
+          UID: this.context.userId
+        }
+      });
+    } else {
+      this.props.history.push("/");
+    }
   }
 
   picSelectedHandler = event => {
@@ -92,10 +108,11 @@ class NewListing extends Component {
 
   postHandler = event => {
     event.preventDefault();
-    // console.log("new listing before setState:"+JSON.stringify(newListing));
+    console.log("userId:" + this.context.userId);
     this.setState({
       newListing: {
-        UID: "test",
+        ...this.state.newListing,
+        UID: this.context.userId,
         title: document.getElementById("Title").value,
         description: document.getElementById("Description").value,
         pics: [...this.state.newListing.pics],
@@ -122,7 +139,7 @@ class NewListing extends Component {
   }
 
   addListingToDB() {
-    let jwtToken = localStorage.getItem("myJwtToken");
+    let jwtToken = this.context.token;
     axios
       .post("http://localhost:4567/api/listings", this.state.newListing, {
         headers: {

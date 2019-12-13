@@ -2,6 +2,7 @@ import React from "react";
 import Listing from "../components/Listings/Listing";
 import FullListing from "../components/Listings/FullListing.js";
 import Template from "./TemplatePage";
+import AuthContext from "../context/auth-context";
 
 import axios from "axios";
 
@@ -18,13 +19,12 @@ class Listings extends React.Component {
       filterLocations: ["Nicosia", "Heraklion", "Athens"]
     };
   }
-
+  static contextType = AuthContext;
   componentDidMount() {
-    let jwtToken = localStorage.getItem("myJwtToken");
     axios
       .get("http://localhost:4567/api/listings", {
         headers: {
-          Authorization: jwtToken
+          Authorization: localStorage.getItem("token")
         }
       })
       .then(response => {
@@ -35,7 +35,7 @@ class Listings extends React.Component {
       })
       .catch(error => {
         if (error.response === undefined) {
-          return this.props.history.push("/signin");
+          // return this.props.history.push("/signin");
         }
         console.log(`error:${JSON.stringify(error)}`);
       });

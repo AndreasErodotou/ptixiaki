@@ -47,7 +47,7 @@ public final class BidDB implements DB<Bid> {
                         .append(" SOLUTION_DESCR  VARCHAR(50)  NOT NULL, ")
                         .append(" PRICE         REAL    NOT NULL, ")
                         .append(" TIME_TO_FIX   REAL   NOT NULL, ")
-                        .append(" WHEN_P          DATE    NOT NULL, ")
+                        .append(" WHEN_P        DATE    NOT NULL, ")
                         .append(" SELECTED      BOOLEAN   NOT NULL, ")
                         .append(" CREATED       TIMESTAMP   NOT NULL)");
                 stmt.executeUpdate(createQuery.toString());

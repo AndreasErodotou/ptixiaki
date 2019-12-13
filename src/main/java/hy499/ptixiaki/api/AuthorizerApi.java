@@ -55,6 +55,7 @@ public class AuthorizerApi {
         System.out.println("request contextPath:" + req.pathInfo());
         if ("OPTIONS".equals(req.requestMethod())
                 || "/api/login".equals(req.pathInfo()) && "POST".equals(req.requestMethod())
+                || "/api/users".equals(req.pathInfo()) && "GET".equals(req.requestMethod())
                 || "/api/users".equals(req.pathInfo()) && "POST".equals(req.requestMethod())) {
             System.out.println("ok");
             return true;

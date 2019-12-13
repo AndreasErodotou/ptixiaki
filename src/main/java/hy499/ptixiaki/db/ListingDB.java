@@ -47,7 +47,6 @@ public final class ListingDB implements DB<Listing> {
                         .append(" UID       VARCHAR(50)    NOT NULL,")
                         .append(" TITLE    VARCHAR(100)    NOT NULL, ")
                         .append(" DESCRIPTION  TEXT, ")
-                        //TEXT[]      =       '{"value 1", "value 2", "value 3"}';
                         .append(" PICS  TEXT[], ")
                         .append(" START  DATE   NOT NULL, ")
                         .append(" EXPIRE  DATE  NOT NULL, ")
@@ -97,7 +96,8 @@ public final class ListingDB implements DB<Listing> {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT * FROM LISTING").append(";");
+                getQuery.append("SELECT * FROM LISTING ")
+                        .append("WHERE LID = ").append("'").append(ID).append("';");
 
                 stmt.execute(getQuery.toString());
 

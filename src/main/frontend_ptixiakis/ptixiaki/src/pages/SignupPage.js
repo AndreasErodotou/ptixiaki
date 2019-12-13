@@ -431,7 +431,7 @@ class Signup extends React.Component {
         {!this.state.signupSuccess ? (
           <form className="form pt-4" onSubmit={this.handleSignup.bind(this)}>
             <div className="form-group row justify-content-center">
-              <h4>ServiceLink</h4>
+              <h4 className="blue-color bold">ServiceLink</h4>
             </div>
 
             <div className="form-row mx-5">

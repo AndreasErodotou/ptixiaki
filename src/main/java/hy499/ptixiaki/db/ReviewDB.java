@@ -74,9 +74,68 @@ public final class ReviewDB implements DB<Review> {
         return review;
     }
 
+    public ServerResponseAPI getUserRating(String UID) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = null;
+        System.out.println("UID: " + UID);
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+                getQuery.append("SELECT TO_UID, COUNT(RID) as c, SUM(rating) as s ")
+                        .append("FROM REVIEW ")
+                        .append("WHERE TO_UID = ").append("'").append(UID).append("'")
+                        .append("group by 1;");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    System.out.println("UID: " + res.getString("TO_UID") + "sum: " + res.getDouble("s") + "count: " + res.getInt("c"));
+                    Map<String, Object> tmp = new HashMap<>();
+                    tmp.put("UID", res.getString("TO_UID"));
+                    tmp.put("sum", res.getDouble("s"));
+                    tmp.put("count", res.getInt("c"));
+                    tmp.put("rating", (res.getDouble("s") / res.getInt("c")));
+
+                    serverRes = new ServerResponseAPI(Status.SUCCESS, "User Reviews", new Gson().toJsonTree(tmp));
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
+    }
+
     @Override
     public ServerResponseAPI get(String ID) throws ClassNotFoundException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Review review = null;
+        ServerResponseAPI serverRes = null;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM REVIEW").append(";");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    review = resToType(res);
+                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "Reviews", new Gson().toJsonTree(review));
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
     }
 
     @Override

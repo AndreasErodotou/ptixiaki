@@ -44,7 +44,6 @@ public final class UserDB implements DB<User> {
     }
 
     public void initUserDB() throws ClassNotFoundException, SQLException {
-
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
@@ -53,12 +52,12 @@ public final class UserDB implements DB<User> {
                         .append(" UID           VARCHAR(50)    PRIMARY KEY   NOT NULL, ")
                         .append(" NAME          VARCHAR(50)    NOT NULL, ")
                         .append(" SURNAME       VARCHAR(50)    NOT NULL, ")
-                        .append(" USERNAME      VARCHAR(50)    NOT NULL, ")
+                        .append(" USERNAME      VARCHAR(50)    UNIQUE, ")
                         .append(" ACCOUNT_TYPE  VARCHAR(50)    NOT NULL, ")
                         .append(" GENDER        VARCHAR(50)    NOT NULL, ")
                         .append(" BDAY          DATE           NOT NULL, ")
                         .append(" ADDRESS       VARCHAR(50)    NOT NULL, ")
-                        .append(" EMAIL         VARCHAR(50)    NOT NULL, ")
+                        .append(" EMAIL         VARCHAR(50)    UNIQUE, ")
                         .append(" PHONE_NUM     VARCHAR(15)    NOT NULL, ")
                         .append(" PASSWORD      VARCHAR(30)    NOT NULL, ")
                         .append(" CREATED       TIMESTAMP)");
@@ -70,16 +69,16 @@ public final class UserDB implements DB<User> {
                         .append(" UID           VARCHAR(50)    PRIMARY KEY   NOT NULL, ")
                         .append(" NAME          VARCHAR(50)    NOT NULL, ")
                         .append(" SURNAME       VARCHAR(50)    NOT NULL, ")
-                        .append(" USERNAME      VARCHAR(50)    NOT NULL, ")
+                        .append(" USERNAME      VARCHAR(50)    UNIQUE, ")
                         .append(" ACCOUNT_TYPE  VARCHAR(50)    NOT NULL, ")
                         .append(" GENDER        VARCHAR(50)    NOT NULL, ")
                         .append(" BDAY          DATE           NOT NULL, ")
                         .append(" ADDRESS       VARCHAR(50)    NOT NULL, ")
-                        .append(" EMAIL         VARCHAR(50)    NOT NULL, ")
+                        .append(" EMAIL         VARCHAR(50)    UNIQUE, ")
                         .append(" PHONE_NUM     VARCHAR(15)    NOT NULL, ")
                         .append(" PASSWORD      VARCHAR(30)    NOT NULL, ")
                         .append(" JOB           TEXT[]         NOT NULL, ")
-                        .append(" WORK_EXP      INT            NOT NULL, ")
+                        .append(" WORK_EXP      REAL           NOT NULL, ")
                         .append(" ABOUT_ME      TEXT           NOT NULL, ")
                         .append(" SERVE_LOC     TEXT[]         NOT NULL, ")
                         .append(" CREATED       TIMESTAMP)");
@@ -273,12 +272,16 @@ public final class UserDB implements DB<User> {
                     Statement stmt = con.createStatement()) {
 
                 StringBuilder checkQuery = new StringBuilder();
+                System.out.println("check email: " + email + " password: " + password);
+//                checkQuery.append("SELECT * FROM CUSTOMER, PROFESSIONAL ")
+//                        .append(" WHERE (CUSTOMER.EMAIL = ").append("'").append(email).append("'")
+//                        .append(" and CUSTOMER.PASSWORD = ").append("'").append(password).append("')")
+//                        .append(" or (PROFESSIONAL.EMAIL = ").append("'").append(email).append("'")
+//                        .append(" and PROFESSIONAL.PASSWORD = ").append("'").append(password).append("');");
+                checkQuery.append("SELECT * FROM PROFESSIONAL ")
+                        .append(" WHERE email = ").append("'").append(email).append("'")
+                        .append(" AND password = ").append("'").append(password).append("';");
 
-                checkQuery.append("SELECT * FROM CUSTOMER, PROFESSIONAL ")
-                        .append(" WHERE (CUSTOMER.EMAIL = ").append("'").append(email).append("'")
-                        .append(" and CUSTOMER.PASSWORD = ").append("'").append(password).append("')")
-                        .append(" or (PROFESSIONAL.EMAIL = ").append("'").append(email).append("'")
-                        .append(" and PROFESSIONAL.PASSWORD = ").append("'").append(password).append("');");
 
                 stmt.execute(checkQuery.toString());
 
@@ -286,9 +289,25 @@ public final class UserDB implements DB<User> {
 
                 if (res.next() == true) {
                     authUser = resToType(res);
+                    System.out.println("vrika ton professional me email: " + authUser.getEmail() + " password: " + authUser.getPassword());
+                    System.out.println("#UserDB: login successfully");
+                } else {
+                    System.out.println("check gia customer email: " + email + " password: " + password);
+                    checkQuery = new StringBuilder();
+                    checkQuery.append("SELECT * FROM CUSTOMER ")
+                            .append(" WHERE email = ").append("'").append(email).append("'")
+                            .append(" AND password = ").append("'").append(password).append("';");
+
+                    stmt.execute(checkQuery.toString());
+
+                    res = stmt.getResultSet();
+                    if (res.next() == true) {
+                        authUser = resToType(res);
+                        System.out.println("vrika ton customer me email: " + authUser.getEmail() + " password: " + authUser.getPassword());
+                        System.out.println("#UserDB: login successfully");
+                    }
                 }
 
-                System.out.println("#UserDB: login successfully");
 
                 stmt.close();
                 con.close();
