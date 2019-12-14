@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Analitics from "../components/AnaliticsChart";
-import SimpleTemplatePage from "./SimpleTemplatePage";
-
+import SimpleTemplatePage from "./templates/SimpleTemplatePage";
+import AuthContext from "../context/auth-context";
 class AnaliticsPage extends Component {
   constructor(props) {
     super(props);
@@ -11,14 +11,13 @@ class AnaliticsPage extends Component {
       checked: "Listings"
     };
   }
-
+  static contextType = AuthContext;
   componentDidMount() {
-    let jwtToken = localStorage.getItem("myJwtToken");
-    fetch("http://localhost:4567/api/statistics/test", {
+    fetch(`http://localhost:4567/api/statistics/${this.context.username}`, {
       method: "GET",
       mode: "cors",
       headers: {
-        Authorization: jwtToken
+        Authorization: this.context.token
       }
     })
       .then(response => {

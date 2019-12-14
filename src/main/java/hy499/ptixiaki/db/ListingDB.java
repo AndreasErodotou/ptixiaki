@@ -87,6 +87,36 @@ public final class ListingDB implements DB<Listing> {
         return listing;
     }
 
+    public ServerResponseAPI getUserListings(String UID) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
+        Map<String, Listing> listings = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM LISTING ")
+                        .append("WHERE UID = ").append("'").append(UID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    Listing listing = resToType(res);
+                    listings.put(listing.getLID(), listing);
+                }
+            }
+            serverRes.setMsg("User Listings");
+            serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+            serverRes.setData(new Gson().toJsonTree(listings.values()).getAsJsonArray());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return serverRes;
+    }
+
     @Override
     public ServerResponseAPI get(String ID) throws ClassNotFoundException {
         ServerResponseAPI serverRes = new ServerResponseAPI();

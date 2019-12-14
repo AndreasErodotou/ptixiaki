@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 import Listing from "../components/Listings/Listing";
-import Template from "./TemplatePage";
+import Template from "./templates/TemplatePage";
 import axios from "axios";
 class ReviewsPage extends Component {
   constructor(props) {

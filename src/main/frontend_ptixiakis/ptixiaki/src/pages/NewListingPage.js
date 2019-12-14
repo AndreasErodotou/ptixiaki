@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import NewListingField from "../components/Listings/NewListingField";
 import Image from "react-bootstrap/Image";
-import SimpleTemplatePage from "./SimpleTemplatePage";
+import SimpleTemplatePage from "./templates/SimpleTemplatePage";
 import AuthContext from "../context/auth-context";
 import axios from "axios";
 

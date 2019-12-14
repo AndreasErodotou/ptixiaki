@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import FullTemplatePage from "./FullTemplatePage";
+import FullTemplatePage from "./templates/FullTemplatePage";
 import Review from "../components/Review";
 import UserDetails from "../components/UserDetails";
 import axios from "axios";

@@ -19,8 +19,6 @@ import hy499.ptixiaki.db.ListingDB;
 import hy499.ptixiaki.db.ReviewDB;
 import hy499.ptixiaki.db.UserDB;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.halt;
@@ -116,11 +114,11 @@ public class AuthorizerApi {
         User authUser = new UserDB().checkLogin(user.getEmail(), user.getPassword());
         if (authUser != null) {
             String token = jwtApi.createJwt(authUser.getUID(), authUser.getUsername(), authUser.getAccountType());
-            Map<String, String> userDetails = new HashMap<>();
-            userDetails.put("userId", authUser.getUID());
-            userDetails.put("username", authUser.getUsername());
-            userDetails.put("accountType", authUser.getAccountType().toString());
-            return new Gson().toJson(new ServerResponseAPI(Status.SUCCESS, "Login Success", token, new Gson().toJsonTree(userDetails)));
+//            Map<String, String> userDetails = new HashMap<>();
+//            userDetails.put("userId", authUser.getUID());
+//            userDetails.put("username", authUser.getUsername());
+//            userDetails.put("accountType", authUser.getAccountType().toString());
+            return new Gson().toJson(new ServerResponseAPI(Status.SUCCESS, "Login Success", token));
         }
         return new Gson().toJson(new ServerResponseAPI(Status.ERROR, "User Athentication Fail!!!"));
     }

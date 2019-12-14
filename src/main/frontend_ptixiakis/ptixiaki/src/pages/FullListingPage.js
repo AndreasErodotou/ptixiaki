@@ -4,10 +4,12 @@ import PropTypes from "prop-types";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import Rating from "../Rating";
-import UserIcon from "../../assets/User_sm.svg";
-import AuthContext from "../../context/auth-context";
+import Rating from "../components/Rating";
+import UserIcon from "../assets/User_sm.svg";
+import AuthContext from "../context/auth-context";
 import axios from "axios";
+import SuccessAlert from "../components/SuccessAlert";
+
 // import ModalDialog from "react-bootstrap/ModalDialog";
 
 class FullListing extends Component {
@@ -24,12 +26,19 @@ class FullListing extends Component {
         when: null,
         selected: false
       },
+      isBidValid: {
+        solution_decription: false,
+        price: false,
+        time_to_fix: false,
+        when: false
+      },
       listingUser: {
         username: null,
         rating: 0,
         bidsCount: 0,
         minBidPrice: 0
-      }
+      },
+      postSuccessfully: false
     };
   }
 
@@ -86,11 +95,20 @@ class FullListing extends Component {
   }
 
   handleBid() {
-    axios.post("http://localhost:4567/api/bids", this.state.bid, {
-      headers: {
-        Authorization: this.context.token
-      }
-    });
+    axios
+      .post("http://localhost:4567/api/bids", this.state.bid, {
+        headers: {
+          Authorization: this.context.token
+        }
+      })
+      .then(response => {
+        console.log("response.data.status" + response.data.status);
+        if (response.data.status === "SUCCESS") {
+          this.setState({
+            postSuccessfully: true
+          });
+        }
+      });
   }
 
   onSolutionDescrChanged(event) {
@@ -102,28 +120,45 @@ class FullListing extends Component {
     });
   }
   onPriceChanged(event) {
-    this.setState({
-      bid: {
-        ...this.state.bid,
-        price: event.target.value
-      }
-    });
+    const price = event.target.value;
+    if (price < this.props.listing[0].max_price) {
+      this.setState({
+        bid: {
+          ...this.state.bid,
+          price: price
+        }
+      });
+    } else {
+      alert(`max price = ${this.props.listing[0].max_price}`);
+      event.target.value = this.state.bid.price;
+    }
   }
   onTimeToFixChanged(event) {
-    this.setState({
-      bid: {
-        ...this.state.bid,
-        time_to_fix: event.target.value
-      }
-    });
+    const time = event.target.value;
+    if (time > 0) {
+      this.setState({
+        bid: {
+          ...this.state.bid,
+          time_to_fix: time
+        }
+      });
+    } else {
+      alert("time to fix must be > 0");
+    }
   }
   onWhenChanged(event) {
-    this.setState({
-      bid: {
-        ...this.state.bid,
-        when: event.target.value
-      }
-    });
+    const when = event.target.value;
+    if (new Date(when) >= new Date()) {
+      this.setState({
+        bid: {
+          ...this.state.bid,
+          when: event.target.value
+        }
+      });
+    } else {
+      alert("Date must be at least today");
+      event.target.value = this.state.bid.when;
+    }
   }
 
   render() {
@@ -172,7 +207,7 @@ class FullListing extends Component {
 
     return (
       <div>
-        {listing[0] ? (
+        {listing[0] && !this.state.postSuccessfully ? (
           <>
             <Modal size="lg" show={this.props.show} onHide={this.props.onHide}>
               <Modal.Header className="pb-0" closeButton>
@@ -232,7 +267,7 @@ class FullListing extends Component {
                           <Form.Label className="col-4 mb-3">
                             Lowest Bid:
                           </Form.Label>
-                          <Form.Label className="col-8 redColor bold mb-3">
+                          <Form.Label className="col-8 bold redColor mb-3">
                             {this.state.listingUser.minBidPrice}€
                             {` ( ${this.state.listingUser.bidsCount} bid${
                               this.state.listingUser.bidsCount > 1 ? "s" : ""
@@ -246,6 +281,7 @@ class FullListing extends Component {
                             className="col-8"
                             placeholder="€"
                             onChange={this.onPriceChanged.bind(this)}
+                            // required
                           />
                           <Form.Label className="col-4 mt-1">
                             Your Solution:
@@ -256,6 +292,7 @@ class FullListing extends Component {
                             placeholder="Solution Description"
                             className="col-8 mt-1"
                             onChange={this.onSolutionDescrChanged.bind(this)}
+                            // required
                           />
 
                           <Form.Label className="col-4 pt-1">When:</Form.Label>
@@ -263,6 +300,7 @@ class FullListing extends Component {
                             type="Date"
                             className="col-8 mt-1"
                             onChange={this.onWhenChanged.bind(this)}
+                            // required
                           />
                           <Form.Label className="col-4 pt-1">
                             Time To Fix It:
@@ -272,6 +310,7 @@ class FullListing extends Component {
                             className="col-8 mt-1"
                             placeholder="Time to fix it in minutes"
                             onChange={this.onTimeToFixChanged.bind(this)}
+                            // required
                           />
                         </Form.Group>
                       </Form>
@@ -290,7 +329,19 @@ class FullListing extends Component {
               </Modal.Footer>
             </Modal>
           </>
-        ) : null}
+        ) : (
+          <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
+            <SuccessAlert
+              title="Bid Posted Successfully"
+              msg={`Bid price: ${this.state.bid.price}\n
+                    Solution: ${this.state.bid.solution_decription}\n
+                    Fixing Time: ${this.state.bid.time_to_fix}\n
+                    when: ${this.state.bid.when} `}
+              redirectPath="/listings"
+              modalHide={this.props.onHide}
+            />
+          </Modal>
+        )}
       </div>
     );
   }

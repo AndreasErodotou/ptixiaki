@@ -2,7 +2,7 @@ import React from "react";
 import SignupField from "../components/Signup/SignupField";
 import SignupSelect from "../components/Signup/SignupSelect";
 import axios from "axios";
-import SuccessSignupAlert from "../components/Signup/SuccessSignupAlert";
+import SuccessAlert from "../components/SuccessAlert";
 
 // import PropTypes from "prop-types";
 
@@ -600,7 +600,12 @@ class Signup extends React.Component {
             </div>
           </form>
         ) : (
-          <SuccessSignupAlert show={true} />
+          <SuccessAlert
+            title="You Signed up Successfully"
+            msg="Press ok to redirect to login"
+            redirectPath="/signin"
+            modalHide={null}
+          />
         )}
       </div>
     );

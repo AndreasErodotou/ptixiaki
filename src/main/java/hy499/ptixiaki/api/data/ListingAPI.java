@@ -26,9 +26,9 @@ public class ListingAPI implements DataApi {
         listingDB = new ListingDB();
     }
 
-    private String getAllUserListings(Request req, Response res) throws ClassNotFoundException {
-        String UID = req.queryParams("UID");
-        return new Gson().toJson(listingDB.get(UID)); //todo: ilopiw to swsto function sto DB
+    private String getUserListings(Request req, Response res) throws ClassNotFoundException {
+        String UID = req.params(":UID");
+        return new Gson().toJson(listingDB.getUserListings(UID)); //todo: ilopiw to swsto function sto DB
     }
 
     @Override
@@ -41,8 +41,8 @@ public class ListingAPI implements DataApi {
     public String getQuery(Request req, Response res) throws ClassNotFoundException {
         if (req.queryParams("LID") != null) {
             return get(req, res);
-        } else if (req.queryParams("UID") != null) {
-            return getAllUserListings(req, res);
+        } else if (req.params(":UID") != null) {
+            return getUserListings(req, res);
         }
         return getAll(req, res);
     }

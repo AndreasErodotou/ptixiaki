@@ -73,7 +73,7 @@ public class BidAPI implements DataApi {
             getQuery.append(" LID = ").append("'").append(req.queryParams("LID")).append("'");
             test = true;
         }
-        if (req.queryParams("UID") != null) {
+        if (req.params(":UID") != null) {
             getQuery.append((test) ? " and " : "");
             getQuery.append("UID = ").append("'").append(req.queryParams("UID")).append("'");
             test = true;

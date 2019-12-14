@@ -1,7 +1,7 @@
 import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import React, { Component } from "react";
-import SimpleTemplate from "./SimpleTemplatePage";
+import SimpleTemplate from "./templates/SimpleTemplatePage";
 import Timetable from "../components/Timetable/Timetable";
 
 class TimetablePage extends Component {

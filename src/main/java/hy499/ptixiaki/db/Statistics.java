@@ -29,6 +29,7 @@ public class Statistics {
                 StringBuilder getQuery = new StringBuilder();
                 getQuery.append("SELECT to_char(created,'Month') as m, extract(year from created) as y, COUNT(created) as c ")
                         .append("FROM LISTING ")
+                        .append("WHERE UID = ").append("'").append(UID).append("'")
                         .append("group by 1,2;");
 
                 stmt.execute(getQuery.toString());
@@ -56,6 +57,7 @@ public class Statistics {
                 StringBuilder getQuery = new StringBuilder();
                 getQuery.append("SELECT to_char(created,'Month') as m, extract(year from created) as y, COUNT(created) as c ")
                         .append("FROM BID ")
+                        .append("WHERE UID = ").append("'").append(UID).append("'")
                         .append("group by 1,2;");
 
                 stmt.execute(getQuery.toString());
@@ -83,6 +85,7 @@ public class Statistics {
                 StringBuilder getQuery = new StringBuilder();
                 getQuery.append("SELECT to_char(created,'Month') as m, extract(year from created) as y, COUNT(created) as c ")
                         .append("FROM REVIEW ")
+                        .append("WHERE UID = ").append("'").append(UID).append("'")
                         .append("group by 1,2;");
 
                 stmt.execute(getQuery.toString());
@@ -110,7 +113,8 @@ public class Statistics {
                 StringBuilder getQuery = new StringBuilder();
                 getQuery.append("SELECT to_char(created,'Month') as m, extract(year from created) as y, SUM(price) as s ")
                         .append("FROM BID ")
-                        .append("WHERE ").append("selected = true ")
+                        .append("WHERE UID = ").append("'").append(UID).append("'")
+                        .append(" and ").append("selected = true ")
                         .append("group by 1,2;");
 
                 stmt.execute(getQuery.toString());

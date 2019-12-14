@@ -1,10 +1,10 @@
 import React from "react";
-import NavBar from "../components/NavBar";
-import Filters from "../components/Filters/Filters";
-import Form from "react-bootstrap/Form";
+import NavBar from "../../components/NavBar";
+import Filters from "../../components/Filters/Filters";
+// import Form from "react-bootstrap/Form";
 // import Button from "react-bootstrap/Button";
-import Rating from "../components/Rating";
-import UserIcon from "../assets/User_sm.svg";
+// import Rating from "../../components/Rating";
+// import UserIcon from "../../assets/User_sm.svg";
 
 const FullTemplatePage = props => {
   return (

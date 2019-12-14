@@ -1,10 +1,12 @@
 import React from "react";
 import Listing from "../components/Listings/Listing";
-import FullListing from "../components/Listings/FullListing.js";
-import Template from "./TemplatePage";
+import FullListing from "./FullListingPage.js";
+import Template from "./templates/TemplatePage";
 import AuthContext from "../context/auth-context";
 
 import axios from "axios";
+
+// import { Route } from "react-router-dom";
 
 class Listings extends React.Component {
   constructor(props) {
@@ -21,12 +23,19 @@ class Listings extends React.Component {
   }
   static contextType = AuthContext;
   componentDidMount() {
+    const url1 = "/listings";
+    const url2 = `/users/${this.context.username}/listings`;
     axios
-      .get("http://localhost:4567/api/listings", {
-        headers: {
-          Authorization: localStorage.getItem("token")
+      .get(
+        `http://localhost:4567/api${
+          this.props.location.pathname === "/user/listings" ? url2 : url1
+        }`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
         }
-      })
+      )
       .then(response => {
         console.log(response);
         this.setState({
@@ -81,6 +90,7 @@ class Listings extends React.Component {
     ) : null;
 
     let content = [];
+    // content.push(`loc:${JSON.stringify(this.props.location)}`);
     content.push(listings);
     content.push(fullListing);
 
