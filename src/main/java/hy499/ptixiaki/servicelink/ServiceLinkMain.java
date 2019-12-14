@@ -88,9 +88,25 @@ public class ServiceLinkMain {
 
                 });
 
+                path("/:UID/bids", () -> {
+
+                    get("/selected", (req, res) -> bidApi.getAllUserSelectedBids(req, res));
+
+                    get("/selected/count", (req, res) -> bidApi.countAllUserSelectedBids(req, res));
+
+                    get("", (req, res) -> bidApi.getReqHandler(req, res));
+
+                    post("", (req, res) -> bidApi.add(req, res));
+
+                    put("/:BID", (req, res) -> bidApi.edit(req, res));
+
+                    delete("/:BID", (req, res) -> bidApi.delete(req, res));
+
+                });
+
                 path("/:UID/reviews", () -> {
 
-                    get("/rating/:UID", (req, res) -> reviewApi.getUserRating(req, res));
+                    get("/rating", (req, res) -> reviewApi.getUserRating(req, res));
 
                     get("", (req, res) -> reviewApi.getQuery(req, res));
 
@@ -106,13 +122,6 @@ public class ServiceLinkMain {
 
                     get("", (req, res) -> timetableApi.getAll(req, res));
 
-//                    post("", (req, res) -> timetableApi.addATimetableEvent(req, res));
-//
-//                    put("/:LID", (req, res) -> timetableApi.editATimetableEvent(req, res));
-//
-//                    delete("/:LID", (req, res) -> timetableApi.deleteATimetableEvent(req, res));
-//
-//                    options("", (req, res) -> optionFunc(req, res));
                 });
 
                 //Users
@@ -141,27 +150,6 @@ public class ServiceLinkMain {
                 delete("/:RID", (req, res) -> reviewApi.delete(req, res));
 
             });
-
-//            before("/listings", (req, res) -> {
-//                authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING);
-//                if (!authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING)) {
-//                    System.out.println("halting...");
-//                    res.body(new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.ERROR, "You Are Unauthorized")));
-//                    halt(403, "You Are Unauthorized");
-//                }
-//            });
-
-//            options("/listings", (req, res) -> {
-//                return new Gson().toJson(new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "cors headers added"));
-//            });
-
-//            after("/listings", (req, res) -> {
-//                System.out.println("listings: headers added");
-//                addHeaders(res);
-//            });
-//            before("/listings", (req, res) -> {
-//                authApi.isAuthorized(req, res, AuthorizerApi.AuthType.LISTING);
-//            });
 
             path("/listings", () -> {
 
@@ -193,6 +181,10 @@ public class ServiceLinkMain {
 
             path("/bids", () -> {
 
+                get("/:LID/min", (req, res) -> bidApi.countListingBidsAndFindMin(req, res));
+
+                get("/:UID/selected", (req, res) -> bidApi.getAllUserSelectedBids(req, res));
+
                 get("", (req, res) -> bidApi.getReqHandler(req, res));
 
                 post("", (req, res) -> bidApi.add(req, res));
@@ -200,7 +192,6 @@ public class ServiceLinkMain {
                 put("/:BID", (req, res) -> bidApi.edit(req, res));
 
                 delete("/:BID", (req, res) -> bidApi.delete(req, res));
-
 
             });
 

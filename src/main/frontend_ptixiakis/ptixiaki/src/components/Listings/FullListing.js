@@ -26,7 +26,9 @@ class FullListing extends Component {
       },
       listingUser: {
         username: null,
-        rating: 0
+        rating: 0,
+        bidsCount: 0,
+        minBidPrice: 0
       }
     };
   }
@@ -35,36 +37,48 @@ class FullListing extends Component {
 
   componentDidMount() {
     const lid = this.props.listing[0].LID;
+    const username = this.props.listing[0].UID;
     axios
-      .get(`http://localhost:4567/api/listings/${lid}`, {
+      .get(`http://localhost:4567/api/reviews/rating/${username}`, {
         headers: {
           Authorization: this.context.token
         }
       })
       .then(response => {
-        const username = response.data.data.UID;
+        const rating = response.data.data.rating;
+        this.setState({
+          bid: {
+            ...this.state.bid,
+            LID: lid,
+            UID: this.context.userId
+          },
+          listingUser: {
+            ...this.state.listingUser,
+            username: username,
+            rating: rating
+          }
+        });
+      })
+      .catch(error => {
+        console.log(`error:${JSON.stringify(error)}`);
+      });
 
-        axios
-          .get(`http://localhost:4567/api/reviews/rating/${username}`, {
-            headers: {
-              Authorization: this.context.token
-            }
-          })
-          .then(response => {
-            console.log(`response:${JSON.stringify(response.data)}`);
-            const rating = response.data.data.rating;
-            this.setState({
-              bid: {
-                ...this.state.bid,
-                LID: lid,
-                UID: this.context.userId
-              },
-              listingUser: {
-                username: username,
-                rating: rating
-              }
-            });
-          });
+    axios
+      .get(`http://localhost:4567/api/bids/${lid}/min`, {
+        headers: {
+          Authorization: this.context.token
+        }
+      })
+      .then(response => {
+        const bidsCount = response.data.data.count;
+        const minBidPrice = response.data.data.price;
+        this.setState({
+          listingUser: {
+            ...this.state.listingUser,
+            bidsCount: bidsCount,
+            minBidPrice: minBidPrice
+          }
+        });
       })
       .catch(error => {
         console.log(`error:${JSON.stringify(error)}`);
@@ -219,7 +233,10 @@ class FullListing extends Component {
                             Lowest Bid:
                           </Form.Label>
                           <Form.Label className="col-8 redColor bold mb-3">
-                            {listing[0].max_price}€
+                            {this.state.listingUser.minBidPrice}€
+                            {` ( ${this.state.listingUser.bidsCount} bid${
+                              this.state.listingUser.bidsCount > 1 ? "s" : ""
+                            } )`}
                           </Form.Label>
                           <Form.Label className="col-4 pt-1">
                             Your Bid:

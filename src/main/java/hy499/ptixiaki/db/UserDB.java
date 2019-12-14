@@ -272,7 +272,7 @@ public final class UserDB implements DB<User> {
                     Statement stmt = con.createStatement()) {
 
                 StringBuilder checkQuery = new StringBuilder();
-                System.out.println("check email: " + email + " password: " + password);
+//                System.out.println("check email: " + email + " password: " + password);
 //                checkQuery.append("SELECT * FROM CUSTOMER, PROFESSIONAL ")
 //                        .append(" WHERE (CUSTOMER.EMAIL = ").append("'").append(email).append("'")
 //                        .append(" and CUSTOMER.PASSWORD = ").append("'").append(password).append("')")
@@ -337,8 +337,7 @@ public final class UserDB implements DB<User> {
 
                 if (res.next()) {
                     user = resToType(res);
-                }
-                if (user == null) {
+                } else {
                     getQuery = new StringBuilder();
 
                     getQuery.append("SELECT * FROM PROFESSIONAL ")

@@ -21,7 +21,7 @@ public class Review {
         UID = "";
         TO_UID = "";
         RID = "";
-        rating = -1.0;
+        rating = 0.0;
         comments = "";
         LID = "";
     }

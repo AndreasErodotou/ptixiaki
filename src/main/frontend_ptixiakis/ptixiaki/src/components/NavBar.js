@@ -1,5 +1,5 @@
 // import "bootstrap/dist/css/bootstrap.css";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 
 import SearchIcon from "../assets/Search.svg";
@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 
 import "./NavBar.css";
 
+import AuthContent from "../context/auth-context";
 // import { LinkContainer } from "react-router-bootstrap";
 
 // import {

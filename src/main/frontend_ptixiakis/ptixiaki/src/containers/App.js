@@ -20,18 +20,12 @@ import UserProfilePage from "../pages/UserProfilePage";
 import AuthContext from "../context/auth-context";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
   static contextType = AuthContext;
 
-  componentDidMount() {
+  render() {
     const token = localStorage.getItem("token");
     if (token !== null) {
-      console.log(`token: ${token}`);
+      // console.log(`token: ${token}`);
       let base64Url = token.split(".")[1];
       let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       let jsonPayload = decodeURIComponent(
@@ -43,7 +37,6 @@ class App extends Component {
           .join("")
       );
 
-      // console.log(jsonPayload);
       const tokenPayload = JSON.parse(jsonPayload);
 
       this.context.token = token;
@@ -51,12 +44,8 @@ class App extends Component {
       this.context.userId = tokenPayload.jti;
       this.context.accountType = tokenPayload.accountType;
       this.context.username = tokenPayload.iss;
-      console.log(`context:${JSON.stringify(this.context)}`);
+      // console.log(`context:${JSON.stringify(this.context)}`);
     }
-  }
-
-  render() {
-    console.log(JSON.stringify(this.state));
 
     return (
       <div>
@@ -71,18 +60,7 @@ class App extends Component {
         <Route exact path="/user/listings" component={ListingsPage} />
         <Route exact path="/user/statistics" component={AnaliticsPage} />
         <Route exact path="/user/timetable" component={TimetablePage} />
-        {/* testing */}
-        <Route
-          exact
-          path="/user/profile"
-          render={() => (
-            <UserProfilePage
-              categories={this.state.filterStars}
-              locations={this.state.filterLocations}
-              content={null}
-            />
-          )}
-        />
+        <Route exact path="/user/profile" component={UserProfilePage} />
       </div>
     );
   }

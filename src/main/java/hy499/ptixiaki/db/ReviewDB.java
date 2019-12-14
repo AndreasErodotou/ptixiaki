@@ -76,7 +76,7 @@ public final class ReviewDB implements DB<Review> {
 
     public ServerResponseAPI getUserRating(String UID) throws ClassNotFoundException {
         ServerResponseAPI serverRes = null;
-        System.out.println("UID: " + UID);
+        Map<String, Object> tmp = new HashMap<>();
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
@@ -90,15 +90,13 @@ public final class ReviewDB implements DB<Review> {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    System.out.println("UID: " + res.getString("TO_UID") + "sum: " + res.getDouble("s") + "count: " + res.getInt("c"));
-                    Map<String, Object> tmp = new HashMap<>();
                     tmp.put("UID", res.getString("TO_UID"));
                     tmp.put("sum", res.getDouble("s"));
                     tmp.put("count", res.getInt("c"));
                     tmp.put("rating", (res.getDouble("s") / res.getInt("c")));
-
-                    serverRes = new ServerResponseAPI(Status.SUCCESS, "User Reviews", new Gson().toJsonTree(tmp));
                 }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "User Reviews", new Gson().toJsonTree(tmp));
+                System.out.println("#ReviewDB: Get User Rating, UID: " + UID);
             }
 
         } catch (SQLException ex) {
@@ -140,7 +138,35 @@ public final class ReviewDB implements DB<Review> {
 
     @Override
     public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Map<String, Review> reviews = new HashMap<>();
+        ServerResponseAPI serverRes = null;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM REVIEW ")
+                        .append("WHERE ").append(query).append(";");
+
+                System.out.println("query: " + getQuery.toString());
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    Review review = resToType(res);
+                    reviews.put(review.getRID(), review);
+                }
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews Made For This User", new Gson().toJsonTree(reviews.values()).getAsJsonArray());
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
     }
 
     @Override

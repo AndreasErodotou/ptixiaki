@@ -10,6 +10,7 @@ import hy499.ptixiaki.data.Bid;
 import hy499.ptixiaki.db.BidDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import hy499.ptixiaki.api.ServerResponseAPI.Status;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import spark.Request;
@@ -110,6 +111,11 @@ public class BidAPI implements DataApi {
         return createResponse(res, bids, msgs);
     }
 
+    public String countListingBidsAndFindMin(Request req, Response res) throws ClassNotFoundException {
+        String LID = req.params(":LID");
+        return new Gson().toJson(bidDB.countListingBidsAndFindMin(LID));
+    }
+
     public String getAllBidsForAListing(Request req, Response res) throws ClassNotFoundException {
         String LID = req.queryParams("LID");
         Map<String, Bid> listingBids = bidDB.getListingBids(LID);
@@ -124,10 +130,18 @@ public class BidAPI implements DataApi {
         return createResponse(res, listingBids, msgs);
     }
 
+    public String countAllUserSelectedBids(Request req, Response res) throws ClassNotFoundException {
+        String UID = req.params("UID");
+        Map<String, Bid> listingBids = bidDB.getUserSelectedBids(true, UID);
+        Map<String, Integer> tmp = new HashMap<>();
+        tmp.put("jobsDone", listingBids.size());
+        ServerResponseAPI serverRes = new ServerResponseAPI(Status.SUCCESS, "testing selected bids", (new Gson().toJsonTree(tmp)));
+        return new Gson().toJson(serverRes);
+    }
+
     public String getAllUserSelectedBids(Request req, Response res) throws ClassNotFoundException {
-        Boolean selected = Boolean.valueOf(req.queryParams("selected"));
-        String UID = req.queryParams("UID");
-        Map<String, Bid> listingBids = bidDB.getUserSelectedBids(selected, UID);
+        String UID = req.params("UID");
+        Map<String, Bid> listingBids = bidDB.getUserSelectedBids(true, UID);
         String[] msgs = {"All Selected Bids", "There Are No Selected Bids"};
         return createResponse(res, listingBids, msgs);
     }
@@ -172,21 +186,21 @@ public class BidAPI implements DataApi {
         return createResponse(res, null, deleted, msgs);
     }
 
-    public String countAllBidsForAListing(Request req, Response res) throws ClassNotFoundException {
-        String LID = req.queryParams("COUNT");
-        int listingBids = bidDB.countListingBids(LID);
-        String[] msgs = {"Listing Bids", "There Are No Bids For This Listing"};
-        System.out.println("There Are: " + listingBids + " Bids For This Listig ");
-        return createResponse(res, null, true, msgs);
-    }
-
-    public String countAllUserBids(Request req, Response res) throws ClassNotFoundException {
-        String UID = req.queryParams("COUNT");
-        int userBids = bidDB.countListingBids(UID);
-        String[] msgs = {"User Bids", "There Are No Bids From This User"};
-        System.out.println("There Are: " + userBids + " Bids From This User ");
-        return createResponse(res, null, true, msgs);
-    }
+//    public String countAllBidsForAListing(Request req, Response res) throws ClassNotFoundException {
+//        String LID = req.queryParams("COUNT");
+//        int listingBids = bidDB.countListingBids(LID);
+//        String[] msgs = {"Listing Bids", "There Are No Bids For This Listing"};
+//        System.out.println("There Are: " + listingBids + " Bids For This Listig ");
+//        return createResponse(res, null, true, msgs);
+//    }
+//
+//    public String countAllUserBids(Request req, Response res) throws ClassNotFoundException {
+//        String UID = req.queryParams("COUNT");
+//        int userBids = bidDB.countListingBids(UID);
+//        String[] msgs = {"User Bids", "There Are No Bids From This User"};
+//        System.out.println("There Are: " + userBids + " Bids From This User ");
+//        return createResponse(res, null, true, msgs);
+//    }
 
     public String countAllSelectedBids(Request req, Response res) throws ClassNotFoundException {
         Boolean selected = Boolean.valueOf(req.queryParams("selected"));

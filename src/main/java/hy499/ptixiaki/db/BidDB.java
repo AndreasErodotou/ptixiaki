@@ -263,30 +263,36 @@ public final class BidDB implements DB<Bid> {
         return listingBidsCount;
     }
 
-    public int countListingBids(String LID) throws ClassNotFoundException {
-        int listingBidsCount = 0;
+    public ServerResponseAPI countListingBidsAndFindMin(String LID) throws ClassNotFoundException {
+        ServerResponseAPI serverRes;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
                 StringBuilder getQuery = new StringBuilder();
 
-                getQuery.append("SELECT COUNT(*)")
+                getQuery.append("SELECT COUNT(LID) as c, MIN(PRICE) as m ")
                         .append("FROM BID ")
                         .append("WHERE LID = ").append("'").append(LID).append("';");
 
                 stmt.execute(getQuery.toString());
 
                 ResultSet res = stmt.getResultSet();
-                while (res.next() == true) {
-                    listingBidsCount = res.getInt("count");
+                if (res.next() == true) {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("count", res.getInt("c"));
+                    data.put("price", res.getInt("m"));
+                    serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Listing Bids Count & Min Bid price", new Gson().toJsonTree(data));
+                } else {
+                    serverRes = new ServerResponseAPI(ServerResponseAPI.Status.ERROR, "Error When Calculating: Listing Bids Count & Min Bid price No Such Listing");
                 }
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+            serverRes = new ServerResponseAPI(ServerResponseAPI.Status.ERROR, "Error When Calculating: Listing Bids Count & Min Bid price");
         }
 
-        return listingBidsCount;
+        return serverRes;
     }
 
     public int countUserBids(String UID) throws ClassNotFoundException {
