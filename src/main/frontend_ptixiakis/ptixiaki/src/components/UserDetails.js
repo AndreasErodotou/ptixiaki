@@ -37,9 +37,7 @@ const UserDetails = ({ user }) => {
     <Form.Group as={Form.Row} className="col-md-6 col-sm-12" key={index}>
       <Form.Label className="w-25">{label}</Form.Label>
       <Form.Label
-        className={`"bold blue-color"${
-          label === "About Me:" ? "w-75" : "w-25"
-        }`}
+        className={`bold  ${label === "About Me:" ? "w-75" : "w-25"}`}
       >
         {user[profKeys[index]]}
       </Form.Label>
@@ -49,12 +47,14 @@ const UserDetails = ({ user }) => {
     <Form className="row">
       <Form.Group as={Form.Row} className="col-12">
         <img className="mr-2" src={UserIcon} alt="UserIcon"></img>
-        <Form.Label className="bold mr-1 mt-1">{user.UID}</Form.Label>
+        <Form.Label className="bold mr-1 mt-1 blue-color">
+          {user.UID}
+        </Form.Label>
         <div className="mt-1">
           <Rating rating={user.rating} />
         </div>
-        <Form.Text className="ml-1 mt-2">{`( ${user.rating} )`}</Form.Text>
-        <Form.Text className="ml-5 mt-2">{`Reviews ( ${user.count} )`}</Form.Text>
+        <Form.Text className="ml-1 mt-2 bold">{`( ${user.rating} )`}</Form.Text>
+        <Form.Text className="ml-5 mt-2 bold">{`Reviews ( ${user.count} )`}</Form.Text>
       </Form.Group>
 
       {formLabels}

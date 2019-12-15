@@ -136,6 +136,38 @@ public final class ReviewDB implements DB<Review> {
         return serverRes;
     }
 
+    public ServerResponseAPI getListingReview(String LID) throws ClassNotFoundException {
+        Review review = null;
+        ServerResponseAPI serverRes = null;
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM REVIEW ")
+                        .append("WHERE LID = ").append("'").append(LID).append("';");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                if (res.next() == true) {
+                    review = resToType(res);
+                    serverRes = new ServerResponseAPI(Status.SUCCESS, "Review", new Gson().toJsonTree(review));
+                } else {
+                    serverRes = new ServerResponseAPI(Status.WARINING, "Review does not exist", new Gson().toJsonTree(review));
+                }
+                stmt.close();
+                con.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
+    }
+
     @Override
     public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
         Map<String, Review> reviews = new HashMap<>();

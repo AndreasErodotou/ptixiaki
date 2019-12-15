@@ -153,10 +153,21 @@ public class ServiceLinkMain {
 
             path("/listings", () -> {
 
-
                 path("/:LID/bids", () -> {
-                    
+
                     get("", (req, res) -> bidApi.getReqHandler(req, res));
+
+                    post("", (req, res) -> bidApi.add(req, res));
+
+                    put("/:BID", (req, res) -> bidApi.edit(req, res));
+
+                    delete("/:BID", (req, res) -> bidApi.delete(req, res));
+
+                });
+
+                path("/:LID/reviews", () -> {
+                    
+                    get("", (req, res) -> reviewApi.getListingReview(req, res));
 
                     post("", (req, res) -> bidApi.add(req, res));
 

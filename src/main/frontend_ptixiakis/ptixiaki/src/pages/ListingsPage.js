@@ -39,7 +39,7 @@ class Listings extends React.Component {
       .then(response => {
         console.log(response);
         this.setState({
-          listings: response.data.data
+          listings: [...response.data.data]
         });
       })
       .catch(error => {
@@ -68,13 +68,21 @@ class Listings extends React.Component {
   }
 
   render() {
+    const path = this.props.location.pathname;
     let listings = this.state.listings.map(listing => {
       return (
         <Listing
           key={listing.LID}
+          username={listing.UID}
           title={listing.title}
           imgsrc={listing.pics}
           descr={listing.description}
+          maxPrice={listing.max_price}
+          buttonTitle={
+            this.props.location.pathname === "/user/listings"
+              ? "Show Bids"
+              : "Bid Now"
+          }
           listingClicked={() => this.listingClickedModalHandler(listing.LID)}
         />
       );
@@ -86,6 +94,7 @@ class Listings extends React.Component {
         listing={this.state.listingClicked}
         onHide={this.handlefullLClose.bind(this)}
         show={true}
+        path={path}
       />
     ) : null;
 

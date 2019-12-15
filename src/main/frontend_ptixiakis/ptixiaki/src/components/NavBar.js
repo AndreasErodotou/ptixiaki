@@ -7,6 +7,7 @@ import UserIcon from "../assets/User.svg";
 import AddIcon from "../assets/Add.svg";
 
 import { Link } from "react-router-dom";
+import AuthContext from "../context/auth-context";
 
 import "./NavBar.css";
 
@@ -34,6 +35,35 @@ const deleteToken = () => {
 const NavBar = props => {
   const [show, setShow] = useState(false);
   const menuClass = `dropdown-menu ${show ? " show" : ""}`;
+  const dropdown = [
+    "Profile",
+    "Listings",
+    "Reviews",
+    "Bids",
+    "Statistics",
+    "Timetable"
+  ];
+  const authContext = useContext(AuthContent);
+  const dropdownListTmp = dropdown.map((category, index) => (
+    <li key={index} role="presentation">
+      <Link
+        className="link"
+        role="menuitem"
+        tabIndex="-1"
+        to={`/user/${category.toLowerCase()}`}
+      >
+        {category}
+      </Link>
+    </li>
+  ));
+
+  let dropdownList = dropdownListTmp;
+
+  if (authContext.accountType === "CUSTOMER") {
+    dropdownList = dropdownListTmp.slice(0, 3);
+    console.log(`dropdown list:${dropdownList}`);
+  }
+
   return (
     <div
       style={{ backgroundColor: "#E8F6F8" }}
@@ -42,7 +72,7 @@ const NavBar = props => {
       <nav className="px-3 py-1">
         <form className=" form-inline">
           <Link to="/" className="col-md-2 col-6 order-sm-2 order-md-1">
-            <h5 className="font-weight-bold pt_es onHover ">ServiceLink</h5>
+            <h5 className="font-weight-bold pt_es onHover">ServiceLink</h5>
           </Link>
           <div className="col-md-5  col-12 order-sm-3 order-md-3 justify-content-md-end">
             <input
@@ -87,56 +117,7 @@ const NavBar = props => {
             ></img>
 
             <ul className={menuClass} role="menu" aria-labelledby="menu1">
-              <li role="presentation">
-                <Link
-                  className="link"
-                  role="menuitem"
-                  tabIndex="-1"
-                  to="/user/profile"
-                >
-                  Profile
-                </Link>
-              </li>
-              <li role="presentation">
-                <Link
-                  className="link"
-                  role="menuitem"
-                  tabIndex="-1"
-                  to="/user/listings"
-                >
-                  Listings
-                </Link>
-              </li>
-              <li role="presentation">
-                <Link
-                  className="link"
-                  role="menuitem"
-                  tabIndex="-1"
-                  to="/user/reviews"
-                >
-                  Reviews
-                </Link>
-              </li>
-              <li role="presentation">
-                <Link
-                  className="link"
-                  role="menuitem"
-                  tabIndex="-1"
-                  to="/user/statistics"
-                >
-                  Statistics
-                </Link>
-              </li>
-              <li role="presentation">
-                <Link
-                  className="link"
-                  role="menuitem"
-                  tabIndex="-1"
-                  to="/user/timetable"
-                >
-                  Timetable
-                </Link>
-              </li>
+              {dropdownList}
               <li role="presentation" className="divider blue"></li>
               <li role="presentation">
                 <Link

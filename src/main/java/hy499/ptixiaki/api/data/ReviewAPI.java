@@ -54,6 +54,11 @@ public class ReviewAPI implements DataApi {
 //        Map<String, Review> reviews = reviewService.getReviewsToAUser(TO_UID);
 //        return createResponse(res, reviews);
 //    }
+    public String getListingReview(Request req, Response res) throws ClassNotFoundException {
+        String LID = req.params(":LID");
+        return new Gson().toJson(reviewDB.getListingReview(LID));
+    }
+
     public String getUserRating(Request req, Response res) throws ClassNotFoundException {
         String UID = req.params(":UID");
         return new Gson().toJson(reviewDB.getUserRating(UID));

@@ -9,7 +9,9 @@ import UserIcon from "../assets/User_sm.svg";
 import AuthContext from "../context/auth-context";
 import axios from "axios";
 import SuccessAlert from "../components/SuccessAlert";
-
+import ListingDetails from "../components/Listings/ListingDetails";
+import BidForm from "../components/BidForm";
+import ReviewForm from "../components/ReviewForm";
 // import ModalDialog from "react-bootstrap/ModalDialog";
 
 class FullListing extends Component {
@@ -17,28 +19,13 @@ class FullListing extends Component {
     super(props);
 
     this.state = {
-      bid: {
-        UID: null,
-        LID: null,
-        solution_decription: null,
-        price: null,
-        time_to_fix: null,
-        when: null,
-        selected: false
-      },
-      isBidValid: {
-        solution_decription: false,
-        price: false,
-        time_to_fix: false,
-        when: false
-      },
       listingUser: {
         username: null,
-        rating: 0,
-        bidsCount: 0,
-        minBidPrice: 0
+        rating: 0
       },
-      postSuccessfully: false
+      postSuccessfully: false,
+      sendReq: false,
+      msg: null
     };
   }
 
@@ -56,11 +43,6 @@ class FullListing extends Component {
       .then(response => {
         const rating = response.data.data.rating;
         this.setState({
-          bid: {
-            ...this.state.bid,
-            LID: lid,
-            UID: this.context.userId
-          },
           listingUser: {
             ...this.state.listingUser,
             username: username,
@@ -71,94 +53,25 @@ class FullListing extends Component {
       .catch(error => {
         console.log(`error:${JSON.stringify(error)}`);
       });
-
-    axios
-      .get(`http://localhost:4567/api/bids/${lid}/min`, {
-        headers: {
-          Authorization: this.context.token
-        }
-      })
-      .then(response => {
-        const bidsCount = response.data.data.count;
-        const minBidPrice = response.data.data.price;
-        this.setState({
-          listingUser: {
-            ...this.state.listingUser,
-            bidsCount: bidsCount,
-            minBidPrice: minBidPrice
-          }
-        });
-      })
-      .catch(error => {
-        console.log(`error:${JSON.stringify(error)}`);
-      });
   }
 
-  handleBid() {
-    axios
-      .post("http://localhost:4567/api/bids", this.state.bid, {
-        headers: {
-          Authorization: this.context.token
-        }
-      })
-      .then(response => {
-        console.log("response.data.status" + response.data.status);
-        if (response.data.status === "SUCCESS") {
-          this.setState({
-            postSuccessfully: true
-          });
-        }
-      });
-  }
-
-  onSolutionDescrChanged(event) {
+  setSendReq() {
     this.setState({
-      bid: {
-        ...this.state.bid,
-        solution_decription: event.target.value
-      }
+      sendReq: true
     });
   }
-  onPriceChanged(event) {
-    const price = event.target.value;
-    if (price < this.props.listing[0].max_price) {
-      this.setState({
-        bid: {
-          ...this.state.bid,
-          price: price
-        }
-      });
-    } else {
-      alert(`max price = ${this.props.listing[0].max_price}`);
-      event.target.value = this.state.bid.price;
-    }
+
+  successReq() {
+    this.setState({
+      postSuccessfully: true,
+      sendReq: false
+    });
   }
-  onTimeToFixChanged(event) {
-    const time = event.target.value;
-    if (time > 0) {
-      this.setState({
-        bid: {
-          ...this.state.bid,
-          time_to_fix: time
-        }
-      });
-    } else {
-      alert("time to fix must be > 0");
-    }
-  }
-  onWhenChanged(event) {
-    const when = event.target.value;
-    if (new Date(when) >= new Date()) {
-      this.setState({
-        bid: {
-          ...this.state.bid,
-          when: event.target.value
-        }
-      });
-    } else {
-      alert("Date must be at least today");
-      event.target.value = this.state.bid.when;
-    }
+
+  setMsg(msg) {
+    this.setState({
+      msg: msg
+    });
   }
 
   render() {
@@ -193,7 +106,7 @@ class FullListing extends Component {
       <Form.Group as={Form.Row} className="col-12">
         <img className="mr-2" src={UserIcon} alt="UserIcon"></img>
         <Form.Label className="mr-1 mt-1">Posted By:</Form.Label>
-        <Form.Label className="bold mr-1 mt-1">
+        <Form.Label className="bold mr-1 mt-1 onHoverBluePointer">
           {this.state.listingUser.username}
         </Form.Label>
         <div className="pb-2">
@@ -205,6 +118,45 @@ class FullListing extends Component {
       </Form.Group>
     );
 
+    const showBidForm = !(this.props.path === "/user/reviews");
+
+    const form = showBidForm ? (
+      <BidForm
+        key="BidForm"
+        sendReq={this.state.sendReq}
+        listing={listing}
+        setSuccess={this.successReq.bind(this)}
+        setMsg={msg => this.setMsg(msg)}
+      />
+    ) : (
+      <ReviewForm
+        key="ReviewForm"
+        UID={listing[0].UID}
+        LID={listing[0].LID}
+        setMsg={msg => this.setMsg(msg)}
+        sendReq={this.state.sendReq}
+        setSuccess={this.successReq.bind(this)}
+      />
+    );
+
+    const feedbackAlert = showBidForm ? (
+      <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
+        <SuccessAlert
+          title="Bid Posted Successfully"
+          msg={this.state.msg}
+          // redirectPath="/listings"
+          modalHide={this.props.onHide}
+        />
+      </Modal>
+    ) : (
+      <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
+        <SuccessAlert
+          title="Review Posted Successfully"
+          msg={this.state.msg}
+          modalHide={this.props.onHide}
+        />
+      </Modal>
+    );
     return (
       <div>
         {listing[0] && !this.state.postSuccessfully ? (
@@ -218,7 +170,7 @@ class FullListing extends Component {
               </Modal.Header>
               <Modal.Body>
                 <div className="container">
-                  <div className="border border-info row d-flex justify-content-center">
+                  <div className="border border-info rounded row d-flex justify-content-center">
                     <div className="lg-border-right sm-border-bottom border-info col-lg-4 col-sm-8">
                       <div className="row my-4 slef-item-center">
                         {/* <img className="img-responsive pic col-sm-12" id="mainPic" src={data}  alt="pic"></img> */}
@@ -226,94 +178,10 @@ class FullListing extends Component {
                       </div>
                     </div>
                     <div className="col-lg-8 col-sm-12 py-4 px-3">
-                      <Form>
-                        <Form.Group>
-                          <Form.Label className="col-12 bold">
-                            {listing[0].title}
-                          </Form.Label>
-                          <Form.Label className="col-12">
-                            {listing[0].description}
-                          </Form.Label>
-                          <Form.Label className="col-4">Category:</Form.Label>
-                          <Form.Label className="col-8">
-                            {listing[0].jobCategory}
-                          </Form.Label>
-                          <Form.Label className="col-4">Location:</Form.Label>
-                          <Form.Label className="col-8">
-                            {listing[0].location}
-                          </Form.Label>
-                          <Form.Label className="col-4">
-                            available from:
-                          </Form.Label>
-                          <Form.Label className="col-8">
-                            {listing[0].available_from}
-                          </Form.Label>
-                          <Form.Label className="col-4">
-                            available until:
-                          </Form.Label>
-                          <Form.Label className="col-8">
-                            {listing[0].available_until}
-                          </Form.Label>
-                          <Form.Label className="col-4">Max price:</Form.Label>
-                          <Form.Label className="col-8">
-                            {listing[0].max_price}€
-                          </Form.Label>
-                        </Form.Group>
-                      </Form>
+                      <ListingDetails listing={listing} />
                     </div>
                     <div className="col-lg-12 col-sm-12 py-4 px-3 border-top border-info">
-                      <Form>
-                        <Form.Group as={Form.Row}>
-                          <Form.Label className="col-4 mb-3">
-                            Lowest Bid:
-                          </Form.Label>
-                          <Form.Label className="col-8 bold redColor mb-3">
-                            {this.state.listingUser.minBidPrice}€
-                            {` ( ${this.state.listingUser.bidsCount} bid${
-                              this.state.listingUser.bidsCount > 1 ? "s" : ""
-                            } )`}
-                          </Form.Label>
-                          <Form.Label className="col-4 pt-1">
-                            Your Bid:
-                          </Form.Label>
-                          <Form.Control
-                            type="Number"
-                            className="col-8"
-                            placeholder="€"
-                            onChange={this.onPriceChanged.bind(this)}
-                            // required
-                          />
-                          <Form.Label className="col-4 mt-1">
-                            Your Solution:
-                          </Form.Label>
-                          <Form.Control
-                            as="textarea"
-                            rows="3"
-                            placeholder="Solution Description"
-                            className="col-8 mt-1"
-                            onChange={this.onSolutionDescrChanged.bind(this)}
-                            // required
-                          />
-
-                          <Form.Label className="col-4 pt-1">When:</Form.Label>
-                          <Form.Control
-                            type="Date"
-                            className="col-8 mt-1"
-                            onChange={this.onWhenChanged.bind(this)}
-                            // required
-                          />
-                          <Form.Label className="col-4 pt-1">
-                            Time To Fix It:
-                          </Form.Label>
-                          <Form.Control
-                            type="Number"
-                            className="col-8 mt-1"
-                            placeholder="Time to fix it in minutes"
-                            onChange={this.onTimeToFixChanged.bind(this)}
-                            // required
-                          />
-                        </Form.Group>
-                      </Form>
+                      {!this.state.postSuccessfully ? form : null}
                     </div>
                   </div>
                 </div>
@@ -322,25 +190,15 @@ class FullListing extends Component {
                 <Button
                   className="align-self-end"
                   variant="primary"
-                  onClick={this.handleBid.bind(this)}
+                  onClick={this.setSendReq.bind(this)}
                 >
-                  Bid
+                  {showBidForm ? "Bid" : "Review"}
                 </Button>
               </Modal.Footer>
             </Modal>
           </>
         ) : (
-          <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
-            <SuccessAlert
-              title="Bid Posted Successfully"
-              msg={`Bid price: ${this.state.bid.price}\n
-                    Solution: ${this.state.bid.solution_decription}\n
-                    Fixing Time: ${this.state.bid.time_to_fix}\n
-                    when: ${this.state.bid.when} `}
-              redirectPath="/listings"
-              modalHide={this.props.onHide}
-            />
-          </Modal>
+          feedbackAlert
         )}
       </div>
     );

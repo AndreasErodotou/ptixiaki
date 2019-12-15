@@ -3,69 +3,100 @@ import React, { Component } from "react";
 import Listing from "../components/Listings/Listing";
 import Template from "./templates/TemplatePage";
 import axios from "axios";
+import AuthContext from "../context/auth-context";
+import FullListing from "./FullListingPage";
+
 class ReviewsPage extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      reviewClicked: null,
-      reviews: [],
+      showFullListing: false,
+      listingClicked: [],
+      listings: [],
 
       filterCategories: ["Electrician", "Hydraulic", "Engineer"],
       filterLocations: ["Nicosia", "Heraklion", "Athens"]
     };
   }
-
+  static contextType = AuthContext;
   componentDidMount() {
-    let jwtToken = localStorage.getItem("myJwtToken");
     axios
-      .get(`http://localhost:4567/api/reviews`, {
-        headers: {
-          Authorization: jwtToken
+      .get(
+        `http://localhost:4567/api/users/${this.context.username}/listings`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
         }
-      })
+      )
       .then(response => {
         console.log(response);
         this.setState({
-          reviews: response.data.data
+          listings: [...response.data.data]
         });
       })
       .catch(error => {
         if (error.response === undefined) {
-          //   return this.props.history.push("/signin");
+          // return this.props.history.push("/signin");
         }
         console.log(`error:${JSON.stringify(error)}`);
       });
   }
 
-  reviewClickedModalHandler(RID) {
+  listingClickedModalHandler(LID) {
     this.setState({
       ...this.state,
-      // showFullListing: true,
-      reviewClicked: this.state.reviews.filter(review => {
-        return review.RID === RID;
+      showFullListing: true,
+      listingClicked: this.state.listings.filter(listing => {
+        return listing.LID === LID;
       })
     });
   }
 
+  handlefullLClose() {
+    this.setState({
+      ...this.state,
+      showFullListing: false
+    });
+  }
+
   render() {
-    let content = this.state.reviews.map(review => {
+    let listings = this.state.listings.map(listing => {
       return (
         <Listing
-          key={review.RID}
-          title={review.title}
-          imgsrc={review.pics}
-          descr={review.description}
-          reviewsClicked={() => this.reviewClickedModalHandler(review.RID)}
+          key={listing.LID}
+          username={listing.UID}
+          title={listing.title}
+          imgsrc={listing.pics}
+          descr={listing.description}
+          maxPrice={listing.max_price}
+          buttonTitle={"Review"}
+          listingClicked={() => this.listingClickedModalHandler(listing.LID)}
         />
       );
     });
+
+    const fullListing = this.state.showFullListing ? (
+      <FullListing
+        key="FullListing"
+        listing={this.state.listingClicked}
+        onHide={this.handlefullLClose.bind(this)}
+        show={true}
+        path={this.props.location.pathname}
+      />
+    ) : null;
+
+    let content = [];
+    // content.push(`loc:${JSON.stringify(this.props.location)}`);
+    content.push(listings);
+    content.push(fullListing);
 
     return (
       <Template
         categories={this.state.filterCategories}
         locations={this.state.filterLocations}
-        // content={content}
+        content={content}
       />
     );
   }

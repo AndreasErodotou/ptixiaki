@@ -14,14 +14,3 @@
   white-space: nowrap;
   min-width: 7.8rem;
 }
-
-.link {
-  display: block;
-  padding: 3px 20px;
-  clear: both;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #333;
-  white-space: nowrap;
-  min-width: 7.8rem;
-}

@@ -8,7 +8,7 @@ import Button from "react-bootstrap/Button";
 const Listing = props => {
   return (
     <Card
-      className="border-primary  m-2 shadow onHoverBackroundColor"
+      className="border-info  m-2 shadow onHoverBackroundColor"
       style={{ width: "16rem" }}
       onClick={props.listingClicked}
     >
@@ -19,17 +19,25 @@ const Listing = props => {
         alt="img.."
       />
       <Card.Body>
-        <Card.Title>{props.title}</Card.Title>
-        <Card.Text>{props.descr}</Card.Text>
+        <Card.Title className="font-weight-bold">
+          {props.title.length > 15
+            ? `${props.title.substring(0, 15)}...`
+            : props.title}
+        </Card.Title>
+        <Card.Subtitle className="font-italic blue-color">{`(Max price: ${props.maxPrice}€)`}</Card.Subtitle>
+        <Card.Text>
+          {props.descr.length > 70
+            ? `${props.descr.substring(0, 70)}...`
+            : props.descr}
+        </Card.Text>
       </Card.Body>
+      <footer className="blockquote-footer">
+        Created by: <cite title="Source Title">{props.username}</cite>
+      </footer>
       <Button style={{ margin: "2%" }} variant="primary">
-        Bid Now
+        {props.buttonTitle}
       </Button>
-      {/* <footer className="blockquote-footer">
-        Created by: <cite title="Source Title">testUser</cite>
-      </footer> */}
     </Card>
-    // </div>
   );
 };
 
