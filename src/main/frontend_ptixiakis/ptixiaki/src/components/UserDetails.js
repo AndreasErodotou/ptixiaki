@@ -37,7 +37,7 @@ const UserDetails = ({ user }) => {
     <Form.Group as={Form.Row} className="col-md-6 col-sm-12" key={index}>
       <Form.Label className="w-25">{label}</Form.Label>
       <Form.Label
-        className={`bold  ${label === "About Me:" ? "w-75" : "w-25"}`}
+        className={`bold  w-75`}
       >
         {user[profKeys[index]]}
       </Form.Label>
@@ -51,10 +51,10 @@ const UserDetails = ({ user }) => {
           {user.UID}
         </Form.Label>
         <div className="mt-1">
-          <Rating rating={user.rating} />
+          <Rating rating={user.reviewsRating} />
         </div>
-        <Form.Text className="ml-1 mt-2 bold">{`( ${user.rating} )`}</Form.Text>
-        <Form.Text className="ml-5 mt-2 bold">{`Reviews ( ${user.count} )`}</Form.Text>
+        <Form.Text className="ml-1 mt-2 bold">{`( ${user.reviewsCount} )`}</Form.Text>
+        {/* <Form.Text className="ml-5 mt-2 bold">{`Reviews ( ${user.count} )`}</Form.Text> */}
       </Form.Group>
 
       {formLabels}

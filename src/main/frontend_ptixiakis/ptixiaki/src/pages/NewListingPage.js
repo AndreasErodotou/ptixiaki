@@ -38,7 +38,7 @@ class NewListing extends Component {
         title: "test",
         description: "test",
         pics: [],
-        available_from: "2019-04-05",
+        available_from: "2019-04-05T10:30",
         available_until: "2019-04-05",
         location: "NICOSIA",
         jobCategory: "test",
@@ -116,8 +116,6 @@ class NewListing extends Component {
         title: document.getElementById("Title").value,
         description: document.getElementById("Description").value,
         pics: [...this.state.newListing.pics],
-        available_from: document.getElementById("Available From").value,
-        available_until: document.getElementById("Available Until").value,
         max_price: document.getElementById("Max Price").value
       },
       post: true
@@ -174,23 +172,48 @@ class NewListing extends Component {
   }
 
   availableFromChanged(event) {
-    let availableFrom = event.target.value;
-    console.log(`available from: ${availableFrom}`);
+    let avail = event.target.value;
+    console.log(`available from: ${avail}`);
+    let tmpDate= this.state.newListing.available_from.split('T');
     this.setState({
       newListing: {
         ...this.state.newListing,
-        available_from: availableFrom
+        available_from: `${avail}T${tmpDate[1]}`
       }
     });
   }
 
   availableUntilChanged(event) {
-    let availableUntil = event.target.value;
-    console.log(`available Until: ${availableUntil}`);
+    let avail = event.target.value;
+    console.log(`available Until: ${avail}`);
+    let tmpDate= this.state.newListing.available_from.split('T');
     this.setState({
       newListing: {
         ...this.state.newListing,
-        available_until: availableUntil
+        available_until: `${avail}T${tmpDate[1]}`
+      }
+    });
+  }
+
+  availTimeChanged(event) {
+    let avail = event.target.value;
+    console.log(`available: ${avail}`);
+    let tmpDate= this.state.newListing.available_from.split('T');
+    this.setState({
+      newListing: {
+        ...this.state.newListing,
+        available_from: `${tmpDate[0]}T${avail}`
+      }
+    });
+  }
+  untilTimeChanged(event) {
+    let avail = event.target.value;
+    console.log(`available Until time: ${avail}`);
+    let tmpDate= this.state.newListing.available_from.split('T');
+    this.setState({
+      newListing: {
+        ...this.state.newListing,
+        available_until: `${tmpDate[0]}T${avail}`
       }
     });
   }
@@ -282,11 +305,13 @@ class NewListing extends Component {
               fieldName="Available From"
               type="date"
               onChange={this.availableFromChanged.bind(this)}
+              onTimeChange={this.availTimeChanged.bind(this)}
             />
             <NewListingField
               fieldName="Available Until"
               type="date"
               onChange={this.availableUntilChanged.bind(this)}
+              onTimeChange={this.untilTimeChanged.bind(this)}
             />
 
             <div className="d-flex justify-content-end">

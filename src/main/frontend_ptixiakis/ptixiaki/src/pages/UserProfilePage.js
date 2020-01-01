@@ -22,11 +22,18 @@ class UserProfilePage extends Component {
   static contextType = AuthContent;
 
   componentDidMount() {
-    console.log(
-      `cmd user profile page context:${JSON.stringify(this.context)}`
-    );
+    const path=window.location.pathname;
+    console.log(`pathname:${window.location.pathname}`);
+    // console.log(`props pathname:${this.props.location.pathname}`);
+    // if(window.location.pathname=='profile')
+    //   username = this.context.username;
+    // else
+    //   username = window.location.pathname;
+    // console.log(
+    //   `user profile page context:${JSON.stringify(this.context)}`
+    // );
     axios
-      .get(`http://localhost:4567/api/users/${this.context.username}`, {
+      .get(`http://localhost:4567/api${path}`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }
@@ -45,7 +52,7 @@ class UserProfilePage extends Component {
 
     axios
       .get(
-        `http://localhost:4567/api/users/${this.context.username}/reviews/rating`,
+        `http://localhost:4567/api${path}/reviews/rating`,
         {
           headers: {
             Authorization: localStorage.getItem("token")
@@ -66,7 +73,7 @@ class UserProfilePage extends Component {
 
     axios
       .get(
-        `http://localhost:4567/api/users/${this.context.username}/bids/selected/count`,
+        `http://localhost:4567/api${path}/bids/selected/count`,
         {
           headers: {
             Authorization: localStorage.getItem("token")
@@ -86,7 +93,7 @@ class UserProfilePage extends Component {
       });
 
     axios
-      .get(`http://localhost:4567/api/users/${this.context.username}/reviews`, {
+      .get(`http://localhost:4567/api${path}/reviews`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }

@@ -16,10 +16,14 @@ import java.sql.SQLException;
 public class ConnectionDB {
 
     private static Connection connection;
-    private final static String url = "jdbc:postgresql://localhost:5432/ptixiaki";
+//    private final static String url = "jdbc:postgresql://localhost:5432/ptixiaki";
+//    private final static String username = "postgres";
+//    private final static String password = "AndHer123!";
+
+    private final static String url = "DB:postgresql://localhost:5432/postgres";
     private final static String username = "postgres";
     private final static String password = "AndHer123!";
-
+    
     public static Connection getDatabaseConnection() throws ClassNotFoundException, SQLException {
         try {
             Class.forName("org.postgresql.Driver");

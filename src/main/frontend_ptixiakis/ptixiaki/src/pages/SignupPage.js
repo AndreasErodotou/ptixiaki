@@ -54,7 +54,7 @@ class Signup extends React.Component {
         accountType: "",
         jobs: [],
         servedLoc: [],
-        jobExp: "",
+        work_exp: "",
         aboutMe: ""
       },
       isValid: {
@@ -70,7 +70,7 @@ class Signup extends React.Component {
         accountType: false,
         jobs: false,
         servedLoc: false,
-        jobExp: false,
+        work_exp: false,
         aboutMe: false
       },
       signupSuccess: false
@@ -95,7 +95,7 @@ class Signup extends React.Component {
           this.state.user.accountType === "CUSTOMER" &&
           (keys[key] === "jobs" ||
             keys[key] === "servedLoc" ||
-            keys[key] === "jobExp" ||
+            keys[key] === "work_exp" ||
             keys[key] === "aboutMe")
         ) {
           //                   do nothing
@@ -396,18 +396,18 @@ class Signup extends React.Component {
     });
   }
 
-  jobExpChanged(event) {
-    const jobExp = event.target.value;
-    const isMatch = jobExp.match("[0-9]+") ? true : false;
+  work_expChanged(event) {
+    const work_exp = event.target.value;
+    const isMatch = work_exp.match("[0-9]+") ? true : false;
 
     this.setState({
       user: {
         ...this.state.user,
-        jobExp: isMatch ? jobExp : this.state.jobExp
+        work_exp: isMatch ? work_exp : this.state.work_exp
       },
       isValid: {
         ...this.state.isValid,
-        jobExp: jobExp >= 0 && jobExp.match("[0-9]{1,2}") ? true : false
+        work_exp: work_exp >= 0 && work_exp.match("[0-9]{1,2}") ? true : false
       }
     });
   }
@@ -553,10 +553,10 @@ class Signup extends React.Component {
                   <SignupField
                     field="Job Experience"
                     type="text"
-                    onChange={this.jobExpChanged.bind(this)}
+                    onChange={this.work_expChanged.bind(this)}
                     placeholder="Years"
-                    stateNow={this.state.user.jobExp}
-                    isValid={this.state.isValid.jobExp}
+                    stateNow={this.state.user.work_exp}
+                    isValid={this.state.isValid.work_exp}
                   />
 
                   <SignupField

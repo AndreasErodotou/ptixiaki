@@ -12,6 +12,8 @@ import SuccessAlert from "../components/SuccessAlert";
 import ListingDetails from "../components/Listings/ListingDetails";
 import BidForm from "../components/BidForm";
 import ReviewForm from "../components/ReviewForm";
+import { Route } from "react-router-dom";
+import {Link} from "react-router-dom"
 // import ModalDialog from "react-bootstrap/ModalDialog";
 
 class FullListing extends Component {
@@ -21,7 +23,8 @@ class FullListing extends Component {
     this.state = {
       listingUser: {
         username: null,
-        rating: 0
+        rating: 0,
+        reviews: 0
       },
       postSuccessfully: false,
       sendReq: false,
@@ -74,6 +77,10 @@ class FullListing extends Component {
     });
   }
 
+  goToUserProfile(){
+      // this.history.push(`/user/profile/${this.state.listingUser.username}`);
+  }
+
   render() {
     const listing = this.props.listing;
     let otherPics = null;
@@ -106,14 +113,14 @@ class FullListing extends Component {
       <Form.Group as={Form.Row} className="col-12">
         <img className="mr-2" src={UserIcon} alt="UserIcon"></img>
         <Form.Label className="mr-1 mt-1">Posted By:</Form.Label>
-        <Form.Label className="bold mr-1 mt-1 onHoverBluePointer">
-          {this.state.listingUser.username}
+        <Form.Label className="bold mr-1 mt-1 onHoverBluePointer" onClick={this.goToUserProfile.bind(this)}> 
+         <Link to= {`/users/${this.state.listingUser.username}`} > {this.state.listingUser.username} </Link>
         </Form.Label>
         <div className="pb-2">
           <Rating rating={this.state.listingUser.rating} />
         </div>
         <Form.Text className="ml-1 mt-2">
-          ({this.state.listingUser.rating})
+          ({this.state.listingUser.reviews})
         </Form.Text>
       </Form.Group>
     );

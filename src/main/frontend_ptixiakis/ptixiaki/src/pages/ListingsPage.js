@@ -28,7 +28,7 @@ class Listings extends React.Component {
     axios
       .get(
         `http://localhost:4567/api${
-          this.props.location.pathname === "/user/listings" ? url2 : url1
+          this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
         }`,
         {
           headers: {

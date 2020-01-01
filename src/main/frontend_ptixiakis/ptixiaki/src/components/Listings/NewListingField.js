@@ -41,6 +41,7 @@ const NewListingField = props => {
             type="time"
             id={props.fieldName}
             placeholder={props.fieldName}
+            onChange={props.onTimeChange}
           />
         </div>
       );

@@ -6,6 +6,7 @@
 package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.db.ListingDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
@@ -54,8 +55,10 @@ public class ListingAPI implements DataApi {
 
     @Override
     public String add(Request req, Response res) throws ClassNotFoundException {
-        Listing listing = new Gson().fromJson(req.body(), Listing.class);
+        System.out.println("request body:" + req.body());
+        Listing listing = new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().fromJson(req.body(), Listing.class);
         listing.setLID(UUID.randomUUID().toString());
+        System.out.println("listing available from: "+listing.getAvailable_from());
         ServerResponseAPI serverRes = listingDB.add(listing);
         return new Gson().toJson(serverRes);
     }

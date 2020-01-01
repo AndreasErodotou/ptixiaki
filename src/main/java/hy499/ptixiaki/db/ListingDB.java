@@ -6,6 +6,7 @@
 package hy499.ptixiaki.db;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import hy499.ptixiaki.data.Professional.Locations;
@@ -15,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -48,8 +50,8 @@ public final class ListingDB implements DB<Listing> {
                         .append(" TITLE    VARCHAR(100)    NOT NULL, ")
                         .append(" DESCRIPTION  TEXT, ")
                         .append(" PICS  TEXT[], ")
-                        .append(" START  DATE   NOT NULL, ")
-                        .append(" EXPIRE  DATE  NOT NULL, ")
+                        .append(" START  TIMESTAMP    NOT NULL, ")
+                        .append(" EXPIRE  TIMESTAMP   NOT NULL, ")
                         .append(" LOCATION  VARCHAR(50) NOT NULL, ")
                         .append(" CATEGORY  VARCHAR(50) NOT NULL, ")
                         .append(" MAX_PRICE    REAL NOT NULL, ")
@@ -76,8 +78,8 @@ public final class ListingDB implements DB<Listing> {
             Array a = res.getArray("PICS");
             String[][] str = (String[][]) a.getArray();
             listing.setPics(new ArrayList<>(Arrays.asList(str[0])));
-            listing.setAvailable_from(res.getDate("START"));
-            listing.setAvailable_until(res.getDate("EXPIRE"));
+            listing.setAvailable_from(res.getTimestamp("START"));
+            listing.setAvailable_until(res.getTimestamp("EXPIRE"));
             listing.setLocation(Locations.valueOf(res.getString("LOCATION")));
             listing.setJobCategory(res.getString("CATEGORY"));
             listing.setMax_price(res.getDouble("MAX_PRICE"));
@@ -109,7 +111,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("User Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new Gson().toJsonTree(listings.values()).getAsJsonArray());
+            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listings.values()).getAsJsonArray());
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -139,7 +141,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("All Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new Gson().toJsonTree(listing));
+            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listing));
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -174,7 +176,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("All Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new Gson().toJsonTree(listings.values()).getAsJsonArray());
+            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listings.values()).getAsJsonArray());
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);

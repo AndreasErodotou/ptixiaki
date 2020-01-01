@@ -36,7 +36,7 @@ const NavBar = props => {
   const [show, setShow] = useState(false);
   const menuClass = `dropdown-menu ${show ? " show" : ""}`;
   const dropdown = [
-    "Profile",
+    "Users",
     "Listings",
     "Reviews",
     "Bids",
@@ -50,9 +50,9 @@ const NavBar = props => {
         className="link"
         role="menuitem"
         tabIndex="-1"
-        to={`/user/${category.toLowerCase()}`}
+        to={`/${category.toLowerCase()}/${authContext.username}`}
       >
-        {category}
+        {(category==="Users")? "Profile":category}
       </Link>
     </li>
   ));
@@ -91,20 +91,24 @@ const NavBar = props => {
               </button>
             </Link>
           </div>
+          {(authContext.accountType === "CUSTOMER")?
           <div className="col-md-4  col-12 order-sm-4 order-md-2">
+          
             <img
               className="img-responsive onHover"
               src={AddIcon}
               alt="AddIcon"
             ></img>
-
+            
             <Link
-              to="listings/create"
+              to="create-listing"
               onClick={props.onCreateYourOwnListingClicked}
             >
               Create Your Own Listing
             </Link>
+            
           </div>
+          : <div className="col-md-4  col-12 order-sm-4 order-md-2"></div>}
 
           <div className="col-md-1 col-2 order-sm-1 order-md-4">
             <img
@@ -116,7 +120,7 @@ const NavBar = props => {
               alt="UserIcon"
             ></img>
 
-            <ul className={menuClass} role="menu" aria-labelledby="menu1">
+            <ul className={menuClass} role="menu" aria-labelledby="menu1" style={{"left": "-33px"}}>
               {dropdownList}
               <li role="presentation" className="divider blue"></li>
               <li role="presentation">
