@@ -427,7 +427,7 @@ public final class BidDB implements DB<Bid> {
                     bids.put(bid.getBID(), bid);
                 }
 
-                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new Gson().toJsonTree(bids));
+                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new Gson().toJsonTree(bids.values()).getAsJsonArray());
                 stmt.close();
                 con.close();
             }

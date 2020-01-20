@@ -9,11 +9,11 @@ class BidForm extends Component {
 
     this.state = {
       bid: {
-        UID: this.props.listing[0].UID,
+        UID: null,
         LID: this.props.listing[0].LID,
-        solution_decription: null,
-        price: null,
-        time_to_fix: null,
+        solution_decription: "",
+        price: 0,
+        time_to_fix: 0,
         when: null,
         selected: false
       },
@@ -26,7 +26,8 @@ class BidForm extends Component {
       bidGeneralInfo: {
         bidsCount: -1,
         minBidPrice: -1
-      }
+      },
+      isBidExists: null
     };
   }
   static contextType = AuthContext;
@@ -34,6 +35,41 @@ class BidForm extends Component {
   componentDidUpdate() {
     if (this.props.sendReq) {
       this.handleBid();
+    }
+
+    if (this.state.isBidExists === null) {
+      axios
+        .get(`http://localhost:4567/api/users/${this.context.username}/listings/${this.props.listing[0].LID}/bids`, {
+          headers: {
+            Authorization: this.context.token
+          }
+        })
+        .then(response => {
+          console.log(
+            "get bid: response.data" + JSON.stringify(response.data)
+          );
+          if (response.data.status === "SUCCESS") {
+            console.log("SUCCESS");
+            this.setState({
+              bid: { 
+                ...response.data.data[0],
+                when: new Date(response.data.data[0].when).toLocaleDateString('en-CA').replace(/\//g,'-')
+              },
+              isBidValid: {
+                solution_decription: true,
+                price: true,
+                time_to_fix: true,
+                when: true
+              },
+              isBidExists: true
+            });
+          } else {
+            this.setState({
+              isBidExists: false
+            });
+          }
+        })
+        .catch(error => console.log(`Error${JSON.stringify(error)}`));
     }
 
     if (this.state.bidGeneralInfo.bidsCount === -1) {
@@ -63,8 +99,12 @@ class BidForm extends Component {
   }
 
   handleBid() {
-    axios
-      .post("http://localhost:4567/api/bids", this.state.bid, {
+    if(this.checkValidity()){
+      let data = this.state.bid
+      data.UID = this.context.username;
+      if(this.state.isBidExists){
+        axios
+      .put(`http://localhost:4567/api/bids/${this.state.bid.BID}`, data, {
         headers: {
           Authorization: this.context.token
         }
@@ -76,10 +116,35 @@ class BidForm extends Component {
                       Solution: ${this.state.bid.solution_decription}\n
                       Fixing Time: ${this.state.bid.time_to_fix}\n
                       when: ${this.state.bid.when} `;
-          this.props.setMsg(msg);
-          this.props.setSuccess();
+          this.props.setSuccess(msg);
         }
       });
+      }else{
+        axios
+          .post("http://localhost:4567/api/bids", data, {
+            headers: {
+              Authorization: this.context.token
+            }
+          })
+          .then(response => {
+            console.log("response.data.status" + response.data.status);
+            if (response.data.status === "SUCCESS") {
+              const msg = `Bid price: ${this.state.bid.price}\n
+                          Solution: ${this.state.bid.solution_decription}\n
+                          Fixing Time: ${this.state.bid.time_to_fix}\n
+                          when: ${this.state.bid.when} `;
+              this.props.setSuccess(msg);
+            }
+          });
+        }
+      }
+  }
+
+  checkValidity(){
+    return this.state.isBidValid.price &&
+          this.state.isBidValid.solution_decription &&
+          this.state.isBidValid.time_to_fix &&
+          this.state.isBidValid.when 
   }
 
   onSolutionDescrChanged(event) {
@@ -87,6 +152,10 @@ class BidForm extends Component {
       bid: {
         ...this.state.bid,
         solution_decription: event.target.value
+      },
+      isBidValid: {
+        ...this.state.isBidValid,
+        solution_decription: true,
       }
     });
   }
@@ -97,10 +166,14 @@ class BidForm extends Component {
         bid: {
           ...this.state.bid,
           price: price
+        },
+        isBidValid: {
+          ...this.state.isBidValid,
+          price: true
         }
       });
     } else {
-      alert(`max price = ${this.props.listing[0].max_price}`);
+      // alert(`max price = ${this.props.listing[0].max_price}`);
       event.target.value = this.state.bid.price;
     }
   }
@@ -111,10 +184,14 @@ class BidForm extends Component {
         bid: {
           ...this.state.bid,
           time_to_fix: time
+        },
+        isBidValid: {
+          ...this.state.isBidValid,
+          time_to_fix: true
         }
       });
     } else {
-      alert("time to fix must be > 0");
+      // alert("time to fix must be > 0");
     }
   }
   onWhenChanged(event) {
@@ -124,10 +201,14 @@ class BidForm extends Component {
         bid: {
           ...this.state.bid,
           when: event.target.value
+        },
+        isBidValid: {
+          ...this.state.isBidValid,
+          when: true
         }
       });
     } else {
-      alert("Date must be at least today");
+      // alert("Date must be at least today");
       event.target.value = this.state.bid.when;
     }
   }
@@ -149,6 +230,7 @@ class BidForm extends Component {
             className="col-8"
             placeholder="€"
             onChange={this.onPriceChanged.bind(this)}
+            value={this.state.bid.price}
             // required
           />
           <Form.Label className="col-4 mt-1">Your Solution:</Form.Label>
@@ -158,6 +240,7 @@ class BidForm extends Component {
             placeholder="Solution Description"
             className="col-8 mt-1"
             onChange={this.onSolutionDescrChanged.bind(this)}
+            value={this.state.bid.solution_decription}
             // required
           />
 
@@ -166,6 +249,7 @@ class BidForm extends Component {
             type="Date"
             className="col-8 mt-1"
             onChange={this.onWhenChanged.bind(this)}
+            value={this.state.bid.when}
             // required
           />
           <Form.Label className="col-4 pt-1">Time To Fix It:</Form.Label>
@@ -174,6 +258,7 @@ class BidForm extends Component {
             className="col-8 mt-1"
             placeholder="Time to fix it in minutes"
             onChange={this.onTimeToFixChanged.bind(this)}
+            value={this.state.bid.time_to_fix}
             // required
           />
         </Form.Group>

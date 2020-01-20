@@ -79,7 +79,8 @@ class Listings extends React.Component {
           descr={listing.description}
           maxPrice={listing.max_price}
           buttonTitle={
-            this.props.location.pathname === "/user/listings"
+            this.context.accountType === "CUSTOMER"
+            // this.props.location.pathname === "/user/listings"
               ? "Show Bids"
               : "Bid Now"
           }

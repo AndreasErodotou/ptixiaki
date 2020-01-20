@@ -41,6 +41,19 @@
   cursor: pointer;
 }
 
+.backround-blue {
+  /* background-color: #17a2b8; */
+  /* width: 4%; */
+
+  cursor: pointer;
+}
+
+.form-check-input{
+  width: 18px;
+  height: 18px;
+  position: absolute;
+}
+
 .bold {
   font-weight: bold;
 }
@@ -62,4 +75,16 @@
   color: #333;
   white-space: nowrap;
   min-width: 7.8rem;
+}
+
+.width-95{
+  width: 93%;
+}
+
+.width-90{
+  width: 90%;
+}
+
+.width-80{
+  width: 80%;
 }

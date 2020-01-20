@@ -63,7 +63,7 @@ public class ServiceLinkMain {
 
                 path("/:UID/listings", () -> {
 
-                    path(":LID/bids", () -> {
+                    path("/:LID/bids", () -> {
 
                         get("", (req, res) -> bidApi.getReqHandler(req, res));
 
@@ -72,6 +72,20 @@ public class ServiceLinkMain {
                         put("/:BID", (req, res) -> bidApi.edit(req, res));
 
                         delete("/:BID", (req, res) -> bidApi.delete(req, res));
+
+                    });
+                    
+                    path("/:LID/reviews", () -> {
+
+                        get("/rating", (req, res) -> reviewApi.getUserRating(req, res));
+
+                        get("", (req, res) -> reviewApi.getQuery(req, res));
+
+                        post("", (req, res) -> reviewApi.add(req, res));
+
+                        put("/:RID", (req, res) -> reviewApi.edit(req, res));
+
+                        delete("/:RID", (req, res) -> reviewApi.delete(req, res));
 
                     });
 

@@ -12,6 +12,8 @@ import SuccessAlert from "../components/SuccessAlert";
 import ListingDetails from "../components/Listings/ListingDetails";
 import BidForm from "../components/BidForm";
 import ReviewForm from "../components/ReviewForm";
+import BidsMade from "../components/BidsMade";
+
 import { Route } from "react-router-dom";
 import {Link} from "react-router-dom"
 // import ModalDialog from "react-bootstrap/ModalDialog";
@@ -28,14 +30,15 @@ class FullListing extends Component {
       },
       postSuccessfully: false,
       sendReq: false,
-      msg: null
+      msg: null,
+      selectedBid: null
     };
   }
 
   static contextType = AuthContext;
 
   componentDidMount() {
-    const lid = this.props.listing[0].LID;
+    // const lid = this.props.listing[0].LID;
     const username = this.props.listing[0].UID;
     axios
       .get(`http://localhost:4567/api/reviews/rating/${username}`, {
@@ -64,15 +67,10 @@ class FullListing extends Component {
     });
   }
 
-  successReq() {
+  successReq(msg) {
     this.setState({
       postSuccessfully: true,
-      sendReq: false
-    });
-  }
-
-  setMsg(msg) {
-    this.setState({
+      sendReq: false,
       msg: msg
     });
   }
@@ -125,31 +123,40 @@ class FullListing extends Component {
       </Form.Group>
     );
 
-    const showBidForm = !(this.props.path === "/user/reviews");
-
-    const form = showBidForm ? (
+    const showBidForm = (this.props.path === "/");
+      // alert("path: "+this.props.path);
+    let form = "The listing is active so you can't see bids made from other users...";
+    if(showBidForm && this.context.accountType!=="CUSTOMER"){
+    form = (
       <BidForm
         key="BidForm"
         sendReq={this.state.sendReq}
         listing={listing}
         setSuccess={this.successReq.bind(this)}
-        setMsg={msg => this.setMsg(msg)}
-      />
-    ) : (
+    />)
+    }else if (!showBidForm) {
+      form = (
       <ReviewForm
         key="ReviewForm"
         UID={listing[0].UID}
         LID={listing[0].LID}
-        setMsg={msg => this.setMsg(msg)}
+        sendReq={this.state.sendReq}
+        setSuccess={this.successReq.bind(this)}
+      />);
+    }else if(showBidForm && this.context.username===this.state.listingUser.username){
+      form = 
+      <BidsMade 
+        LID = {listing[0].LID}
         sendReq={this.state.sendReq}
         setSuccess={this.successReq.bind(this)}
       />
-    );
+      // form = "Here is the bids made for this listing, when you are ready choose one";
+    }
 
     const feedbackAlert = showBidForm ? (
       <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
         <SuccessAlert
-          title="Bid Posted Successfully"
+          title={this.context.accountType!=="CUSTOMER"?"Bid Posted Successfully":"Bid Selected"}
           msg={this.state.msg}
           // redirectPath="/listings"
           modalHide={this.props.onHide}
@@ -199,7 +206,7 @@ class FullListing extends Component {
                   variant="primary"
                   onClick={this.setSendReq.bind(this)}
                 >
-                  {showBidForm ? "Bid" : "Review"}
+                  {showBidForm? this.context.accountType!=="CUSTOMER"? "Bid": "Select" : "Review"}
                 </Button>
               </Modal.Footer>
             </Modal>

@@ -22,7 +22,7 @@ class ReviewForm extends Component {
         TO_UID: null,
         LID: this.props.LID,
         rating: 1,
-        comments: null
+        comments: ""
       },
       isReviewValid: {
         comments: false
@@ -39,7 +39,7 @@ class ReviewForm extends Component {
 
     if (this.state.reviewExists === null) {
       axios
-        .get(`http://localhost:4567/api/listings/${this.props.LID}/reviews`, {
+        .get(`http://localhost:4567/api/users/${this.props.UID}/listings/${this.props.LID}/reviews`, {
           headers: {
             Authorization: this.context.token
           }
@@ -48,9 +48,11 @@ class ReviewForm extends Component {
           console.log(
             "get review: response.data" + JSON.stringify(response.data)
           );
-          if (response.data.data.status === "SUCCESS") {
+          if (response.data.status === "SUCCESS") {
+            console.log("SUCCESS");
             this.setState({
-              review: { ...response.data.data },
+              review: { ...response.data.data[0] },
+              isReviewValid: {comments: true},
               reviewExists: true
             });
           } else {
@@ -65,6 +67,23 @@ class ReviewForm extends Component {
 
   handleReview() {
     if (this.state.isReviewValid.comments) {
+      if(this.state.reviewExists){
+        axios
+        .put(`http://localhost:4567/api/reviews/${this.state.review.RID}`, this.state.review, {
+          headers: {
+            Authorization: this.context.token
+          } 
+        })
+        .then(response => {
+          console.log("response.data.status " + response.data.status);
+          if (response.data.status === "SUCCESS") {
+            const msg = `rating: ${this.state.review.rating}\n
+                       comments: ${this.state.review.comments} `;
+            this.props.setSuccess(msg);
+          }
+        })
+        .catch(error => console.log(`Error${JSON.stringify(error.response)}`));
+      }else{
       axios
         .post("http://localhost:4567/api/reviews", this.state.review, {
           headers: {
@@ -74,15 +93,13 @@ class ReviewForm extends Component {
         .then(response => {
           console.log("response.data.status " + response.data.status);
           if (response.data.status === "SUCCESS") {
-            console.log("success 1!!!");
             const msg = `rating: ${this.state.review.rating}\n
                        comments: ${this.state.review.comments} `;
-            this.props.setMsg(msg);
-            this.props.setSuccess();
-            console.log("success 2!!!");
+            this.props.setSuccess(msg);
           }
         })
         .catch(error => console.log(`Error${JSON.stringify(error.response)}`));
+      }
     } else {
       alert("fileds are not valid...");
     }
@@ -110,6 +127,9 @@ class ReviewForm extends Component {
   }
 
   render() {
+    console.log(
+      "STATE:" + JSON.stringify(this.state)
+    );
     return (
       <Form>
         <Form.Group as={Form.Row}>
@@ -121,6 +141,7 @@ class ReviewForm extends Component {
             className="col-8"
             options={ratingArray}
             onChange={this.onRatingChanged.bind(this)}
+            value={this.state.review.rating}
           >
             {[1, 2, 3, 4, 5].map(num => (
               <option key={num}>{num}</option>
@@ -133,6 +154,7 @@ class ReviewForm extends Component {
             placeholder="More Details About Review"
             className="col-8 mt-1"
             onChange={this.onCommentsChanged.bind(this)}
+            value={this.state.review.comments}
             // required
           />
         </Form.Group>

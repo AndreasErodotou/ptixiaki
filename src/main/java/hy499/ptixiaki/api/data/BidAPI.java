@@ -6,6 +6,7 @@
 package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import hy499.ptixiaki.data.Bid;
 import hy499.ptixiaki.db.BidDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
@@ -64,29 +65,28 @@ public class BidAPI implements DataApi {
         System.out.println("Listings: getReqHandler");
         StringBuilder getQuery = new StringBuilder();
         Boolean test = false;
-        if (req.queryParams("BID") != null) {
-            getQuery.append("BID = ").append("'").append(req.queryParams("BID")).append("'");
-            test = true;
-        }
-        if (req.queryParams("LID") != null) {
+//        if (req.queryParams("BID") != null) {
+//            getQuery.append("BID = ").append("'").append(req.queryParams("BID")).append("'");
+//            test = true;
+//        }
+        if (req.params(":LID") != null) {
             getQuery.append((test) ? " and " : "");
-            getQuery.append(" LID = ").append("'").append(req.queryParams("LID")).append("'");
+            getQuery.append(" LID = ").append("'").append(req.params(":LID")).append("'");
             test = true;
         }
         if (req.params(":UID") != null) {
             getQuery.append((test) ? " and " : "");
-            getQuery.append("UID = ").append("'").append(req.queryParams("UID")).append("'");
-            test = true;
+            getQuery.append("UID = ").append("'").append(req.params(":UID")).append("'");
         }
-        if (req.queryParams("selected") != null) {
-            getQuery.append((test) ? " and " : "");
-            getQuery.append(" selected = ").append(req.queryParams("selected"));
-            test = true;
-        }
-        if (req.queryParams("COUNT") != null) {
-            getQuery.append((test) ? " and " : "");
-            getQuery.append("COUNT = ").append(req.queryParams("COUNT"));
-        }
+//        if (req.queryParams("selected") != null) {
+//            getQuery.append((test) ? " and " : "");
+//            getQuery.append(" selected = ").append(req.queryParams("selected"));
+//            test = true;
+//        }
+//        if (req.queryParams("COUNT") != null) {
+//            getQuery.append((test) ? " and " : "");
+//            getQuery.append("COUNT = ").append(req.queryParams("COUNT"));
+//        }
         if (!getQuery.toString().isEmpty()) {
             System.out.println(getQuery.toString());
             return getQuery(res, getQuery.toString());
