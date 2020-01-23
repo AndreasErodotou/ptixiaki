@@ -77,9 +77,11 @@ class ReviewForm extends Component {
         .then(response => {
           console.log("response.data.status " + response.data.status);
           if (response.data.status === "SUCCESS") {
+            const title="Review Edited";
+           
             const msg = `rating: ${this.state.review.rating}\n
                        comments: ${this.state.review.comments} `;
-            this.props.setSuccess(msg);
+            this.props.setSuccess(msg,title);
           }
         })
         .catch(error => console.log(`Error${JSON.stringify(error.response)}`));
@@ -93,9 +95,10 @@ class ReviewForm extends Component {
         .then(response => {
           console.log("response.data.status " + response.data.status);
           if (response.data.status === "SUCCESS") {
+            const title="Review Posted";
             const msg = `rating: ${this.state.review.rating}\n
                        comments: ${this.state.review.comments} `;
-            this.props.setSuccess(msg);
+            this.props.setSuccess(msg,title);
           }
         })
         .catch(error => console.log(`Error${JSON.stringify(error.response)}`));

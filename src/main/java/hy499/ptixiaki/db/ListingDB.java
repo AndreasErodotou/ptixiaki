@@ -88,6 +88,36 @@ public final class ListingDB implements DB<Listing> {
         }
         return listing;
     }
+    
+    public ServerResponseAPI search(String query)throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
+        Map<String, Listing> listings = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT * FROM LISTING ")
+                        .append("WHERE to_tsvector(title) ").append("@@ to_tsquery('").append(query).append("');");
+
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+
+                while (res.next() == true) {
+                    Listing listing = resToType(res);
+                    listings.put(listing.getLID(), listing);
+                }
+            }
+            serverRes.setMsg("Search Listings");
+            serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
+            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listings.values()).getAsJsonArray());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return serverRes;
+    }
 
     public ServerResponseAPI getUserListings(String UID) throws ClassNotFoundException {
         ServerResponseAPI serverRes = new ServerResponseAPI();

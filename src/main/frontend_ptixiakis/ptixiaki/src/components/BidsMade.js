@@ -34,12 +34,13 @@ const BidsMade = (props) => {
             console.log(JSON.stringify(response.data));
             }
             fetchData();
+            const title = "Bid Selected";
             const msg = `username: ${selectedBid.UID}\n
                         solution: ${selectedBid.solution_decription}\n
                         price: ${selectedBid.price}\n
                         time needed: ${selectedBid.time_to_fix}\n
                         when: ${selectedBid.when}`;
-            props.setSuccess(msg);
+            props.setSuccess(msg,title);
         }
     }, [props.sendReq,selectedBid]);
 

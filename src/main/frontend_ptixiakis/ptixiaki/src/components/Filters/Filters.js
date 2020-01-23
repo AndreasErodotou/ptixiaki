@@ -8,7 +8,7 @@ const Filters = props => {
   let locations = null;
   if (props.categories !== null) {
     categories = props.categories.map((category, indexed) => (
-      <Category key={indexed} category={category} />
+      <Category key={indexed} category={category} onChangeMade={() => console.log(category)} />
     ));
   }
   if (props.locations !== null) {

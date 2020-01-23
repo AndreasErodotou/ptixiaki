@@ -12,8 +12,8 @@ class UserProfilePage extends Component {
     this.state = {
       user: {
         jobsDone: 0,
-        reviewsCount: 0,
-        reviewsRating: 0
+        count: 0,
+        rating: 0
       },
       reviews: []
     };
@@ -93,7 +93,7 @@ class UserProfilePage extends Component {
       });
 
     axios
-      .get(`http://localhost:4567/api${path}/reviews`, {
+      .get(`http://localhost:4567/api/reviews?TO_UID=${path.split('/')[2]}`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }

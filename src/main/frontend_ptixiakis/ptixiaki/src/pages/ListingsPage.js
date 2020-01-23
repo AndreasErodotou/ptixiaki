@@ -18,10 +18,14 @@ class Listings extends React.Component {
       listings: [],
 
       filterCategories: ["Electrician", "Hydraulic", "Engineer"],
-      filterLocations: ["Nicosia", "Heraklion", "Athens"]
+      filterLocations: ["Nicosia", "Heraklion", "Athens"],
+
+      searchQuery : null
     };
   }
+  
   static contextType = AuthContext;
+
   componentDidMount() {
     const url1 = "/listings";
     const url2 = `/users/${this.context.username}/listings`;
@@ -49,6 +53,40 @@ class Listings extends React.Component {
         console.log(`error:${JSON.stringify(error)}`);
       });
   }
+
+  componentDidUpdate() {
+    // alert('path: '+this.props.location.pathname);
+    const query=this.props.history.location.search;
+    const prevQuery= this.state.searchQuery;
+    // alert('q: '+ JSON.stringify(this.props.history.location.search));
+    // let url='http://localhost:4567/api/listings'
+    if(this.props.location.pathname === '/search' && (prevQuery === null || prevQuery !== query)){
+      axios
+      .get(
+        `http://localhost:4567/api/listings${this.props.history.location.search}` 
+        ,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+        }
+      )
+      .then(response => {
+        console.log(response);
+        this.setState({
+          listings: [...response.data.data],
+          searchQuery: query
+        });
+      })
+      .catch(error => {
+        if (error.response === undefined) {
+          // return this.props.history.push("/signin");
+        }
+        console.log(`error:${JSON.stringify(error)}`);
+      });
+    }
+  }
+  
 
   listingClickedModalHandler(LID) {
     this.setState({

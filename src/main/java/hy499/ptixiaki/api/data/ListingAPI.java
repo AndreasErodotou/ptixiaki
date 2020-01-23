@@ -45,6 +45,16 @@ public class ListingAPI implements DataApi {
         } else if (req.params(":UID") != null) {
             return getUserListings(req, res);
         }
+        
+        if (req.queryParams("q") != null) {
+            StringBuilder DBQuery = new StringBuilder();
+            String query = req.queryParams("q");
+            query = query.replaceAll(",", "|");
+            System.out.println("query: "+query);
+            
+            return new Gson().toJson(listingDB.search(query));
+        }
+        
         return getAll(req, res);
     }
 

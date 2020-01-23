@@ -28,7 +28,7 @@ const UserDetails = ({ user }) => {
     "jobs",
     "servedLoc",
     "workExperience",
-    "jobsDone", //prp na gini ena request sta binds tou user pou einai selected...
+    "jobsDone", 
     "aboutMe"
   ];
 
@@ -51,9 +51,9 @@ const UserDetails = ({ user }) => {
           {user.UID}
         </Form.Label>
         <div className="mt-1">
-          <Rating rating={user.reviewsRating} />
+          <Rating rating={user.rating} />
         </div>
-        <Form.Text className="ml-1 mt-2 bold">{`( ${user.reviewsCount} )`}</Form.Text>
+        <Form.Text className="ml-1 mt-2 bold">{`( ${user.count} )`}</Form.Text>
         {/* <Form.Text className="ml-5 mt-2 bold">{`Reviews ( ${user.count} )`}</Form.Text> */}
       </Form.Group>
 

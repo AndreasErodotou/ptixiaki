@@ -31,6 +31,7 @@ class FullListing extends Component {
       postSuccessfully: false,
       sendReq: false,
       msg: null,
+      title: null,
       selectedBid: null
     };
   }
@@ -48,11 +49,13 @@ class FullListing extends Component {
       })
       .then(response => {
         const rating = response.data.data.rating;
+        const reviews = response.data.data.count;
         this.setState({
           listingUser: {
             ...this.state.listingUser,
             username: username,
-            rating: rating
+            rating: rating,
+            reviews: reviews
           }
         });
       })
@@ -67,11 +70,12 @@ class FullListing extends Component {
     });
   }
 
-  successReq(msg) {
+  successReq(msg, title) {
     this.setState({
       postSuccessfully: true,
       sendReq: false,
-      msg: msg
+      msg: msg,
+      title: title
     });
   }
 
@@ -153,20 +157,13 @@ class FullListing extends Component {
       // form = "Here is the bids made for this listing, when you are ready choose one";
     }
 
-    const feedbackAlert = showBidForm ? (
+    const feedbackAlert = (
       <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
         <SuccessAlert
-          title={this.context.accountType!=="CUSTOMER"?"Bid Posted Successfully":"Bid Selected"}
+          // title={this.context.accountType!=="CUSTOMER"?"Bid Posted Successfully":"Bid Selected"}
+          title={this.state.title}
           msg={this.state.msg}
           // redirectPath="/listings"
-          modalHide={this.props.onHide}
-        />
-      </Modal>
-    ) : (
-      <Modal size="sm" show={this.props.show} onHide={this.props.onHide}>
-        <SuccessAlert
-          title="Review Posted Successfully"
-          msg={this.state.msg}
           modalHide={this.props.onHide}
         />
       </Modal>

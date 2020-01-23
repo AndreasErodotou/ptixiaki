@@ -112,11 +112,12 @@ class BidForm extends Component {
       .then(response => {
         console.log("response.data.status" + response.data.status);
         if (response.data.status === "SUCCESS") {
+          const title="Bid Edited";
           const msg = `Bid price: ${this.state.bid.price}\n
                       Solution: ${this.state.bid.solution_decription}\n
                       Fixing Time: ${this.state.bid.time_to_fix}\n
                       when: ${this.state.bid.when} `;
-          this.props.setSuccess(msg);
+          this.props.setSuccess(msg,title);
         }
       });
       }else{
@@ -129,11 +130,12 @@ class BidForm extends Component {
           .then(response => {
             console.log("response.data.status" + response.data.status);
             if (response.data.status === "SUCCESS") {
+              const title="Bid Posted";
               const msg = `Bid price: ${this.state.bid.price}\n
                           Solution: ${this.state.bid.solution_decription}\n
                           Fixing Time: ${this.state.bid.time_to_fix}\n
                           when: ${this.state.bid.when} `;
-              this.props.setSuccess(msg);
+              this.props.setSuccess(msg,title);
             }
           });
         }

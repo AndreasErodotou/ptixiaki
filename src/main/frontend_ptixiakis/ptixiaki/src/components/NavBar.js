@@ -34,6 +34,8 @@ const deleteToken = () => {
 
 const NavBar = props => {
   const [show, setShow] = useState(false);
+  const [search, setSearch] = useState('');
+
   const menuClass = `dropdown-menu ${show ? " show" : ""}`;
   const dropdown = [
     "Users",
@@ -64,6 +66,11 @@ const NavBar = props => {
     console.log(`dropdown list:${dropdownList}`);
   }
 
+  const onSearch = (event) =>{
+    console.log("key pressed: "+ event.target.value);
+    setSearch(event.target.value);
+  }
+
   return (
     <div
       style={{ backgroundColor: "#E8F6F8" }}
@@ -80,13 +87,15 @@ const NavBar = props => {
               type="search"
               placeholder="Search"
               aria-label="Search"
+              onChange={onSearch}
             ></input>
-            <Link to="/search">
+            <Link to =  {(search!=='')? `/search?q=${search.split(' ').join(',')}`: '/'} >
               <button className="btn p-1 ml-1 blue searchBox" type="submit">
                 <img
                   className="img-responsive"
                   src={SearchIcon}
                   alt="SearchIcon"
+                  onClick={() => console.log("Search: "+search)}
                 ></img>
               </button>
             </Link>
@@ -101,7 +110,7 @@ const NavBar = props => {
             ></img>
             
             <Link
-              to="create-listing"
+              to="create_listing"
               onClick={props.onCreateYourOwnListingClicked}
             >
               Create Your Own Listing

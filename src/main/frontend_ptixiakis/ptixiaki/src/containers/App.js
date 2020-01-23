@@ -54,12 +54,14 @@ class App extends Component {
 
         <Route exact path="/" component={ListingsPage} />
         <Route exact path="/bids" component={BidsPage} />
-        <Route exact path="/create-listing" component={NewListing} />
+        <Route exact path="/create_listing" component={NewListing} />
         <Route path="/listings" component={ListingsPage} />
         <Route exact path="/statistics" component={AnaliticsPage} />
         <Route exact path="/timetable" component={TimetablePage} />
         <Route path="/users" component={UserProfilePage} />
         <Route path="/reviews" component={ReviewsPage} />
+
+        <Route path="/search" component={ListingsPage} />
       </div>
     );
   }
