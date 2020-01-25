@@ -67,7 +67,6 @@ const NavBar = props => {
   }
 
   const onSearch = (event) =>{
-    console.log("key pressed: "+ event.target.value);
     setSearch(event.target.value);
   }
 

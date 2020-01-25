@@ -27,40 +27,35 @@ class Listings extends React.Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    const url1 = "/listings";
-    const url2 = `/users/${this.context.username}/listings`;
-    axios
-      .get(
-        `http://localhost:4567/api${
-          this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
-        }`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token")
+    if(this.props.location.pathname!=="/search"){
+      const url1 = "/listings";
+      const url2 = `/users/${this.context.username}/listings`;
+      axios
+        .get(
+          `http://localhost:4567/api${
+            this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
+          }`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token")
+            }
           }
-        }
-      )
-      .then(response => {
-        console.log(response);
-        this.setState({
-          listings: [...response.data.data]
+        )
+        .then(response => {
+          console.log(response);
+          this.setState({
+            listings: [...response.data.data]
+          });
+        })
+        .catch(error => {
+          if (error.response === undefined) {
+            // return this.props.history.push("/signin");
+          }
+          console.log(`error:${JSON.stringify(error)}`);
         });
-      })
-      .catch(error => {
-        if (error.response === undefined) {
-          // return this.props.history.push("/signin");
-        }
-        console.log(`error:${JSON.stringify(error)}`);
-      });
-  }
-
-  componentDidUpdate() {
-    // alert('path: '+this.props.location.pathname);
-    const query=this.props.history.location.search;
-    const prevQuery= this.state.searchQuery;
-    // alert('q: '+ JSON.stringify(this.props.history.location.search));
-    // let url='http://localhost:4567/api/listings'
-    if(this.props.location.pathname === '/search' && (prevQuery === null || prevQuery !== query)){
+    }else{
+      const query=this.props.history.location.search;
+      // const prevQuery= this.state.searchQuery;
       axios
       .get(
         `http://localhost:4567/api/listings${this.props.history.location.search}` 
@@ -86,6 +81,41 @@ class Listings extends React.Component {
       });
     }
   }
+
+  // componentDidUpdate() {
+    // alert('path: '+this.props.location.pathname);
+
+    // const query=this.props.history.location.search;
+    // const prevQuery= this.state.searchQuery;
+
+    // alert('q: '+ JSON.stringify(this.props.history.location.search));
+    // let url='http://localhost:4567/api/listings'
+    // if(this.props.location.pathname === '/search' && (prevQuery === null || prevQuery !== query)){
+    //   axios
+    //   .get(
+    //     `http://localhost:4567/api/listings${this.props.history.location.search}` 
+    //     ,
+    //     {
+    //       headers: {
+    //         Authorization: localStorage.getItem("token")
+    //       }
+    //     }
+    //   )
+    //   .then(response => {
+    //     console.log(response);
+    //     this.setState({
+    //       listings: [...response.data.data],
+    //       searchQuery: query
+    //     });
+    //   })
+    //   .catch(error => {
+    //     if (error.response === undefined) {
+    //       // return this.props.history.push("/signin");
+    //     }
+    //     console.log(`error:${JSON.stringify(error)}`);
+    //   });
+    // }
+  // }
   
 
   listingClickedModalHandler(LID) {
