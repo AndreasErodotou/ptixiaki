@@ -89,7 +89,7 @@ public final class ListingDB implements DB<Listing> {
         return listing;
     }
     
-    public ServerResponseAPI search(String query)throws ClassNotFoundException {
+    public ServerResponseAPI search(String query, String filters)throws ClassNotFoundException {
         ServerResponseAPI serverRes = new ServerResponseAPI();
         Map<String, Listing> listings = new HashMap<>();
         try {
@@ -98,7 +98,11 @@ public final class ListingDB implements DB<Listing> {
                 StringBuilder getQuery = new StringBuilder();
 
                 getQuery.append("SELECT * FROM LISTING ")
-                        .append("WHERE to_tsvector(title) ").append("@@ to_tsquery('").append(query).append("');");
+                        .append(" WHERE ");
+                if(query!=null) {
+                    getQuery.append(" to_tsvector(title) ").append("@@ to_tsquery('").append(query).append("') ");
+                }
+                getQuery.append(filters).append(";");
 
                 stmt.execute(getQuery.toString());
 

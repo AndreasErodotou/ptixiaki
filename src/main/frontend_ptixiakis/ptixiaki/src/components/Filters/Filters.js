@@ -11,8 +11,8 @@ const Filters = props => {
   const [filters, setFilters] = useState({
     categoriesChecked : [],
     locationsChecked : [],
-    minPrice: null,
-    maxPrice: null
+    minPrice: 0,
+    maxPrice: 0
   })
 
   let location = useLocation();
@@ -20,33 +20,38 @@ const Filters = props => {
 
   const history = useHistory();
 
-  const [putSymbolAnd, setSymbolAnd] = useState(window.location.href.indexOf('search')?true:false);
-
   useEffect(() => {
-    console.log(JSON.stringify(filters));
+    console.log(JSON.stringify(filters) );
     const query = createQuery();
     // window.location.href = window.location.href+query;
-    history.push(location.search.split('&')[0] + query);
+    if(location.pathname.indexOf("search") > 0){
+      history.push(location.search.split('&')[0] + query);
+    }
+    else{
+      history.push('?' +query);
+      // location.search = '?'+query;
+    }
     console.log("Query: "+query);
   }, [filters]);
 
   const createQuery = () => {
     let query = "";
+    let putSymbolAnd = location.pathname.indexOf("search")===1?true:false;
     if(filters.categoriesChecked.length > 0){
       query += ((putSymbolAnd)? "&":"") + "categories=" + filters.categoriesChecked.join(',');
-      setSymbolAnd(true);
+      putSymbolAnd=true;
     }
     if(filters.locationsChecked.length > 0){
       query += ((putSymbolAnd)? "&":"") + "locations=" + filters.locationsChecked.join(',');
-      setSymbolAnd(true);
+      putSymbolAnd=true;
     }
     if(filters.minPrice> 0){
       query += ((putSymbolAnd)? "&":"") + "min_price=" + filters.minPrice;
-      setSymbolAnd(true);
+      putSymbolAnd=true;
     }
     if(filters.maxPrice> 0){
       query += ((putSymbolAnd)? "&":"") + "max_price=" + filters.maxPrice;
-      setSymbolAnd(true);
+      putSymbolAnd=true;
     }
     return query
   }
@@ -69,7 +74,7 @@ const Filters = props => {
 
   const minPriceChanged = (e) => {
     const minPrice= e.target.value;
-    if(minPrice <= filters.maxPrice && minPrice >= 0){
+    if(parseInt(minPrice) <= parseInt(filters.maxPrice) && minPrice >= 0){
       setFilters({...filters ,minPrice :  e.target.value});
     }else{
       e.target.value = filters.minPrice;
@@ -78,7 +83,7 @@ const Filters = props => {
 
   const maxPriceChanged = (e) => {
     const maxPrice = e.target.value;
-    if(maxPrice >= filters.minPrice && maxPrice >= 0){
+    if(parseInt(maxPrice) >= parseInt(filters.minPrice) && maxPrice >= 0){
       setFilters({...filters ,maxPrice :  e.target.value});
     }else{
       e.target.value = filters.maxPrice;

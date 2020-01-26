@@ -40,19 +40,58 @@ public class ListingAPI implements DataApi {
 
     @Override
     public String getQuery(Request req, Response res) throws ClassNotFoundException {
-        if (req.queryParams("LID") != null) {
+        String filters = "";
+        String query = null;
+        Boolean putAnd = false;
+        
+        if (req.queryParams(":LID") != null) {
             return get(req, res);
-        } else if (req.params(":UID") != null) {
-            return getUserListings(req, res);
         }
         
         if (req.queryParams("q") != null) {
-            StringBuilder DBQuery = new StringBuilder();
-            String query = req.queryParams("q");
+            query = req.queryParams("q");
             query = query.replaceAll(",", "|");
-            System.out.println("query: "+query);
-            
-            return new Gson().toJson(listingDB.search(query));
+            putAnd = true;
+        }
+        
+        if(req.queryParams("locations")!=null){
+            String locations = req.queryParams("locations").toUpperCase();
+            filters += (putAnd?" and (":"") + " LOCATION = '" + locations.replaceAll(",","' or LOCATION = '");
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
+        }
+       
+        if(req.queryParams("categories")!=null){
+            String categories = req.queryParams("categories").toLowerCase();
+            filters += (putAnd?" and (":"") + " CATEGORY = '" + categories.replaceAll(",","' or CATEGORY = '"); 
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
+        }
+        
+        if(req.queryParams("min_price")!=null){
+            String minPrice = req.queryParams("min_price").toLowerCase();
+            filters += (putAnd?" and (":"") + " min_price = '" + minPrice;
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
+        }
+        
+        if(req.queryParams("max_price")!=null){
+            String maxPrice = req.queryParams("max_price").toLowerCase();
+            filters += (putAnd?" and (":"") + " max_price = '" + maxPrice;
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
+        }
+        
+        if (req.params(":UID") != null) {
+            filters += (putAnd?" and (":"") + " UID = '" + req.params(":UID");
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
+        }
+        
+        if(putAnd){
+            System.out.println("filters: " + filters);
+            System.out.println("query: " + query);
+            return new Gson().toJson(listingDB.search(query,filters));
         }
         
         return getAll(req, res);

@@ -46,18 +46,20 @@ const NavBar = props => {
     "Timetable"
   ];
   const authContext = useContext(AuthContent);
-  const dropdownListTmp = dropdown.map((category, index) => (
-    <li key={index} role="presentation">
-      <Link
-        className="link"
-        role="menuitem"
-        tabIndex="-1"
-        to={`/${category.toLowerCase()}/${authContext.username}`}
-      >
-        {(category==="Users")? "Profile":category}
-      </Link>
-    </li>
-  ));
+  const dropdownListTmp = dropdown.map((category, index) => {
+    if(authContext.accountType !== "PROFESSIONAL" || category !== "Listings"){
+      return (<li key={index} role="presentation">
+        <Link
+          className="link"
+          role="menuitem"
+          tabIndex="-1"
+          to={`/${category.toLowerCase()}/${authContext.username}`}
+        >
+          {(category==="Users")? "Profile":category}
+        </Link>
+      </li>)
+    }
+  });
 
   let dropdownList = dropdownListTmp;
 
@@ -77,7 +79,7 @@ const NavBar = props => {
     >
       <nav className="px-3 py-1">
         <form className=" form-inline">
-          <Link to="/" className="col-md-2 col-6 order-sm-2 order-md-1">
+          <Link to="/listings" className="col-md-2 col-6 order-sm-2 order-md-1">
             <h5 className="font-weight-bold pt_es onHover">ServiceLink</h5>
           </Link>
           <div className="col-md-5  col-12 order-sm-3 order-md-3 justify-content-md-end">

@@ -52,10 +52,10 @@ class App extends Component {
         <Route exact path="/signin" component={SigninPage} />
         <Route exact path="/signup" component={SignupPage} />
 
-        <Route exact path="/" component={ListingsPage} />
+        <Route exact path="/listings" component={ListingsPage} />
         <Route exact path="/bids" component={BidsPage} />
         <Route exact path="/create_listing" component={NewListing} />
-        <Route path="/listings" component={ListingsPage} />
+        <Route path="/listings/:UID" component={ListingsPage} />
         <Route exact path="/statistics" component={AnaliticsPage} />
         <Route exact path="/timetable" component={TimetablePage} />
         <Route path="/users" component={UserProfilePage} />

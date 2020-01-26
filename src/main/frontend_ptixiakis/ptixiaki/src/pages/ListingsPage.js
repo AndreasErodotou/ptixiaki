@@ -20,21 +20,33 @@ class Listings extends React.Component {
       filterCategories: ["Electrician", "Hydraulic", "Engineer"],
       filterLocations: ["Nicosia", "Heraklion", "Athens"],
 
-      searchQuery : null
+      searchQuery : "",
+      updated: false
     };
   }
   
   static contextType = AuthContext;
 
-  componentDidMount() {
+  async componentDidMount() {
     if(this.props.location.pathname!=="/search"){
-      const url1 = "/listings";
-      const url2 = `/users/${this.context.username}/listings`;
+      let url = `/users/${this.context.username}/listings`;
+      if(this.context.accountType === "PROFESSIONAL"){
+        let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`,{
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+        });
+        let userDetails = await res.data.data;
+        url=`/listings?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`;
+        console.log("userDetails:" + userDetails);
+        console.log("url:" + url);
+        // this.props.history.push(`?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`);
+      }
       axios
         .get(
-          `http://localhost:4567/api${
-            this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
-          }`,
+          `http://localhost:4567/api${url}`,
+          //   this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
+          // }`,
           {
             headers: {
               Authorization: localStorage.getItem("token")
@@ -53,9 +65,14 @@ class Listings extends React.Component {
           }
           console.log(`error:${JSON.stringify(error)}`);
         });
-    }else{
-      const query=this.props.history.location.search;
-      // const prevQuery= this.state.searchQuery;
+    }
+  }
+
+  componentDidUpdate() {
+    const query=this.props.history.location.search;
+    const prevQuery= this.state.searchQuery;
+
+    if(query!=="" && (prevQuery === null || prevQuery !== query)){
       axios
       .get(
         `http://localhost:4567/api/listings${this.props.history.location.search}` 
@@ -70,7 +87,8 @@ class Listings extends React.Component {
         console.log(response);
         this.setState({
           listings: [...response.data.data],
-          searchQuery: query
+          searchQuery: query,
+          updated: false
         });
       })
       .catch(error => {
@@ -80,42 +98,32 @@ class Listings extends React.Component {
         console.log(`error:${JSON.stringify(error)}`);
       });
     }
+    else if(query==="" && !this.state.updated){
+      const url2 = `/users/${this.context.username}/listings`;
+      axios
+        .get(
+          `http://localhost:4567/api${url2}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token")
+            }
+          }
+        )
+        .then(response => {
+          console.log(response);
+          this.setState({
+            listings: [...response.data.data],
+            updated: true
+          });
+        })
+        .catch(error => {
+          if (error.response === undefined) {
+            // return this.props.history.push("/signin");
+          }
+          console.log(`error:${JSON.stringify(error)}`);
+        });
+      }
   }
-
-  // componentDidUpdate() {
-    // alert('path: '+this.props.location.pathname);
-
-    // const query=this.props.history.location.search;
-    // const prevQuery= this.state.searchQuery;
-
-    // alert('q: '+ JSON.stringify(this.props.history.location.search));
-    // let url='http://localhost:4567/api/listings'
-    // if(this.props.location.pathname === '/search' && (prevQuery === null || prevQuery !== query)){
-    //   axios
-    //   .get(
-    //     `http://localhost:4567/api/listings${this.props.history.location.search}` 
-    //     ,
-    //     {
-    //       headers: {
-    //         Authorization: localStorage.getItem("token")
-    //       }
-    //     }
-    //   )
-    //   .then(response => {
-    //     console.log(response);
-    //     this.setState({
-    //       listings: [...response.data.data],
-    //       searchQuery: query
-    //     });
-    //   })
-    //   .catch(error => {
-    //     if (error.response === undefined) {
-    //       // return this.props.history.push("/signin");
-    //     }
-    //     console.log(`error:${JSON.stringify(error)}`);
-    //   });
-    // }
-  // }
   
 
   listingClickedModalHandler(LID) {
