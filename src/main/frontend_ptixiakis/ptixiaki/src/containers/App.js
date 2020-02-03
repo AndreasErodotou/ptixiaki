@@ -1,7 +1,7 @@
 import "./App.css";
 import React, { Component } from "react";
 
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 
 import SigninPage from "../pages/SigninPage";
 import SignupPage from "../pages/SignupPage";
@@ -47,8 +47,12 @@ class App extends Component {
       // console.log(`context:${JSON.stringify(this.context)}`);
     }
 
+    // const comp =  (token!==null)?(<Redirect to="/listings" />):(<Redirect to="/signin" />)
+
     return (
       <div>
+        <Route path="/" render={()=>(token!==null)?(<Redirect to="/listings" />):(<Redirect to="/signin" />)} />
+
         <Route exact path="/signin" component={SigninPage} />
         <Route exact path="/signup" component={SignupPage} />
 
@@ -56,10 +60,10 @@ class App extends Component {
         <Route exact path="/bids" component={BidsPage} />
         <Route exact path="/create_listing" component={NewListing} />
         <Route path="/listings/:UID" component={ListingsPage} />
-        <Route exact path="/statistics" component={AnaliticsPage} />
-        <Route exact path="/timetable" component={TimetablePage} />
-        <Route path="/users" component={UserProfilePage} />
-        <Route path="/reviews" component={ReviewsPage} />
+        <Route exact path="/statistics/:UID" component={AnaliticsPage} />
+        <Route exact path="/timetable/:UID" component={TimetablePage} />
+        <Route path="/users/:UID" component={UserProfilePage} />
+        <Route path="/reviews/:UID" component={ReviewsPage} />
 
         <Route path="/search" component={ListingsPage} />
       </div>

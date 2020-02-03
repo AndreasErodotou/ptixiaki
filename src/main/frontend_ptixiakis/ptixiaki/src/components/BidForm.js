@@ -220,12 +220,16 @@ class BidForm extends Component {
       <Form>
         <Form.Group as={Form.Row}>
           <Form.Label className="col-4 mb-3">Lowest Bid:</Form.Label>
-          <Form.Label className="col-8 bold redColor mb-3">
-            {generalInfo.minBidPrice}€
-            {` ( ${generalInfo.bidsCount} bid${
-              generalInfo.bidsCount > 1 ? "s" : ""
-            } )`}
-          </Form.Label>
+          {(generalInfo.bidsCount>0)?(
+            <Form.Label className="col-8 bold redColor mb-3">
+              {generalInfo.minBidPrice}€
+              {` ( ${generalInfo.bidsCount} bid${
+                generalInfo.bidsCount > 1 ? "s" : ""
+              } )`}
+            </Form.Label>
+          ): (<Form.Label className="col-8 bold mb-3">
+                -
+            </Form.Label>)}
           <Form.Label className="col-4 pt-1">Your Bid:</Form.Label>
           <Form.Control
             type="Number"

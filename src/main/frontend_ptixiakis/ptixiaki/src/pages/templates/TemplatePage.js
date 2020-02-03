@@ -1,8 +1,12 @@
 import React from "react";
+// import React, { useState, useContext } from "react";
 import NavBar from "../../components/NavBar";
 import Filters from "../../components/Filters/Filters";
+// import AuthContext from "../context/auth-context";
 
 const TemplatePage = props => {
+  // const authContext = useContext(AuthContext);
+  // const [profFilters, setProfFilters] = useState(null);
   return (
     <div>
       <NavBar key="navbar" />
@@ -12,6 +16,7 @@ const TemplatePage = props => {
             key="filters"
             categories={props.categories}
             locations={props.locations}
+            profFilters= {props.profFilters}
           />
         </div>
         <div className="col-10 pt-2">

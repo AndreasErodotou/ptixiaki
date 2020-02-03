@@ -21,7 +21,8 @@ class Listings extends React.Component {
       filterLocations: ["Nicosia", "Heraklion", "Athens"],
 
       searchQuery : "",
-      updated: false
+      updated: false,
+      profFilters: null
     };
   }
   
@@ -30,6 +31,7 @@ class Listings extends React.Component {
   async componentDidMount() {
     if(this.props.location.pathname!=="/search"){
       let url = `/users/${this.context.username}/listings`;
+      let professionalFilters = null;
       if(this.context.accountType === "PROFESSIONAL"){
         let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`,{
           headers: {
@@ -40,6 +42,10 @@ class Listings extends React.Component {
         url=`/listings?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`;
         console.log("userDetails:" + userDetails);
         console.log("url:" + url);
+        professionalFilters = {
+          categories: userDetails.jobs,
+          locations: userDetails.servedLoc
+        };
         // this.props.history.push(`?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`);
       }
       axios
@@ -56,7 +62,8 @@ class Listings extends React.Component {
         .then(response => {
           console.log(response);
           this.setState({
-            listings: [...response.data.data]
+            listings: [...response.data.data],
+            profFilters: professionalFilters
           });
         })
         .catch(error => {
@@ -71,11 +78,14 @@ class Listings extends React.Component {
   componentDidUpdate() {
     const query=this.props.history.location.search;
     const prevQuery= this.state.searchQuery;
-
-    if(query!=="" && (prevQuery === null || prevQuery !== query)){
+    let userUrl='';
+    if(this.context.accountType==="CUSTOMER" && this.props.location.pathname!=="/search"){
+      userUrl = `users/${this.context.username}/`;
+    }
+    if(query!=="" && (prevQuery === "" || prevQuery !== query)){
       axios
       .get(
-        `http://localhost:4567/api/listings${this.props.history.location.search}` 
+        `http://localhost:4567/api/${userUrl}listings${this.props.history.location.search}` 
         ,
         {
           headers: {
@@ -99,10 +109,10 @@ class Listings extends React.Component {
       });
     }
     else if(query==="" && !this.state.updated){
-      const url2 = `/users/${this.context.username}/listings`;
+      // const url = `/users/${this.context.username}/listings`;
       axios
         .get(
-          `http://localhost:4567/api${url2}`,
+          `http://localhost:4567/api/${userUrl}listings`,
           {
             headers: {
               Authorization: localStorage.getItem("token")
@@ -113,6 +123,7 @@ class Listings extends React.Component {
           console.log(response);
           this.setState({
             listings: [...response.data.data],
+            searchQuery: "",
             updated: true
           });
         })
@@ -185,6 +196,7 @@ class Listings extends React.Component {
         categories={this.state.filterCategories}
         locations={this.state.filterLocations}
         content={content}
+        profFilters={this.state.profFilters}
       />
     );
   }

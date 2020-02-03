@@ -7,6 +7,7 @@ import { useHistory, useLocation } from "react-router-dom";
 const Filters = props => {
   let categories = null;
   let locations = null;
+  const [profFiltersUpdated, setProfFiltersUpdated] = useState(false);
 
   const [filters, setFilters] = useState({
     categoriesChecked : [],
@@ -32,11 +33,22 @@ const Filters = props => {
       // location.search = '?'+query;
     }
     console.log("Query: "+query);
-  }, [filters]);
+  }, [filters,props.profFilters]);
 
   const createQuery = () => {
     let query = "";
     let putSymbolAnd = location.pathname.indexOf("search")===1?true:false;
+    if((props.profFilters !==null && props.profFilters !==undefined) && !profFiltersUpdated &&!putSymbolAnd){
+      // alert(JSON.stringify(props.profFilters));
+      // userDetails.jobs.charAt(0).toUpperCase() + userDetails.jobs.slice(1)
+      const profCategories = props.profFilters.categories.map(category => category.charAt(0).toUpperCase() + category.slice(1).toLowerCase())
+      const profLocations = props.profFilters.locations.map(location => location.charAt(0).toUpperCase() + location.slice(1).toLowerCase())
+      
+      filters.categoriesChecked = profCategories;
+      filters.locationsChecked = profLocations;
+      putSymbolAnd=true;
+      setProfFiltersUpdated(true);
+    }
     if(filters.categoriesChecked.length > 0){
       query += ((putSymbolAnd)? "&":"") + "categories=" + filters.categoriesChecked.join(',');
       putSymbolAnd=true;
@@ -92,12 +104,12 @@ const Filters = props => {
 
   if (props.categories !== null) {
     categories = props.categories.map((category, indexed) => (
-      <Category key={indexed} category={category} onChangeMade={categoryChanged} />
+      <Category key={indexed} category={category} onChangeMade={categoryChanged} checked={filters.categoriesChecked.indexOf(category) > -1}/>
     ));
   }
   if (props.locations !== null) {
     locations = props.locations.map((location, indexed) => (
-      <Category key={indexed} category={location} onChangeMade={locationChanged}/>
+      <Category key={indexed} category={location} onChangeMade={locationChanged} checked={filters.locationsChecked.indexOf(location) > -1}/>
     ));
   }
 

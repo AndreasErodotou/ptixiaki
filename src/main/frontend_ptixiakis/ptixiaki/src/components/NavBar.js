@@ -11,7 +11,6 @@ import AuthContext from "../context/auth-context";
 
 import "./NavBar.css";
 
-import AuthContent from "../context/auth-context";
 // import { LinkContainer } from "react-router-bootstrap";
 
 // import {
@@ -45,7 +44,7 @@ const NavBar = props => {
     "Statistics",
     "Timetable"
   ];
-  const authContext = useContext(AuthContent);
+  const authContext = useContext(AuthContext);
   const dropdownListTmp = dropdown.map((category, index) => {
     if(authContext.accountType !== "PROFESSIONAL" || category !== "Listings"){
       return (<li key={index} role="presentation">

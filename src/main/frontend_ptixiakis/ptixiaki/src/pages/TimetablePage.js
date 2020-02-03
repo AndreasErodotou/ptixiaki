@@ -3,6 +3,7 @@ import moment from "moment";
 import React, { Component } from "react";
 import SimpleTemplate from "./templates/SimpleTemplatePage";
 import Timetable from "../components/Timetable/Timetable";
+import AuthContext from "../context/auth-context";
 
 class TimetablePage extends Component {
   constructor(props) {
@@ -13,14 +14,14 @@ class TimetablePage extends Component {
     };
   }
 
+  static contextType = AuthContext;
+
   componentDidMount() {
-    let jwtToken = localStorage.getItem("myJwtToken");
-    console.log("to token einai: " + jwtToken);
-    fetch("http://localhost:4567/api/events/UserID", {
+    fetch(`http://localhost:4567/api/events/${this.context.username}`, {
       method: "GET",
       mode: "cors",
       headers: {
-        Authorization: jwtToken
+        Authorization: this.context.token
       }
     })
       .then(response => {

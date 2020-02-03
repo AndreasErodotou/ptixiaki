@@ -127,7 +127,7 @@ class FullListing extends Component {
       </Form.Group>
     );
 
-    const showBidForm = (this.props.path === "/listings");
+    const showBidForm = !(this.props.path === "/reviews");
       // alert("path: "+this.props.path);
     let form = "The listing is active so you can't see bids made from other users...";
     if(showBidForm && this.context.accountType!=="CUSTOMER"){
@@ -181,7 +181,7 @@ class FullListing extends Component {
               </Modal.Header>
               <Modal.Body>
                 <div className="container">
-                  <div className="border border-info rounded row d-flex justify-content-center">
+                  <div className="rounded row d-flex justify-content-center">
                     <div className="lg-border-right sm-border-bottom border-info col-lg-4 col-sm-8">
                       <div className="row my-4 slef-item-center">
                         {/* <img className="img-responsive pic col-sm-12" id="mainPic" src={data}  alt="pic"></img> */}
