@@ -56,28 +56,28 @@ public class ListingAPI implements DataApi {
         
         if(req.queryParams("locations")!=null){
             String locations = req.queryParams("locations").toUpperCase();
-            filters += (putAnd?" and (":"") + " LOCATION = '" + locations.replaceAll(",","' or LOCATION = '");
-            filters += putAnd ? "') ":"'";
+            filters += (putAnd?" and ":"") + "( LOCATION = '" + locations.replaceAll(",","' or LOCATION = '");
+            filters +=  "') ";
             putAnd = true;
         }
        
         if(req.queryParams("categories")!=null){
             String categories = req.queryParams("categories").toLowerCase();
-            filters += (putAnd?" and (":"") + " CATEGORY = '" + categories.replaceAll(",","' or CATEGORY = '"); 
-            filters += putAnd ? "') ":"'";
+            filters += (putAnd?" and ":"") + "( CATEGORY = '" + categories.replaceAll(",","' or CATEGORY = '");
+            filters += "') ";
             putAnd = true;
         }
         
         if(req.queryParams("min_price")!=null){
             String minPrice = req.queryParams("min_price").toLowerCase();
-            filters += (putAnd?" and (":"") + " min_price = '" + minPrice;
+            filters += (putAnd?" and (":"") + " max_price >= '" + minPrice;
             filters += putAnd ? "') ":"'";
             putAnd = true;
         }
         
         if(req.queryParams("max_price")!=null){
             String maxPrice = req.queryParams("max_price").toLowerCase();
-            filters += (putAnd?" and (":"") + " max_price = '" + maxPrice;
+            filters += (putAnd?" and (":"") + " max_price <= '" + maxPrice;
             filters += putAnd ? "') ":"'";
             putAnd = true;
         }
