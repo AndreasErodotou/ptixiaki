@@ -7,6 +7,7 @@ package hy499.ptixiaki.db;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import hy499.ptixiaki.api.GsonUTCDateAdapter;
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import hy499.ptixiaki.data.Professional.Locations;
@@ -59,7 +60,6 @@ public final class ListingDB implements DB<Listing> {
                 stmt.executeUpdate(createQuery.toString());
                 System.out.println("#ListingDB: Table Listing Created");
                 stmt.close();
-                con.close();
             }
 
         } catch (SQLException ex) {
@@ -115,7 +115,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("Search Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listings.values()).getAsJsonArray());
+            serverRes.setData(new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(listings.values()).getAsJsonArray());
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -145,7 +145,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("User Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listings.values()).getAsJsonArray());
+            serverRes.setData(new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(listings.values()).getAsJsonArray());
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,7 +175,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("All Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listing));
+            serverRes.setData(new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(listing));
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -210,7 +210,7 @@ public final class ListingDB implements DB<Listing> {
             }
             serverRes.setMsg("All Listings");
             serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-            serverRes.setData(new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().toJsonTree(listings.values()).getAsJsonArray());
+            serverRes.setData(new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(listings.values()).getAsJsonArray());
 
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -262,7 +262,6 @@ public final class ListingDB implements DB<Listing> {
                 serverRes.setResourceId(listing.getLID());
 
                 stmt.close();
-                con.close();
 
             }
 
@@ -311,7 +310,6 @@ public final class ListingDB implements DB<Listing> {
                 serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
 
                 stmt.close();
-                con.close();
 
             }
 
@@ -340,9 +338,6 @@ public final class ListingDB implements DB<Listing> {
 
                 serverRes.setMsg("Listing Deleted");
                 serverRes.setStatus(ServerResponseAPI.Status.SUCCESS);
-
-                stmt.close();
-                con.close();
 
             }
 

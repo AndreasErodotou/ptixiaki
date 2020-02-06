@@ -15,9 +15,9 @@ const ListingDetails = ({ listing }) => {
         <Form.Label className="col-6">Location:</Form.Label>
         <Form.Label className="col-6 bold">{listing[0].location}</Form.Label>
         <Form.Label className="col-6">available from:</Form.Label>
-        <Form.Label className="col-6">{listing[0].available_from}</Form.Label>
+        <Form.Label className="col-6">{listing[0].available_from.split('T').join(' ')}</Form.Label>
         <Form.Label className="col-6">available until:</Form.Label>
-        <Form.Label className="col-6">{listing[0].available_until}</Form.Label>
+        <Form.Label className="col-6">{listing[0].available_until.split('T').join(' ')}</Form.Label>
         <Form.Label className="col-6">Max price:</Form.Label>
         <Form.Label className="col-6 bold">{listing[0].max_price}€</Form.Label>
       </Form.Group>

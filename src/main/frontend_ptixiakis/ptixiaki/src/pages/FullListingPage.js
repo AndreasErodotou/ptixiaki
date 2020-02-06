@@ -127,7 +127,7 @@ class FullListing extends Component {
       </Form.Group>
     );
 
-    const showBidForm = !(this.props.path === "/reviews");
+    const showBidForm = !(this.props.path.indexOf("reviews") > 0);
       // alert("path: "+this.props.path);
     let form = "The listing is active so you can't see bids made from other users...";
     if(showBidForm && this.context.accountType!=="CUSTOMER"){

@@ -51,7 +51,7 @@ class App extends Component {
 
     return (
       <div>
-        <Route path="/" render={()=>(token!==null)?(<Redirect to="/listings" />):(<Redirect to="/signin" />)} />
+        <Route exact path="/" render={()=>(token!==null)?(<Redirect to="/listings" />):(<Redirect to="/signin" />)} />
 
         <Route exact path="/signin" component={SigninPage} />
         <Route exact path="/signup" component={SignupPage} />

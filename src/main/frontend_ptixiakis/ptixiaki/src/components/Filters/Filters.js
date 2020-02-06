@@ -12,6 +12,7 @@ const Filters = props => {
   const [filters, setFilters] = useState({
     categoriesChecked : [],
     locationsChecked : [],
+    // order: null,
     minPrice: 0,
     maxPrice: 0
   })
@@ -25,6 +26,7 @@ const Filters = props => {
     console.log(JSON.stringify(filters) );
     const query = createQuery();
     // window.location.href = window.location.href+query;
+    
     if(location.pathname.indexOf("search") > 0){
       history.push(location.search.split('&')[0] + query);
     }
@@ -33,11 +35,12 @@ const Filters = props => {
       // location.search = '?'+query;
     }
     console.log("Query: "+query);
-  }, [filters,props.profFilters]);
+  }, [filters,props.profFilters,props.order]);
 
   const createQuery = () => {
     let query = "";
-    let putSymbolAnd = location.pathname.indexOf("search")===1?true:false;
+    let putSymbolAnd = location.pathname.indexOf("search")>0?true:false;
+
     if((props.profFilters !==null && props.profFilters !==undefined) && !profFiltersUpdated &&!putSymbolAnd){
       // alert(JSON.stringify(props.profFilters));
       // userDetails.jobs.charAt(0).toUpperCase() + userDetails.jobs.slice(1)
@@ -46,7 +49,6 @@ const Filters = props => {
       
       filters.categoriesChecked = profCategories;
       filters.locationsChecked = profLocations;
-      putSymbolAnd=true;
       setProfFiltersUpdated(true);
     }
     if(filters.categoriesChecked.length > 0){
@@ -63,6 +65,10 @@ const Filters = props => {
     }
     if(filters.maxPrice> 0){
       query += ((putSymbolAnd)? "&":"") + "max_price=" + filters.maxPrice;
+      putSymbolAnd=true;
+    }
+    if(props.order !=="all"){
+      query += ((putSymbolAnd)? "&":"") + "order=" + props.order;
       putSymbolAnd=true;
     }
     return query
@@ -170,8 +176,8 @@ const Filters = props => {
             </div>
           </article>
 
-          <h4 className="onHoverBluePointer">Posted Today</h4>
-          <h4 className="onHoverBluePointer">Ending Soon</h4>
+          {/* <h4 className="onHoverBluePointer">Posted Today</h4>
+          <h4 className="onHoverBluePointer">Ending Soon</h4> */}
         </div>
       </aside>
     </div>

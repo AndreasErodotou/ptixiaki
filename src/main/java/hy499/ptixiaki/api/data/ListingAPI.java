@@ -7,10 +7,15 @@ package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import hy499.ptixiaki.api.GsonUTCDateAdapter;
 import hy499.ptixiaki.data.Listing;
 import hy499.ptixiaki.db.ListingDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 import spark.Request;
 import spark.Response;
@@ -81,6 +86,23 @@ public class ListingAPI implements DataApi {
             filters += putAnd ? "') ":"'";
             putAnd = true;
         }
+
+        if(req.queryParams("order")!=null){
+            String order = req.queryParams("order").toLowerCase();
+            String tmpstr="";
+
+            String pattern = "MM-dd-yyyy";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+            if(order.equals("ending-soon")){
+                tmpstr=" expire >'"+new Date().toString() +"' and expire < '"+getNextDate(simpleDateFormat.format(new Date()));
+            }else{
+                tmpstr=" start >'"+simpleDateFormat.format(new Date()) +"' and start < '"+new Date().toString();
+            }
+            filters += (putAnd?" and (":"") + tmpstr;
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
+        }
         
         if (req.params(":UID") != null) {
             filters += (putAnd?" and (":"") + " UID = '" + req.params(":UID");
@@ -97,6 +119,20 @@ public class ListingAPI implements DataApi {
         return getAll(req, res);
     }
 
+    public static String getNextDate(String  curDate) {
+        final SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy");
+        Date date = null;
+        try {
+            date = format.parse(curDate);
+        }catch (ParseException e){
+            return null;
+        }
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        return format.format(calendar.getTime());
+    }
+
     @Override
     public String getAll(Request req, Response res) throws ClassNotFoundException {
         return new Gson().toJson(listingDB.getAll());
@@ -105,7 +141,7 @@ public class ListingAPI implements DataApi {
     @Override
     public String add(Request req, Response res) throws ClassNotFoundException {
         System.out.println("request body:" + req.body());
-        Listing listing = new GsonBuilder().setDateFormat("YYYY-MM-DD'T'hh:mm").create().fromJson(req.body(), Listing.class);
+        Listing listing = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().fromJson(req.body(), Listing.class);
         listing.setLID(UUID.randomUUID().toString());
         System.out.println("listing available from: "+listing.getAvailable_from());
         ServerResponseAPI serverRes = listingDB.add(listing);

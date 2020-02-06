@@ -39,7 +39,7 @@ class NewListing extends Component {
         description: "test",
         pics: [],
         available_from: "2019-04-05T10:30",
-        available_until: "2019-04-05",
+        available_until: "2019-04-05T11:30",
         location: "NICOSIA",
         jobCategory: "test",
         max_price: "100"
@@ -186,7 +186,7 @@ class NewListing extends Component {
   availableUntilChanged(event) {
     let avail = event.target.value;
     console.log(`available Until: ${avail}`);
-    let tmpDate= this.state.newListing.available_from.split('T');
+    let tmpDate= this.state.newListing.available_until.split('T');
     this.setState({
       newListing: {
         ...this.state.newListing,
