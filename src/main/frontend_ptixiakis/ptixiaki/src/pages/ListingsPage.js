@@ -17,8 +17,8 @@ class Listings extends React.Component {
       listingClicked: [],
       listings: [],
 
-      filterCategories: ["Electrician", "Hydraulic", "Engineer"],
-      filterLocations: ["Nicosia", "Heraklion", "Athens"],
+      filterCategories: ["Electrician", "Plumber", "Engineer"],
+      filterLocations: ["Heraklion","Nicosia", "Athens"],
 
       searchQuery : "",
       updated: false,
@@ -28,42 +28,17 @@ class Listings extends React.Component {
   
   static contextType = AuthContext;
 
-  async componentDidMount() {
-    if(this.props.location.pathname!=="/search"){
-      let url = `/users/${this.context.username}/listings`;
-      let professionalFilters = null;
-      if(this.context.accountType === "PROFESSIONAL"){
-        let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`,{
+  getListingsRequest (URL){
+    axios
+        .get(URL, {
           headers: {
-            Authorization: localStorage.getItem("token")
+            Authorization: this.context.token
           }
-        });
-        let userDetails = await res.data.data;
-        url=`/listings?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`;
-        console.log("userDetails:" + userDetails);
-        console.log("url:" + url);
-        professionalFilters = {
-          categories: userDetails.jobs,
-          locations: userDetails.servedLoc
-        };
-        // this.props.history.push(`?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`);
-      }
-      axios
-        .get(
-          `http://localhost:4567/api${url}`,
-          //   this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
-          // }`,
-          {
-            headers: {
-              Authorization: localStorage.getItem("token")
-            }
-          }
-        )
+        })
         .then(response => {
           console.log(response);
           this.setState({
-            listings: [...response.data.data],
-            profFilters: professionalFilters
+            listings: response.data.data
           });
         })
         .catch(error => {
@@ -72,6 +47,57 @@ class Listings extends React.Component {
           }
           console.log(`error:${JSON.stringify(error)}`);
         });
+  }
+
+  async componentDidMount() {
+    if(this.props.location.pathname.indexOf("/search")<0){
+
+      if(this.props.location.pathname.indexOf("bids") > 0){
+        this.getListingsRequest(`http://localhost:4567/api/users/${this.context.username}/listings`);
+      }else{
+        let url = `/users/${this.context.username}/listings`;
+        let professionalFilters = null;
+        if (this.context.accountType === "PROFESSIONAL") {
+          let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`, {
+            headers: {
+              Authorization: localStorage.getItem("token")
+            }
+          });
+          let userDetails = await res.data.data;
+          url = `/listings?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
+          console.log("userDetails:" + userDetails);
+          console.log("url:" + url);
+          professionalFilters = {
+            categories: userDetails.jobs,
+            locations: userDetails.servedLoc
+          };
+          // this.props.history.push(`?categories=${userDetails.jobs.join(',',',')}&locations=${userDetails.servedLoc.join(',',',')}`);
+        }
+        axios
+            .get(
+                `http://localhost:4567/api${url}`,
+                //   this.props.location.pathname === `/listings/${this.context.username}` ? url2 : url1
+                // }`,
+                {
+                  headers: {
+                    Authorization: this.context.token
+                  }
+                }
+            )
+            .then(response => {
+              console.log(response);
+              this.setState({
+                listings: [...response.data.data],
+                profFilters: professionalFilters
+              });
+            })
+            .catch(error => {
+              if (error.response === undefined) {
+                // return this.props.history.push("/signin");
+              }
+              console.log(`error:${JSON.stringify(error)}`);
+            });
+      }
     }
   }
 

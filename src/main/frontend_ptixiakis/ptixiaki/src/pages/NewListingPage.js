@@ -13,19 +13,18 @@ import axios from "axios";
 const categories = [
   { label: "electrician", value: 1 },
   { label: "plumber", value: 2 },
-  { label: "car mechanic", value: 3 },
-  { label: "painter", value: 4 }
+  { label: "engineer", value: 3 }
 ];
 
 const locations = [
   { label: "Heraklion", value: 1 },
-  { label: "Chania", value: 2 },
-  { label: "Rethimno", value: 3 },
-  { label: "Nicosia", value: 4 },
-  { label: "Limassol", value: 5 },
-  { label: "Larnaca", value: 6 },
-  { label: "Paphos", value: 7 },
-  { label: "Athens", value: 8 }
+  { label: "Nicosia", value: 2 },
+  { label: "Athens", value: 3 },
+  // { label: "Chania", value: 4 },
+  // { label: "Limassol", value: 5 },
+  // { label: "Larnaca", value: 6 },
+  // { label: "Paphos", value: 7 },
+  // { label: "Rethimno", value: 8 }
 ];
 
 class NewListing extends Component {

@@ -44,7 +44,7 @@ const UserDetails = ({ user }) => {
     </Form.Group>
   ));
   return (
-    <Form className="row">
+    <Form className="row border-bottom border-info">
       <Form.Group as={Form.Row} className="col-12">
         <img className="mr-2" src={UserIcon} alt="UserIcon"></img>
         <Form.Label className="bold mr-1 mt-1 blue-color">

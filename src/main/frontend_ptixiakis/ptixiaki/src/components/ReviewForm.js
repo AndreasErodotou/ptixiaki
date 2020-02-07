@@ -18,7 +18,8 @@ class ReviewForm extends Component {
 
     this.state = {
       review: {
-        UID: this.props.UID,
+        RID: null,
+        UID: null,
         TO_UID: null,
         LID: this.props.LID,
         rating: 1,
@@ -30,6 +31,7 @@ class ReviewForm extends Component {
       reviewExists: null
     };
   }
+
   static contextType = AuthContext;
 
   componentDidUpdate() {
@@ -38,18 +40,18 @@ class ReviewForm extends Component {
     }
 
     if (this.state.reviewExists === null) {
+      // let UID=this.props.UID;
+      // if(this.context.accountType==="PROFESSIONAL"){
+      //   UID=this.context.username;
+      // }
       axios
-        .get(`http://localhost:4567/api/users/${this.props.UID}/listings/${this.props.LID}/reviews`, {
+        .get(`http://localhost:4567/api/users/${this.context.username}/listings/${this.props.LID}/reviews`, {
           headers: {
             Authorization: this.context.token
           }
         })
         .then(response => {
-          console.log(
-            "get review: response.data" + JSON.stringify(response.data)
-          );
-          if (response.data.status === "SUCCESS") {
-            console.log("SUCCESS");
+          if (response.data.data[0] !== undefined && response.data.data[0] !== null  ) {
             this.setState({
               review: { ...response.data.data[0] },
               isReviewValid: {comments: true},
@@ -65,7 +67,7 @@ class ReviewForm extends Component {
     }
   }
 
-  handleReview() {
+  async handleReview() {
     if (this.state.isReviewValid.comments) {
       if(this.state.reviewExists){
         axios
@@ -75,7 +77,6 @@ class ReviewForm extends Component {
           } 
         })
         .then(response => {
-          console.log("response.data.status " + response.data.status);
           if (response.data.status === "SUCCESS") {
             const title="Review Edited";
            
@@ -86,14 +87,29 @@ class ReviewForm extends Component {
         })
         .catch(error => console.log(`Error${JSON.stringify(error.response)}`));
       }else{
+        let review= this.state.review;
+        const accountType = this.context.accountType;
+        review.UID=(accountType === "PROFESSIONAL")?this.context.username:this.props.UID;
+        review.TO_UID=(accountType === "PROFESSIONAL")?this.props.UID :null;
+        if(accountType !== "PROFESSIONAL"){
+          let response = await axios
+              .get(`http://localhost:4567/api/listings/${this.props.LID}/bids?selected=true`, {
+                headers: {
+                  Authorization: this.context.token
+                }
+              });
+           let data = await response.data.data;
+           review.TO_UID = data[0].UID;
+           console.log("den ime prof");
+        }
+        console.log(JSON.stringify(review));
       axios
-        .post("http://localhost:4567/api/reviews", this.state.review, {
+        .post("http://localhost:4567/api/reviews", review, {
           headers: {
             Authorization: this.context.token
           }
         })
         .then(response => {
-          console.log("response.data.status " + response.data.status);
           if (response.data.status === "SUCCESS") {
             const title="Review Posted";
             const msg = `rating: ${this.state.review.rating}\n
@@ -130,9 +146,6 @@ class ReviewForm extends Component {
   }
 
   render() {
-    console.log(
-      "STATE:" + JSON.stringify(this.state)
-    );
     return (
       <Form>
         <Form.Group as={Form.Row}>

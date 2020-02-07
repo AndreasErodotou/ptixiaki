@@ -8,7 +8,9 @@ package hy499.ptixiaki.api.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import hy499.ptixiaki.api.GsonUTCDateAdapter;
+import hy499.ptixiaki.api.JwtAPI;
 import hy499.ptixiaki.data.Listing;
+import hy499.ptixiaki.data.Token;
 import hy499.ptixiaki.db.ListingDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import java.sql.SQLException;
@@ -32,10 +34,10 @@ public class ListingAPI implements DataApi {
         listingDB = new ListingDB();
     }
 
-    private String getUserListings(Request req, Response res) throws ClassNotFoundException {
-        String UID = req.params(":UID");
-        return new Gson().toJson(listingDB.getUserListings(UID)); //todo: ilopiw to swsto function sto DB
-    }
+    //    private String getUserListings(Request req, Response res) throws ClassNotFoundException {
+    //        String UID = req.params(":UID");
+    //        return new Gson().toJson(listingDB.getUserListings(UID));
+    //    }
 
     @Override
     public String get(Request req, Response res) throws ClassNotFoundException {
@@ -48,6 +50,8 @@ public class ListingAPI implements DataApi {
         String filters = "";
         String query = null;
         Boolean putAnd = false;
+
+
         
         if (req.queryParams(":LID") != null) {
             return get(req, res);
@@ -58,7 +62,7 @@ public class ListingAPI implements DataApi {
             query = query.replaceAll(",", "|");
             putAnd = true;
         }
-        
+
         if(req.queryParams("locations")!=null){
             String locations = req.queryParams("locations").toUpperCase();
             filters += (putAnd?" and ":"") + "( LOCATION = '" + locations.replaceAll(",","' or LOCATION = '");
@@ -103,11 +107,25 @@ public class ListingAPI implements DataApi {
             filters += putAnd ? "') ":"'";
             putAnd = true;
         }
-        
+
         if (req.params(":UID") != null) {
             filters += (putAnd?" and (":"") + " UID = '" + req.params(":UID");
             filters += putAnd ? "') ":"'";
             putAnd = true;
+
+            Token token = new JwtAPI().parseJWT(req.headers("Authorization"));
+            if((token.getAccountType().toString() == "PROFESSIONAL") && (req.queryParams("selected") == null)){
+                return new Gson().toJson(listingDB.getUserBidListings(" BID.UID = '" + req.params(":UID")+"'"));
+            }else if (req.queryParams("selected") != null) {
+                String tmpQuery;
+                if(token.getAccountType().toString() == "PROFESSIONAL") {
+                    tmpQuery = " BID.UID = '" + req.params(":UID") + "'";
+                }else{
+                    tmpQuery = " Listing.UID = '" + req.params(":UID") + "'";
+                }
+                tmpQuery += (putAnd?" and ":"") + " ( selected = '" + req.queryParams("selected")+ "') ";
+                return new Gson().toJson(listingDB.getUserBidListings(tmpQuery));
+            }
         }
         
         if(putAnd){
@@ -151,7 +169,7 @@ public class ListingAPI implements DataApi {
     @Override
     public String edit(Request req, Response res) throws ClassNotFoundException {
         String LID = req.params(":LID");
-        Listing listing = new Gson().fromJson(req.body(), Listing.class);
+        Listing listing = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().fromJson(req.body(), Listing.class);
         listing.setLID(LID);
         return new Gson().toJson(listingDB.edit(listing));
     }

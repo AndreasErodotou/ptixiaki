@@ -14,7 +14,7 @@ class BidForm extends Component {
         solution_decription: "",
         price: 0,
         time_to_fix: 0,
-        when: null,
+        when: `${new Date().toLocaleDateString('en-CA')}T${new Date().getHours()+1}:${new Date().getMinutes()}`,
         selected: false
       },
       isBidValid: {
@@ -52,8 +52,7 @@ class BidForm extends Component {
             console.log("SUCCESS");
             this.setState({
               bid: { 
-                ...response.data.data[0],
-                when: new Date(response.data.data[0].when).toLocaleDateString('en-CA').replace(/\//g,'-')
+                ...response.data.data[0]
               },
               isBidValid: {
                 solution_decription: true,
@@ -116,7 +115,7 @@ class BidForm extends Component {
           const msg = `Bid price: ${this.state.bid.price}\n
                       Solution: ${this.state.bid.solution_decription}\n
                       Fixing Time: ${this.state.bid.time_to_fix}\n
-                      when: ${this.state.bid.when} `;
+                      when: ${this.state.bid.when.split('T').join(' ')} `;
           this.props.setSuccess(msg,title);
         }
       });
@@ -134,7 +133,7 @@ class BidForm extends Component {
               const msg = `Bid price: ${this.state.bid.price}\n
                           Solution: ${this.state.bid.solution_decription}\n
                           Fixing Time: ${this.state.bid.time_to_fix}\n
-                          when: ${this.state.bid.when} `;
+                          when: ${this.state.bid.when.split('T').join(' ')} `;
               this.props.setSuccess(msg,title);
             }
           });
@@ -196,13 +195,15 @@ class BidForm extends Component {
       // alert("time to fix must be > 0");
     }
   }
-  onWhenChanged(event) {
+
+  onWhenDateChanged(event) {
     const when = event.target.value;
-    if (new Date(when) >= new Date()) {
+    let tmpWhen= this.state.bid.when.split('T');
+    if ( when >= new Date().toLocaleDateString('en-CA')) {
       this.setState({
         bid: {
           ...this.state.bid,
-          when: event.target.value
+          when: `${when}T${tmpWhen[1]}`
         },
         isBidValid: {
           ...this.state.isBidValid,
@@ -214,6 +215,27 @@ class BidForm extends Component {
       event.target.value = this.state.bid.when;
     }
   }
+
+  onWhenTimeChanged(event) {
+    const time = event.target.value;
+    let tmpWhen= this.state.bid.when.split('T');
+    if (tmpWhen[0] >= new Date().toLocaleDateString('en-CA')) {
+      this.setState({
+        bid: {
+          ...this.state.bid,
+          when: `${tmpWhen[0]}T${time}`
+        },
+        isBidValid: {
+          ...this.state.isBidValid,
+          when: true
+        }
+      });
+    } else {
+      // alert("Date must be at least today");
+      event.target.value = this.state.bid.when;
+    }
+  }
+
   render() {
     const generalInfo = this.state.bidGeneralInfo;
     return (
@@ -253,10 +275,18 @@ class BidForm extends Component {
           <Form.Label className="col-4 pt-1">When:</Form.Label>
           <Form.Control
             type="Date"
-            className="col-8 mt-1"
-            onChange={this.onWhenChanged.bind(this)}
-            value={this.state.bid.when}
+            className="col-4 mt-1"
+            onChange={this.onWhenDateChanged.bind(this)}
+            value={this.state.bid.when.split('T')[0]}
             // required
+          />
+          {/*<Form.Label className="col-4 pt-1"></Form.Label>*/}
+          <Form.Control
+              type="time"
+              className="col-4 mt-1"
+              onChange={this.onWhenTimeChanged.bind(this)}
+              value={this.state.bid.when.split('T')[1]}
+              // required
           />
           <Form.Label className="col-4 pt-1">Time To Fix It:</Form.Label>
           <Form.Control

@@ -6,8 +6,12 @@
 package hy499.ptixiaki.db;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import hy499.ptixiaki.api.GsonUTCDateAdapter;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import hy499.ptixiaki.data.Bid;
+import hy499.ptixiaki.data.Listing;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +51,7 @@ public final class BidDB implements DB<Bid> {
                         .append(" SOLUTION_DESCR  VARCHAR(50)  NOT NULL, ")
                         .append(" PRICE         REAL    NOT NULL, ")
                         .append(" TIME_TO_FIX   REAL   NOT NULL, ")
-                        .append(" WHEN_P        DATE    NOT NULL, ")
+                        .append(" WHEN_P        TIMESTAMP    NOT NULL, ")
                         .append(" SELECTED      BOOLEAN   NOT NULL, ")
                         .append(" CREATED       TIMESTAMP   NOT NULL)");
                 stmt.executeUpdate(createQuery.toString());
@@ -71,7 +75,7 @@ public final class BidDB implements DB<Bid> {
             bid.setSolution_decription(res.getString("SOLUTION_DESCR"));
             bid.setPrice(res.getDouble("PRICE"));
             bid.setTime_to_fix(res.getDouble("TIME_TO_FIX"));
-            bid.setWhen(res.getDate("WHEN_P"));
+            bid.setWhen(res.getTimestamp("WHEN_P"));
             bid.setSelected(res.getBoolean("SELECTED"));
         } catch (SQLException ex) {
             Logger.getLogger(BidDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -393,9 +397,7 @@ public final class BidDB implements DB<Bid> {
                     bid = resToType(res);
                 }
 
-                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new Gson().toJsonTree(bid));
-                stmt.close();
-                con.close();
+                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bid));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -416,18 +418,17 @@ public final class BidDB implements DB<Bid> {
                 getQuery.append("SELECT * FROM BID ")
                         .append("WHERE ").append(query).append(";");
 
-                System.out.println("BD: " + getQuery.toString());
+                System.out.println("DB: " + getQuery.toString());
                 stmt.execute(getQuery.toString());
 
                 ResultSet res = stmt.getResultSet();
 
                 while (res.next() == true) {
                     Bid bid = resToType(res);
-
                     bids.put(bid.getBID(), bid);
                 }
 
-                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new Gson().toJsonTree(bids.values()).getAsJsonArray());
+                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid", new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bids.values()).getAsJsonArray());
                 stmt.close();
                 con.close();
             }
@@ -460,7 +461,7 @@ public final class BidDB implements DB<Bid> {
                     bids.put(bid.getBID(), bid);
                 }
 
-                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "All Bids", new Gson().toJsonTree(bids));
+                serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "All Bids", new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bids));
                 stmt.close();
                 con.close();
             }
@@ -502,7 +503,7 @@ public final class BidDB implements DB<Bid> {
                     stmt.executeUpdate(insQuery.toString());
                     System.out.println("#BidDB: BID added");
 
-                    serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid Added", new Gson().toJsonTree(bid));
+                    serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid Added", new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bid));
                     stmt.close();
                     con.close();
 
@@ -536,7 +537,7 @@ public final class BidDB implements DB<Bid> {
                     stmt.executeUpdate(updQuery.toString());
                     System.out.println("#BidDB: Bid Updated, BID: " + bid.getBID());
 
-                    serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid Edited", new Gson().toJsonTree(bid));
+                    serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "Bid Edited", new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bid));
                     stmt.close();
                     con.close();
 

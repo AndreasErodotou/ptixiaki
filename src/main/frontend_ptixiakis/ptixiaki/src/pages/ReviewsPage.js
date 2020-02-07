@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 import Listing from "../components/Listings/Listing";
-import Template from "./templates/TemplatePage";
+import SimpleTemplate from "./templates/SimpleTemplatePage";
 import axios from "axios";
 import AuthContext from "../context/auth-context";
 import FullListing from "./FullListingPage";
@@ -13,17 +13,14 @@ class ReviewsPage extends Component {
     this.state = {
       showFullListing: false,
       listingClicked: [],
-      listings: [],
-
-      filterCategories: ["Electrician", "Hydraulic", "Engineer"],
-      filterLocations: ["Nicosia", "Heraklion", "Athens"]
+      listings: []
     };
   }
   static contextType = AuthContext;
   componentDidMount() {
     axios
       .get(
-        `http://localhost:4567/api/users/${this.context.username}/listings`,
+        `http://localhost:4567/api/users/${this.context.username}/listings?selected=true`,
         {
           headers: {
             Authorization: localStorage.getItem("token")
@@ -62,20 +59,26 @@ class ReviewsPage extends Component {
   }
 
   render() {
-    let listings = this.state.listings.map(listing => {
-      return (
-        <Listing
-          key={listing.LID}
-          username={listing.UID}
-          title={listing.title}
-          imgsrc={listing.pics}
-          descr={listing.description}
-          maxPrice={listing.max_price}
-          buttonTitle={"Review"}
-          listingClicked={() => this.listingClickedModalHandler(listing.LID)}
-        />
-      );
-    });
+    let listings = <div className="container mt-3 ">
+      <div className="row">
+        {
+          this.state.listings.map(listing => {
+            return (
+                <Listing
+                    key={listing.LID}
+                    username={listing.UID}
+                    title={listing.title}
+                    imgsrc={listing.pics}
+                    descr={listing.description}
+                    maxPrice={listing.max_price}
+                    buttonTitle={"Review"}
+                    listingClicked={() => this.listingClickedModalHandler(listing.LID)}
+                />
+            )
+          })
+        }
+      </div>
+    </div>;
 
     const fullListing = this.state.showFullListing ? (
       <FullListing
@@ -93,9 +96,7 @@ class ReviewsPage extends Component {
     content.push(fullListing);
 
     return (
-      <Template
-        categories={this.state.filterCategories}
-        locations={this.state.filterLocations}
+      <SimpleTemplate
         content={content}
       />
     );

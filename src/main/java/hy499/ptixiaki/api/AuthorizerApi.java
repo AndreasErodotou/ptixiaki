@@ -47,10 +47,10 @@ public class AuthorizerApi {
 
     public Boolean isAuthorized(Request req) throws SQLException, ClassNotFoundException {
         String jwtToken = req.headers("Authorization");
-        System.out.println("jwtToken = " + jwtToken);
-        System.out.println("request method:" + req.requestMethod());
-        System.out.println("request contextPath:" + req.contextPath());
-        System.out.println("request contextPath:" + req.pathInfo());
+//        System.out.println("jwtToken = " + jwtToken);
+//        System.out.println("request method:" + req.requestMethod());
+//        System.out.println("request contextPath:" + req.contextPath());
+//        System.out.println("request contextPath:" + req.pathInfo());
         if ("OPTIONS".equals(req.requestMethod())
                 || "/api/login".equals(req.pathInfo()) && "POST".equals(req.requestMethod())
                 || "/api/users".equals(req.pathInfo()) && "GET".equals(req.requestMethod())

@@ -6,10 +6,13 @@
 package hy499.ptixiaki.api;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import hy499.ptixiaki.db.Timetable;
 import spark.Request;
 import spark.Response;
+
+import java.util.Date;
 
 /**
  *
@@ -27,7 +30,7 @@ public class TimetableAPI {
         ServerResponseAPI serverRes;
         JsonArray data;
 
-        data = new Gson().toJsonTree(timetable.getEvents(req.params(":UID")).values()).getAsJsonArray();
+        data = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(timetable.getEvents(req.params(":UID")).values()).getAsJsonArray();
 
         serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS, "get all user events", new Gson().toJsonTree(data));
         return new Gson().toJson(serverRes);

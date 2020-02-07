@@ -7,13 +7,20 @@ package hy499.ptixiaki.api.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import hy499.ptixiaki.api.GsonUTCDateAdapter;
 import hy499.ptixiaki.data.Bid;
+import hy499.ptixiaki.data.Token;
 import hy499.ptixiaki.db.BidDB;
 import hy499.ptixiaki.api.ServerResponseAPI;
 import hy499.ptixiaki.api.ServerResponseAPI.Status;
+
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import hy499.ptixiaki.db.ListingDB;
 import spark.Request;
 import spark.Response;
 
@@ -33,32 +40,32 @@ public class BidAPI implements DataApi {
         res.header("Access-Control-Allow-Origin", "*");
         if (!bids.isEmpty()) {
             res.status(200);
-            return new Gson()
+            return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create()
                     .toJson(new ServerResponseAPI(Status.SUCCESS,
                             msg[0],
-                            new Gson().toJsonTree(bids)));
+                            new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bids)));
         }
         res.status(400);
-        return new Gson()
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create()
                 .toJson(new ServerResponseAPI(Status.WARINING,
                         msg[1],
-                        new Gson().toJsonTree(null)));
+                        new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(null)));
     }
 
     public String createResponse(Response res, Bid bid, Boolean bool, String[] msg) {
         res.header("Access-Control-Allow-Origin", "*");
         if (bool) {
             res.status(200);
-            return new Gson()
+            return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create()
                     .toJson(new ServerResponseAPI(Status.SUCCESS,
                             msg[0],
-                            new Gson().toJsonTree(bid)));
+                            new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(bid)));
         }
         res.status(400);
-        return new Gson()
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create()
                 .toJson(new ServerResponseAPI(Status.ERROR,
                         msg[1],
-                        new Gson().toJsonTree(null)));
+                        new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(null)));
     }
 
     public String getReqHandler(Request req, Response res) throws ClassNotFoundException {
@@ -78,11 +85,11 @@ public class BidAPI implements DataApi {
             getQuery.append((test) ? " and " : "");
             getQuery.append("UID = ").append("'").append(req.params(":UID")).append("'");
         }
-//        if (req.queryParams("selected") != null) {
-//            getQuery.append((test) ? " and " : "");
-//            getQuery.append(" selected = ").append(req.queryParams("selected"));
-//            test = true;
-//        }
+        if (req.queryParams("selected") != null) {
+            getQuery.append((test) ? " and " : "");
+            getQuery.append(" selected = ").append(req.queryParams("selected"));
+            test = true;
+        }
 //        if (req.queryParams("COUNT") != null) {
 //            getQuery.append((test) ? " and " : "");
 //            getQuery.append("COUNT = ").append(req.queryParams("COUNT"));
@@ -97,10 +104,10 @@ public class BidAPI implements DataApi {
 
     @Override
     public String getAll(Request req, Response res) throws ClassNotFoundException {
-        return new Gson().toJson(bidDB.getAll());
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJson(bidDB.getAll());
     }
 
-    public String getQuery(Response res, String queryParams) throws ClassNotFoundException {
+    public String getQuery(Response res, String queryParams) throws ClassNotFoundException{
         return new Gson().toJson(bidDB.getQuery(queryParams));
     }
 
@@ -131,7 +138,7 @@ public class BidAPI implements DataApi {
     }
 
     public String countAllUserSelectedBids(Request req, Response res) throws ClassNotFoundException {
-        String UID = req.params("UID");
+        String UID = req.params(":UID");
         Map<String, Bid> listingBids = bidDB.getUserSelectedBids(true, UID);
         Map<String, Integer> tmp = new HashMap<>();
         tmp.put("jobsDone", listingBids.size());
@@ -140,7 +147,7 @@ public class BidAPI implements DataApi {
     }
 
     public String getAllUserSelectedBids(Request req, Response res) throws ClassNotFoundException {
-        String UID = req.params("UID");
+        String UID = req.params(":UID");
         Map<String, Bid> listingBids = bidDB.getUserSelectedBids(true, UID);
         String[] msgs = {"All Selected Bids", "There Are No Selected Bids"};
         return createResponse(res, listingBids, msgs);
@@ -149,27 +156,27 @@ public class BidAPI implements DataApi {
     @Override
     public String get(Request req, Response res) throws ClassNotFoundException {
         String BID = req.queryParams("BID");
-        return new Gson().toJson(bidDB.get(BID));
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJson(bidDB.get(BID));
     }
 
     @Override
     public String add(Request req, Response res) throws ClassNotFoundException {
-        Bid bid = new Gson().fromJson(req.body(), Bid.class);
+        Bid bid = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().fromJson(req.body(), Bid.class);
         bid.setBID(UUID.randomUUID().toString());
-        return new Gson().toJson(bidDB.add(bid));
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJson(bidDB.add(bid));
     }
 
     @Override
     public String edit(Request req, Response res) throws ClassNotFoundException {
         String BID = req.params(":BID");
-        Bid bid = new Gson().fromJson(req.body(), Bid.class);
-        return new Gson().toJson(bidDB.edit(bid));
+        Bid bid = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().fromJson(req.body(), Bid.class);
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJson(bidDB.edit(bid));
     }
 
     @Override
     public String delete(Request req, Response res) throws ClassNotFoundException {
         String BID = req.params(":BID");
-        return new Gson().toJson(bidDB.delete(BID));
+        return new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJson(bidDB.delete(BID));
     }
 
     public String deleteAllUserBids(Request req, Response res) throws ClassNotFoundException {

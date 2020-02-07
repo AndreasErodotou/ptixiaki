@@ -24,7 +24,7 @@ public final class Timetable {
     public TimetableEvent bidToEvent(ResultSet res) {
         TimetableEvent event = new TimetableEvent();
         try {
-            event.setDate(res.getDate("WHEN_P"));
+            event.setDate(res.getTimestamp("WHEN_P"));
             event.setDuration(res.getDouble("TIME_TO_FIX"));
             event.setLID(res.getString("LID"));
             event.setUID(res.getString("UID"));

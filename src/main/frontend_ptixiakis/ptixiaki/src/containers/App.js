@@ -57,15 +57,15 @@ class App extends Component {
         <Route exact path="/signup" component={SignupPage} />
 
         <Route exact path="/listings" component={ListingsPage} />
-        <Route exact path="/bids" component={BidsPage} />
+        <Route exact path="/bids/:UID" component={BidsPage} />
         <Route exact path="/create_listing" component={NewListing} />
-        <Route path="/listings/:UID" component={ListingsPage} />
+        <Route exact path="/listings/:UID" component={ListingsPage} />
         <Route exact path="/statistics/:UID" component={AnaliticsPage} />
         <Route exact path="/timetable/:UID" component={TimetablePage} />
-        <Route path="/users/:UID" component={UserProfilePage} />
-        <Route path="/reviews/:UID" component={ReviewsPage} />
+        <Route exact path="/users/:UID" component={UserProfilePage} />
+        <Route exact path="/reviews/:UID" component={ReviewsPage} />
 
-        <Route path="/search" component={ListingsPage} />
+        <Route exact path="/search" component={ListingsPage} />
       </div>
     );
   }

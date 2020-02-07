@@ -96,7 +96,7 @@ class AnaliticsPage extends Component {
         <div className="d-flex justify-content-between">
           <div className="d-flex-column">
             <Analitics
-              name="Listings"
+              name="Listings Won"
               stData={this.state.analitics.Listings}
               width="250px"
               height="110px"
@@ -110,7 +110,7 @@ class AnaliticsPage extends Component {
 
           <div>
             <Analitics
-              name="Bids"
+              name="Bids Made"
               stData={this.state.analitics.Bids}
               width="250px"
               height="110px"
@@ -124,7 +124,7 @@ class AnaliticsPage extends Component {
 
           <div>
             <Analitics
-              name="Reviews"
+              name="Reviews Made"
               stData={this.state.analitics.Reviews}
               width="250px"
               height="110px"
@@ -137,7 +137,7 @@ class AnaliticsPage extends Component {
           </div>
           <div>
             <Analitics
-              name="Money"
+              name="Money Made"
               stData={this.state.analitics.Money}
               width="250px"
               height="110px"

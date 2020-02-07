@@ -25,7 +25,7 @@ const BidsMade = (props) => {
     useEffect(() => {
         if(props.sendReq && selectedBid !==null){
             selectedBid.selected = true;
-            selectedBid.when = new Date(selectedBid.when).toLocaleDateString('en-CA').replace(/\//g,'-')
+            // selectedBid.when = new Date(selectedBid.when).toLocaleDateString('en-CA').replace(/\//g,'-')
             async function fetchData() {
             const response = await axios.put(`http://localhost:4567/api/bids/${selectedBid.BID}`,selectedBid,{
                 headers: {
@@ -39,7 +39,7 @@ const BidsMade = (props) => {
                         solution: ${selectedBid.solution_decription}\n
                         price: ${selectedBid.price}\n
                         time needed: ${selectedBid.time_to_fix}\n
-                        when: ${selectedBid.when}`;
+                        when: ${selectedBid.when.split('T').join(' ')}`;
             props.setSuccess(msg,title);
         }
     }, [props.sendReq,selectedBid]);

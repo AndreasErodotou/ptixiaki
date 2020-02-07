@@ -1,34 +1,35 @@
-import React, { Component } from "react";
-// import PropTypes from "prop-types";
+import React, {Component} from "react";
 import Listing from "../components/Listings/Listing";
-import NavBar from "../components/NavBar";
-import Filters from "../components/Filters/Filters";
+import FullListing from "./FullListingPage.js";
+import SimpleTemplate from "./templates/SimpleTemplatePage";
+import AuthContext from "../context/auth-context";
+
 import axios from "axios";
+
 class BidsPage extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      bidClicked: null,
-      bids: [],
-
-      filterCategories: ["Electrician", "Hydraulic", "Engineer"],
-      filterLocations: ["Nicosia", "Heraklion", "Athens"]
+      showFullListing: false,
+      listingClicked: [],
+      listings: []
     };
   }
 
+  static contextType = AuthContext;
+
   componentDidMount() {
-    let jwtToken = localStorage.getItem("myJwtToken");
     axios
-      .get(`http://localhost:4567/api/bids`, {
+      .get(`http://localhost:4567/api/users/${this.context.username}/listings`, {
         headers: {
-          Authorization: jwtToken
+          Authorization: this.context.token
         }
       })
       .then(response => {
         console.log(response);
         this.setState({
-          bids: response.data.data
+          listings: response.data.data
         });
       })
       .catch(error => {
@@ -39,41 +40,75 @@ class BidsPage extends Component {
       });
   }
 
-  bidClickedModalHandler(BID) {
+  bidClickedModalHandler(LID) {
     this.setState({
       ...this.state,
       // showFullListing: true,
-      bidClicked: this.state.bids.filter(bid => {
-        return bid.BID === BID;
+      listingClicked: this.state.listings.filter(listing => {
+        return listing.LID === LID;
       })
     });
   }
 
+  listingClickedModalHandler(LID) {
+    this.setState({
+      ...this.state,
+      showFullListing: true,
+      listingClicked: this.state.listings.filter(listing => {
+        return listing.LID === LID;
+      })
+    });
+  }
+
+  handlefullLClose() {
+    this.setState({
+      ...this.state,
+      showFullListing: false
+    });
+  }
+
   render() {
-    // let bids = this.state.bids.map(bid => {
-    //   return (
-    //     <Listing
-    //       key={bid.BID}
-    //       title={bid.title}
-    //       imgsrc={bid.pics}
-    //       descr={bid.description}
-    //       bidClicked={() => this.bidClickedModalHandler(bid.BID)}
-    //     />
-    //   );
-    // });
-    return (
-      <div>
-        {/* <NavBar key="navbar" />
-        <Filters
-          key="filters"
-          categories={this.state.filterCategories}
-          locations={this.state.filterLocations}
-        /> */}
+    const path = this.props.location.pathname;
+    let listings = <div className="container mt-3 ">
+      <div className="row">
+        {
+          this.state.listings.map(listing => {
+            return (
+                <Listing
+                    key={listing.LID}
+                    username={listing.UID}
+                    title={listing.title}
+                    imgsrc={listing.pics}
+                    descr={listing.description}
+                    maxPrice={listing.max_price}
+                    buttonTitle={"Show Bid"}
+                    listingClicked={() => this.listingClickedModalHandler(listing.LID)}
+                />
+            )
+          })
+        }
       </div>
+    </div>;
+
+    const fullListing = this.state.showFullListing ? (
+        <FullListing
+            key="FullListing"
+            listing={this.state.listingClicked}
+            onHide={this.handlefullLClose.bind(this)}
+            show={true}
+            path={path}
+        />
+    ) : null;
+
+
+    return (
+        <SimpleTemplate
+            content={[listings,fullListing]}
+        />
     );
   }
 }
 
-BidsPage.propTypes = {};
-
 export default BidsPage;
+
+

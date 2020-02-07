@@ -2,7 +2,6 @@ import React from "react";
 import Chart from "react-google-charts";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
-// import { PropTypes } from "prop-types";
 
 const Analitics = ({ name, stData, onChartClick, checked, ...dim }) => {
   const months = [
@@ -31,7 +30,7 @@ const Analitics = ({ name, stData, onChartClick, checked, ...dim }) => {
           id="dropdown-basic-button"
           title="Last Year"
           size="sm"
-          // disabled
+          disabled
         >
           <Dropdown.Item href="#/last-month">Last Month</Dropdown.Item>
           <Dropdown.Item href="#/last-week">Last Week</Dropdown.Item>

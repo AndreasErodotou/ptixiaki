@@ -14,7 +14,6 @@ import BidForm from "../components/BidForm";
 import ReviewForm from "../components/ReviewForm";
 import BidsMade from "../components/BidsMade";
 
-import { Route } from "react-router-dom";
 import {Link} from "react-router-dom"
 // import ModalDialog from "react-bootstrap/ModalDialog";
 

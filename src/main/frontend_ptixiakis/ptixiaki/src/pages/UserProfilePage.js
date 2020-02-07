@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import FullTemplatePage from "./templates/FullTemplatePage";
+import SimpleTemplatePage from "./templates/SimpleTemplatePage";
 import Review from "../components/Review";
 import UserDetails from "../components/UserDetails";
 import axios from "axios";
@@ -118,15 +118,23 @@ class UserProfilePage extends Component {
     const contentDown = this.state.reviews.map((review, index) => (
       <Review review={review} key={index} />
     ));
+
+    const content = (
+        <div className="container mt-4">
+          {contentTop}
+          {contentDown}
+        </div>
+    )
     return (
-      <div>
-        <FullTemplatePage
-          categories={Categories}
-          locations={Locations}
-          contentTop={contentTop}
-          contentDown={contentDown}
+
+        <SimpleTemplatePage
+          // categories={Categories}
+          // locations={Locations}
+          // contentTop={contentTop}
+          // contentDown={contentDown}
+          content={content}
         />
-      </div>
+
     );
   }
 }
