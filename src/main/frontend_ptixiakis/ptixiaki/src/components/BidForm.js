@@ -48,7 +48,7 @@ class BidForm extends Component {
           console.log(
             "get bid: response.data" + JSON.stringify(response.data)
           );
-          if (response.data.status === "SUCCESS") {
+          if (response.data.data[0] !== undefined && response.data.data[0] !== null) {
             console.log("SUCCESS");
             this.setState({
               bid: { 

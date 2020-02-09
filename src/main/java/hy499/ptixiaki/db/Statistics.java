@@ -27,16 +27,17 @@ public class Statistics {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
 
                 StringBuilder getQuery = new StringBuilder();
-                getQuery.append("SELECT to_char(created,'Month') as m, extract(year from created) as y, COUNT(created) as c ")
-                        .append("FROM LISTING ")
-                        .append("WHERE UID = ").append("'").append(UID).append("'")
+                getQuery.append("SELECT to_char(BID.created,'Month') as m, extract(year from BID.created) as y, COUNT(BID.created) as c ")
+                        .append("FROM LISTING INNER JOIN BID ON LISTING.LID = BID.LID ")
+                        .append("WHERE BID.UID = ").append("'").append(UID).append("'")
+                        .append(" and selected = ").append("'true' ")
                         .append("group by 1,2;");
-
+//                System.out.println(getQuery.toString());
                 stmt.execute(getQuery.toString());
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    System.out.println("year: " + res.getInt("y") + "month: " + res.getString("m") + "count: " + res.getInt("c"));
+//                    System.out.println("year: " + res.getInt("y") + " month: " + res.getString("m") + "count: " + res.getInt("c"));
                     data.put(res.getString("m"), res.getInt("c"));
                 }
             }
@@ -64,7 +65,7 @@ public class Statistics {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    System.out.println("year: " + res.getInt("y") + "month: " + res.getString("m") + "count: " + res.getInt("c"));
+//                    System.out.println("year: " + res.getInt("y") + " month: " + res.getString("m") + "count: " + res.getInt("c"));
                     data.put(res.getString("m"), res.getInt("c"));
                 }
             }
@@ -92,7 +93,7 @@ public class Statistics {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    System.out.println("year: " + res.getInt("y") + "month: " + res.getString("m") + "count: " + res.getInt("c"));
+//                    System.out.println("year: " + res.getInt("y") + " month: " + res.getString("m") + "count: " + res.getInt("c"));
                     data.put(res.getString("m"), res.getInt("c"));
                 }
             }
@@ -121,7 +122,7 @@ public class Statistics {
 
                 ResultSet res = stmt.getResultSet();
                 while (res.next() == true) {
-                    System.out.println("year: " + res.getInt("y") + "month: " + res.getString("m") + "count: " + res.getInt("s"));
+//                    System.out.println("year: " + res.getInt("y") + " month: " + res.getString("m") + "count: " + res.getInt("s"));
                     data.put(res.getString("m"), res.getInt("s"));
                 }
             }

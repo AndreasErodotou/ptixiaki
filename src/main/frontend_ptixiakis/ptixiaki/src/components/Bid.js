@@ -55,11 +55,11 @@ const Bid = ({ bid, onSelect }) => {
               <Form.Label className="ml-1 mt-2 bold">({bid.price}€)</Form.Label>
             </div>
           </Form.Group>
-          <Form.Group>
+          <Form.Group as={Form.Row}>
             <Form.Label className="w-50">{bid.solution_decription}</Form.Label>
             <Form.Label className="w-50">{`Time Needed: ${bid.time_to_fix}'`}</Form.Label>
           </Form.Group>
-          <Form.Group className="">
+          <Form.Group as={Form.Row}>
             <Form.Label className="w-50"></Form.Label>
             <Form.Label className="w-50">{`Date: ${bid.when}`}</Form.Label>
           </Form.Group>

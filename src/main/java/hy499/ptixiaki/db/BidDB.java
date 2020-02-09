@@ -48,7 +48,7 @@ public final class BidDB implements DB<Bid> {
                         .append(" BID           VARCHAR(50)    PRIMARY KEY   NOT NULL, ")
                         .append(" UID           VARCHAR(50)    NOT NULL,")
                         .append(" LID           VARCHAR(50)    NOT NULL, ")
-                        .append(" SOLUTION_DESCR  VARCHAR(50)  NOT NULL, ")
+                        .append(" SOLUTION_DESCR  VARCHAR(500)  NOT NULL, ")
                         .append(" PRICE         REAL    NOT NULL, ")
                         .append(" TIME_TO_FIX   REAL   NOT NULL, ")
                         .append(" WHEN_P        TIMESTAMP    NOT NULL, ")
