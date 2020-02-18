@@ -62,7 +62,7 @@ class App extends Component {
         <Route exact path="/listings/:UID" component={ListingsPage} />
         <Route exact path="/statistics/:UID" component={AnaliticsPage} />
         <Route exact path="/timetable/:UID" component={TimetablePage} />
-        <Route exact path="/users/:UID" component={UserProfilePage} />
+        <Route path="/users/:UID" component={UserProfilePage} />
         <Route exact path="/reviews/:UID" component={ReviewsPage} />
 
         <Route exact path="/search" component={ListingsPage} />

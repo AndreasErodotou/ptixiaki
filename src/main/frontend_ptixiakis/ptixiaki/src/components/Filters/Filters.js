@@ -12,10 +12,12 @@ const Filters = props => {
   const [filters, setFilters] = useState({
     categoriesChecked : [],
     locationsChecked : [],
-    // order: null,
+    starsChecked : [],
+    withReview: false,
+    withoutReview: false,
     minPrice: 0,
     maxPrice: 0
-  })
+  });
 
   let location = useLocation();
   // alert(JSON.stringify(useLocation()));
@@ -26,7 +28,7 @@ const Filters = props => {
     console.log(JSON.stringify(filters) );
     const query = createQuery();
     // window.location.href = window.location.href+query;
-    
+
     if(location.pathname.indexOf("search") > 0){
       history.push(location.search.split('&')[0] + query);
     }
@@ -39,14 +41,14 @@ const Filters = props => {
 
   const createQuery = () => {
     let query = "";
-    let putSymbolAnd = location.pathname.indexOf("search")>0?true:false;
+    let putSymbolAnd = location.pathname.indexOf("search")>0;
 
     if((props.profFilters !==null && props.profFilters !==undefined) && !profFiltersUpdated &&!putSymbolAnd){
       // alert(JSON.stringify(props.profFilters));
       // userDetails.jobs.charAt(0).toUpperCase() + userDetails.jobs.slice(1)
       const profCategories = props.profFilters.categories.map(category => category.charAt(0).toUpperCase() + category.slice(1).toLowerCase())
       const profLocations = props.profFilters.locations.map(location => location.charAt(0).toUpperCase() + location.slice(1).toLowerCase())
-      
+
       filters.categoriesChecked = profCategories;
       filters.locationsChecked = profLocations;
       setProfFiltersUpdated(true);
@@ -57,6 +59,18 @@ const Filters = props => {
     }
     if(filters.locationsChecked.length > 0){
       query += ((putSymbolAnd)? "&":"") + "locations=" + filters.locationsChecked.join(',');
+      putSymbolAnd=true;
+    }
+    if(filters.starsChecked.length > 0){
+      query += ((putSymbolAnd)? "&":"") + "stars=" + filters.starsChecked.join(',');
+      putSymbolAnd=true;
+    }
+    if(filters.withoutReview !== false && !(filters.withoutReview && filters.withReview)){
+      query += ((putSymbolAnd)? "&":"") + "without_review=" + filters.withoutReview;
+      putSymbolAnd=true;
+    }
+    if(filters.withReview !== false && !(filters.withoutReview && filters.withReview)){
+      query += ((putSymbolAnd)? "&":"") + "with_review=" + filters.withReview;
       putSymbolAnd=true;
     }
     if(filters.minPrice> 0){
@@ -72,7 +86,7 @@ const Filters = props => {
       putSymbolAnd=true;
     }
     return query
-  }
+  };
 
   const categoryChanged = (e) => {
     if(e.target.checked){
@@ -80,7 +94,7 @@ const Filters = props => {
     }else{
       setFilters({...filters ,categoriesChecked : filters.categoriesChecked.filter((category)=> category !== e.target.value)});
     }
-  }
+  };
 
   const locationChanged = (e) => {
     if(e.target.checked){
@@ -88,7 +102,31 @@ const Filters = props => {
     }else{
       setFilters({...filters ,locationsChecked : filters.locationsChecked.filter( location => location !== e.target.value)});
     }
-  }
+  };
+
+  const starsChanged = (e) => {
+    if(e.target.checked){
+      setFilters({...filters ,starsChecked : [...filters.starsChecked, e.target.value.split(' ')[0]]})
+    }else{
+      setFilters({...filters ,starsChecked : filters.starsChecked.filter( star => star !== e.target.value.split(' ')[0])});
+    }
+  };
+
+  const withoutReviewChanged = (e) => {
+    if(e.target.checked){
+      setFilters({...filters ,withoutReview : true})
+    }else{
+      setFilters({...filters ,withoutReview : false});
+    }
+  };
+
+  const withReviewChanged = (e) => {
+    if(e.target.checked){
+      setFilters({...filters ,withReview : true})
+    }else{
+      setFilters({...filters ,withReview : false});
+    }
+  };
 
   const minPriceChanged = (e) => {
     const minPrice= e.target.value;
@@ -97,7 +135,7 @@ const Filters = props => {
     }else{
       e.target.value = filters.minPrice;
     }
-  }
+  };
 
   const maxPriceChanged = (e) => {
     const maxPrice = e.target.value;
@@ -106,7 +144,7 @@ const Filters = props => {
     }else{
       e.target.value = filters.maxPrice;
     }
-  }
+  };
 
   if (props.categories !== null) {
     categories = props.categories.map((category, indexed) => (
@@ -119,68 +157,133 @@ const Filters = props => {
     ));
   }
 
-  return (
-    <div className="sticky-top">
-      <aside className="filters">
-        <div className="card" style={{ borderRadius: "0rem" }}>
-          <article className="card-group-item">
-            <header className="card-header">
-              <h6 className="title">Category </h6>
-            </header>
-            <div className="card-body">
-              <form>
-                {categories}
-                <a href="#show-more">Show more</a>
-              </form>
-            </div>
-          </article>
+  const listingFilters = (<div className="sticky-top">
 
-          <article className="card-group-item">
-            <header className="card-header">
-              <h6 className="title">Location </h6>
-            </header>
-            <div className="card-body">
-              <form>
-                {locations}
-                <a href="#show-more">Show more</a>
-              </form>
-            </div>
-          </article>
+        <article className="card-group-item">
+          <header className="card-header">
+            <h6 className="title">Category </h6>
+          </header>
+          <div className="card-body">
+            <form>
+              {categories}
+              <a href="#show-more">Show more</a>
+            </form>
+          </div>
+        </article>
 
-          <article className="card-group-item">
-            <header className="card-header">
-              <h6 className="title">Max Price </h6>
-            </header>
-            <div className="card-body">
-              <div className="form-row">
-                <div className="form-group col-md-6">
-                  <label>Min (€)</label>
-                  <input
+        <article className="card-group-item">
+          <header className="card-header">
+            <h6 className="title">Location </h6>
+          </header>
+          <div className="card-body">
+            <form>
+              {locations}
+              <a href="#show-more">Show more</a>
+            </form>
+          </div>
+        </article>
+
+        <article className="card-group-item">
+          <header className="card-header">
+            <h6 className="title">Max Price </h6>
+          </header>
+          <div className="card-body">
+            <div className="form-row">
+              <div className="form-group col-md-6">
+                <label>Min (€)</label>
+                <input
                     type="number"
                     className="form-control"
                     id="inputEmail4"
                     placeholder=""
                     onChange = {minPriceChanged}
-                  />
-                </div>
-                <div className="form-group col-md-6 text-right">
-                  <label>Max (€)</label>
-                  <input
+                />
+              </div>
+              <div className="form-group col-md-6 text-right">
+                <label>Max (€)</label>
+                <input
                     type="number"
                     className="form-control"
                     placeholder=""
                     onChange = {maxPriceChanged}
-                  />
-                </div>
+                />
               </div>
             </div>
-          </article>
+          </div>
+        </article>
 
-          {/* <h4 className="onHoverBluePointer">Posted Today</h4>
+        {/* <h4 className="onHoverBluePointer">Posted Today</h4>
           <h4 className="onHoverBluePointer">Ending Soon</h4> */}
-        </div>
-      </aside>
-    </div>
+
+  </div>);
+
+  const ratingFilters = (
+      <div className="sticky-top">
+        <article className="card-group-item" key={"Jobs Done"}>
+          <header className="card-header">
+            <h6 className="title">Jobs Done </h6>
+          </header>
+          <div className="card-body">
+            <form>
+              <Category category={`With Review`} onChangeMade={withReviewChanged}/>
+              <Category category={`Without Review`} onChangeMade={withoutReviewChanged}/>
+            </form>
+          </div>
+        </article>
+
+        <article className="card-group-item" key={"Min Price"}>
+          <header className="card-header">
+            <h6 className="title">Max Price </h6>
+          </header>
+          <div className="card-body">
+            <div className="form-row">
+              <div className="form-group col-md-6">
+                <label>Min (€)</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    id="inputEmail4"
+                    placeholder=""
+                    onChange = {minPriceChanged}
+                />
+              </div>
+              <div className="form-group col-md-6 text-right" key={"Max Price"}>
+                <label>Max (€)</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    placeholder=""
+                    onChange = {maxPriceChanged}
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+);
+  const profileFilters = (
+      <div className="sticky-top">
+        <article className="card-group-item">
+          <header className="card-header">
+            <h6 className="title">Ratings </h6>
+          </header>
+          <div className="card-body">
+            <form>
+              {[1,2,3,4,5].map((star, indexed) => (
+                  <Category key={indexed} category={`${star} star`} onChangeMade={starsChanged}/>
+              ))}
+            </form>
+          </div>
+        </article>
+      </div>
+  );
+
+  return (
+    <aside className="filters">
+      <div className="card" style={{ borderRadius: "0rem" }}>
+        {(location.pathname.indexOf("reviews") > 0)?ratingFilters:listingFilters}
+      </div>
+    </aside>
   );
 };
 

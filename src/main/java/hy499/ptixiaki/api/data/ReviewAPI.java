@@ -72,6 +72,8 @@ public class ReviewAPI implements DataApi {
 
     @Override
     public String getQuery(Request req, Response res) throws ClassNotFoundException {
+        String order = req.queryParams("order");
+
         String UID = req.params(":UID");
         String LID = req.params(":LID");
         String TO_UID = req.queryParams("TO_UID");
@@ -85,6 +87,14 @@ public class ReviewAPI implements DataApi {
             }
             if(LID != null){
                 query += " and LID= " +"'"+LID+"'";
+            }
+        }
+        System.out.println(order);
+        if(order!=null){
+            if(order.equals("positive-first")){
+                query += " ORDER BY RATING DESC";
+            }else{
+                query += " ORDER BY RATING ASC";
             }
         }
         return new Gson().toJson(reviewDB.getQuery(query));

@@ -74,7 +74,7 @@ class Signin extends React.Component {
         if (isAuthenticated.token) {
           console.log("success");
           localStorage.setItem("token", isAuthenticated.token);
-          this.props.history.push("/");
+          window.location.reload();
         } else {
           this.onLoginError();
         }

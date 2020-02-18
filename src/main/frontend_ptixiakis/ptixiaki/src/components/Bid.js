@@ -5,6 +5,7 @@ import Rating from "../components/Rating";
 import AuthContext from '../context/auth-context';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from 'axios';
+import {Link} from "react-router-dom";
 
 const Bid = ({ bid, onSelect }) => {
     const [review, updateReview] = useState(undefined);
@@ -40,9 +41,12 @@ const Bid = ({ bid, onSelect }) => {
     
         <Form className="mx-4 mt-3 h-25 width-90">
           <Form.Group as={Form.Row}>
-            <div className="">
-              <img className="mr-2" src={UserIcon} alt="UserIcon"></img>
-              <Form.Label className="bold mr-1 mt-1">{bid.UID}</Form.Label>
+            <div>
+              <img className="mr-2" src={UserIcon} alt="UserIcon"/>
+              {/*<Form.Label className="bold mr-1 mt-1">{bid.UID}</Form.Label>*/}
+              <Form.Label className="onHoverBluePointer bold">
+                <Link style={{ textDecoration: 'none' }} to= {`/users/${bid.UID}`} > {bid.UID} </Link>
+              </Form.Label>
             </div>
             <div className=" d-flex px-2 w-25">
               <div className="mt-1">
@@ -60,7 +64,7 @@ const Bid = ({ bid, onSelect }) => {
             <Form.Label className="w-50">{`Time Needed: ${bid.time_to_fix}'`}</Form.Label>
           </Form.Group>
           <Form.Group as={Form.Row}>
-            <Form.Label className="w-50"></Form.Label>
+            <Form.Label className="w-50"/>
             <Form.Label className="w-50">{`Date: ${bid.when}`}</Form.Label>
           </Form.Group>
         </Form>

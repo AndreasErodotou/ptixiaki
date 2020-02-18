@@ -4,6 +4,8 @@ import Review from "../components/Review";
 import UserDetails from "../components/UserDetails";
 import axios from "axios";
 import AuthContent from "../context/auth-context";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 
 class UserProfilePage extends Component {
   constructor(props) {
@@ -15,7 +17,9 @@ class UserProfilePage extends Component {
         count: 0,
         rating: 0
       },
-      reviews: []
+      reviews: [],
+      query: "",
+      update: false
     };
   }
 
@@ -24,18 +28,10 @@ class UserProfilePage extends Component {
   componentDidMount() {
     const path=window.location.pathname;
     console.log(`pathname:${window.location.pathname}`);
-    // console.log(`props pathname:${this.props.location.pathname}`);
-    // if(window.location.pathname=='profile')
-    //   username = this.context.username;
-    // else
-    //   username = window.location.pathname;
-    // console.log(
-    //   `user profile page context:${JSON.stringify(this.context)}`
-    // );
     axios
       .get(`http://localhost:4567/api${path}`, {
         headers: {
-          Authorization: localStorage.getItem("token")
+          Authorization: this.context.token
         }
       })
       .then(response => {
@@ -55,7 +51,7 @@ class UserProfilePage extends Component {
         `http://localhost:4567/api${path}/reviews/rating`,
         {
           headers: {
-            Authorization: localStorage.getItem("token")
+            Authorization: this.context.token
           }
         }
       )
@@ -108,7 +104,38 @@ class UserProfilePage extends Component {
       });
   }
 
-  render() {
+  componentDidUpdate() {
+    const query= this.state.query;
+    if(query!=="" && this.state.update){
+      const path = window.location.pathname;
+      alert(`http://localhost:4567api/reviews?TO_UID=${this.context.username}${this.state.query}`);
+      axios
+          .get(`http://localhost:4567/api/reviews?TO_UID=${this.context.username}${this.state.query}`, {
+            headers: {
+              Authorization: this.context.token
+            }
+          })
+          .then(response => {
+            this.setState({
+              reviews: [...response.data.data],
+              update:false
+            });
+          })
+          .catch(error => {
+            console.log(`error: ${JSON.stringify(error)}`);
+          });
+    }
+  }
+
+  queryChanged(value){
+    this.setState({
+      ...this.state,
+      query:`&order=${value}`,
+      update: true
+    });
+  }
+
+  render(){
     const Categories = ["Electrician", "Hydraulic", "Engineer"];
     const Locations = ["Nicosia", "Heraklion", "Athens"];
     let contentTop;
@@ -122,9 +149,22 @@ class UserProfilePage extends Component {
     const content = (
         <div className="container mt-4">
           {contentTop}
+          <DropdownButton
+              id="dropdown-basic-button"
+              title={`Reviews: ${this.state.query.replace('&order=',' ').replace('all','')}`}
+              size="sm"
+              className="justify-content-end offset-9 my-3"
+
+              // disabled
+          >
+            <Dropdown.Item onClick={() => this.queryChanged("positive-first")}>Positive First</Dropdown.Item>
+            <Dropdown.Item onClick={() => this.queryChanged("negative-first")}>Negative First</Dropdown.Item>
+            <Dropdown.Item onClick={() => this.queryChanged("all")}>All</Dropdown.Item>
+
+          </DropdownButton>
           {contentDown}
         </div>
-    )
+    );
     return (
 
         <SimpleTemplatePage

@@ -23,7 +23,7 @@ class FullListing extends Component {
 
     this.state = {
       listingUser: {
-        username: null,
+        username: this.props.listing[0].UID,
         rating: 0,
         reviews: 0
       },
@@ -47,16 +47,17 @@ class FullListing extends Component {
         }
       })
       .then(response => {
-        const rating = response.data.data.rating;
-        const reviews = response.data.data.count;
-        this.setState({
-          listingUser: {
-            ...this.state.listingUser,
-            username: username,
-            rating: rating,
-            reviews: reviews
-          }
-        });
+        if (response.data.data.rating!==undefined) {
+          const rating = response.data.data.rating;
+          const reviews = response.data.data.count;
+          this.setState({
+            listingUser: {
+              ...this.state.listingUser,
+              rating: rating,
+              reviews: reviews
+            }
+          });
+        }
       })
       .catch(error => {
         console.log(`error:${JSON.stringify(error)}`);
@@ -112,10 +113,10 @@ class FullListing extends Component {
 
     const postedBy = (
       <Form.Group as={Form.Row} className="col-12">
-        <img className="mr-2" src={UserIcon} alt="UserIcon"></img>
+        <img className="mr-2" src={UserIcon} alt="UserIcon"/>
         <Form.Label className="mr-1 mt-1">Posted By:</Form.Label>
         <Form.Label className="bold mr-1 mt-1 onHoverBluePointer" onClick={this.goToUserProfile.bind(this)}> 
-         <Link to= {`/users/${this.state.listingUser.username}`} > {this.state.listingUser.username} </Link>
+         <Link style={{ textDecoration: 'none' }} to= {`/users/${this.state.listingUser.username}`} > {this.state.listingUser.username} </Link>
         </Form.Label>
         <div className="pb-2">
           <Rating rating={this.state.listingUser.rating} />

@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,7 +171,7 @@ public final class ReviewDB implements DB<Review> {
 
     @Override
     public ServerResponseAPI getQuery(String query) throws ClassNotFoundException {
-        Map<String, Review> reviews = new HashMap<>();
+        ArrayList<Review> reviews= new ArrayList<>();
         ServerResponseAPI serverRes = null;
         try {
             try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
@@ -187,11 +188,9 @@ public final class ReviewDB implements DB<Review> {
 
                 while (res.next() == true) {
                     Review review = resToType(res);
-                    reviews.put(review.getRID(), review);
+                    reviews.add(review);
                 }
-                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews Made For This User", new Gson().toJsonTree(reviews.values()).getAsJsonArray());
-                stmt.close();
-                con.close();
+                serverRes = new ServerResponseAPI(Status.SUCCESS, "All Reviews Made For This User", new Gson().toJsonTree(reviews).getAsJsonArray());
             }
 
         } catch (SQLException ex) {

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 import Listing from "../components/Listings/Listing";
-import SimpleTemplate from "./templates/SimpleTemplatePage";
 import axios from "axios";
 import AuthContext from "../context/auth-context";
 import FullListing from "./FullListingPage";
+import Template from "./templates/TemplatePage";
 
 class ReviewsPage extends Component {
   constructor(props) {
@@ -13,32 +13,65 @@ class ReviewsPage extends Component {
     this.state = {
       showFullListing: false,
       listingClicked: [],
-      listings: []
+      listings: [],
+
+      searchQuery:"",
+      updated: false
     };
   }
   static contextType = AuthContext;
-  componentDidMount() {
-    axios
-      .get(
-        `http://localhost:4567/api/users/${this.context.username}/listings?selected=true`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token")
-          }
-        }
-      )
-      .then(response => {
-        console.log(response);
-        this.setState({
-          listings: [...response.data.data]
-        });
-      })
-      .catch(error => {
-        if (error.response === undefined) {
-          // return this.props.history.push("/signin");
-        }
-        console.log(`error:${JSON.stringify(error)}`);
-      });
+
+  componentDidUpdate() {
+    const query=this.props.history.location.search;
+    const prevQuery= this.state.searchQuery;
+
+    if(query!=="" && (prevQuery === "" || prevQuery !== query)){
+      axios
+          .get(
+              `http://localhost:4567/api/users/${this.context.username}/listings${query}&selected=true`,
+              {
+                headers: {
+                  Authorization: this.context.token
+                }
+              }
+          )
+          .then(response => {
+            this.setState({
+              listings: [...response.data.data],
+              searchQuery: query,
+              updated: false
+            });
+          })
+          .catch(error => {
+            if (error.response === undefined) {
+              // return this.props.history.push("/signin");
+            }
+            console.log(`error:${JSON.stringify(error)}`);
+          });
+    }else if(query==="" && !this.state.updated){
+      axios
+          .get(
+              `http://localhost:4567/api/users/${this.context.username}/listings?selected=true`,
+              {
+                headers: {
+                  Authorization: this.context.token
+                }
+              }
+          )
+          .then(response => {
+            this.setState({
+              listings: [...response.data.data],
+              searchQuery: query,
+              updated: true
+            });
+          })
+          .catch(error => {
+            if (error.response === undefined) {
+              // return this.props.history.push("/signin");
+            }
+            console.log(`error:${JSON.stringify(error)}`);
+          });
+    }
   }
 
   listingClickedModalHandler(LID) {
@@ -96,9 +129,15 @@ class ReviewsPage extends Component {
     content.push(fullListing);
 
     return (
-      <SimpleTemplate
-        content={content}
-      />
+      // <SimpleTemplate
+      //   content={content}
+      // />
+        <Template
+          categories={null}
+          locations={null}
+          content={content}
+          profFilters={null}
+        />
     );
   }
 }

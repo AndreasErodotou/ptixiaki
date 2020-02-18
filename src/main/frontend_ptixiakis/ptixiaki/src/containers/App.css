@@ -30,6 +30,8 @@
 .onHoverBluePointer:hover {
   color: #17a2b8;
   cursor: pointer;
+  text-decoration: none;
+  clear: both;
 }
 
 .p-1 {
@@ -64,6 +66,10 @@
   /* max-height: 90%;
   width: 100%;
   height: 100%; */
+}
+
+.disableLinkUnderline{
+  textDecoration: 'none';
 }
 
 .link {

@@ -114,17 +114,25 @@ public class ListingAPI implements DataApi {
             putAnd = true;
 
             Token token = new JwtAPI().parseJWT(req.headers("Authorization"));
-            if((token.getAccountType().toString() == "PROFESSIONAL") && (req.queryParams("selected") == null)){
+            if((token.getAccountType().toString().equals("PROFESSIONAL")) && (req.queryParams("selected") == null)){
                 return new Gson().toJson(listingDB.getUserBidListings(" BID.UID = '" + req.params(":UID")+"'"));
             }else if (req.queryParams("selected") != null) {
                 String tmpQuery;
-                if(token.getAccountType().toString() == "PROFESSIONAL") {
-                    tmpQuery = " BID.UID = '" + req.params(":UID") + "'";
+                if(token.getAccountType().toString().equals("PROFESSIONAL")) {
+                    tmpQuery =  " (BID.UID = '" + req.params(":UID") + "')";
                 }else{
-                    tmpQuery = " Listing.UID = '" + req.params(":UID") + "'";
+                    tmpQuery =  " (Listing.UID = '" + req.params(":UID") + "')";
                 }
-                tmpQuery += (putAnd?" and ":"") + " ( selected = '" + req.queryParams("selected")+ "') ";
-                return new Gson().toJson(listingDB.getUserBidListings(tmpQuery));
+                tmpQuery += (putAnd?" and ":"") + " ( BID.selected = '" + req.queryParams("selected")+ "') ";
+                if(req.queryParams("with_review") != null){
+                    tmpQuery += (putAnd?" and ":"") + "(REVIEW.UID = '" + req.params(":UID") + "')";
+                    return new Gson().toJson(listingDB.getUserReviewListings(tmpQuery,true));
+                }else if(req.queryParams("without_review") != null){
+                    tmpQuery += (putAnd?" and ":"") + " (REVIEW.LID IS NULL or REVIEW.UID != '" + req.params(":UID") + "') ";
+                    return new Gson().toJson(listingDB.getUserReviewListings(tmpQuery,false));
+                }else {
+                    return new Gson().toJson(listingDB.getUserBidListings(tmpQuery));
+                }
             }
         }
         

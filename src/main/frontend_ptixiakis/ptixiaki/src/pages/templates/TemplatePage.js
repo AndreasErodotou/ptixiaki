@@ -33,21 +33,23 @@ const TemplatePage = props => {
         </div>
         <div className="col-10 pt-2">
           <div className="row m-auto">
+          {(location.pathname.indexOf("listings") > 0)?
             <DropdownButton
                 id="dropdown-basic-button"
                 title={`Listings ${order ? `: ${order}` : ''}`}
                 size="sm"
-                className="col-12 justify-content-end offset-9"
+                className="justify-content-end offset-9"
 
                 // disabled
             >
-              <Dropdown.Item onClick={orderClicked} onClick={() => orderClicked("posted-today")}>Posted
+              <Dropdown.Item onClick={() => orderClicked("posted-today")}>Posted
                 Today</Dropdown.Item>
-              <Dropdown.Item onClick={orderClicked} onClick={() => orderClicked("ending-soon")}>Ending
+              <Dropdown.Item onClick={() => orderClicked("ending-soon")}>Ending
                 Soon</Dropdown.Item>
-              <Dropdown.Item onClick={orderClicked} onClick={() => orderClicked("all")}>All</Dropdown.Item>
+              <Dropdown.Item onClick={() => orderClicked("all")}>All</Dropdown.Item>
 
             </DropdownButton>
+          : null}
             {props.content}
           </div>
         </div>

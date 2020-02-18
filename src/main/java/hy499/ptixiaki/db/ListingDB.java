@@ -387,4 +387,50 @@ public final class ListingDB implements DB<Listing> {
 
         return serverRes;
     }
+
+    public ServerResponseAPI getUserReviewListings(String query, boolean withReviews) throws ClassNotFoundException {
+        ServerResponseAPI serverRes = new ServerResponseAPI();
+        Map<String, Listing> listings = new HashMap<>();
+        try {
+            try (Connection con = ConnectionDB.getDatabaseConnection(); Statement stmt = con.createStatement()) {
+
+                StringBuilder getQuery = new StringBuilder();
+
+                getQuery.append("SELECT LISTING.LID, ")
+                        .append("LISTING.UID, ")
+                        .append("LISTING.TITLE, ")
+                        .append("LISTING.DESCRIPTION, ")
+                        .append("LISTING.PICS, ")
+                        .append("LISTING.START, ")
+                        .append("LISTING.EXPIRE, ")
+                        .append("LISTING.LOCATION, ")
+                        .append("LISTING.CATEGORY, ")
+                        .append("LISTING.MAX_PRICE ")
+                        .append("FROM LISTING INNER JOIN BID ON BID.LID = LISTING.LID ");
+                if (withReviews){
+                    getQuery.append(" INNER JOIN REVIEW ON LISTING.LID = REVIEW.LID ")
+                            .append("WHERE ").append(query).append(";");
+                }else{
+                    getQuery.append(" LEFT JOIN REVIEW ON LISTING.LID = REVIEW.LID ")
+                    .append("WHERE ").append(query).append(";");
+                }
+
+                System.out.println(getQuery.toString());
+                stmt.execute(getQuery.toString());
+
+                ResultSet res = stmt.getResultSet();
+                while (res.next() == true) {
+                    Listing listing = resToType(res);
+                    listings.put(listing.getLID(), listing);
+                }
+            }
+            serverRes = new ServerResponseAPI(ServerResponseAPI.Status.SUCCESS,"Professional Bid Listings");
+            serverRes.setData(new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter()).create().toJsonTree(listings.values()).getAsJsonArray());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return serverRes;
+    }
 }

@@ -110,7 +110,7 @@ const NavBar = props => {
             ></img>
             
             <Link
-              to="create_listing"
+              to={`/create_listing`}
               onClick={props.onCreateYourOwnListingClicked}
             >
               Create Your Own Listing
