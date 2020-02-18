@@ -6,7 +6,7 @@ import Rating from "../components/Rating";
 const Review = ({ review }) => {
   console.log(`review:${JSON.stringify(review)}`);
   return (
-    <Form className="mx-4 my-3 p-2 h-25 border border-info rounded">
+    <Form className="mx-4 my-3 p-2 h-50 border border-info rounded">
       <Form.Group as={Form.Row}>
         <div className="col-9">
           <img className="mr-2" src={UserIcon} alt="UserIcon"></img>

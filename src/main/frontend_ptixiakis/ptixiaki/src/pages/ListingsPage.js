@@ -5,8 +5,6 @@ import Template from "./templates/TemplatePage";
 import AuthContext from "../context/auth-context";
 
 import axios from "axios";
-import {Redirect} from "react-router-dom";
-
 // import { Route } from "react-router-dom";
 
 class Listings extends React.Component {
@@ -76,7 +74,6 @@ class Listings extends React.Component {
           profFilters: professionalFilters,
           searchQuery: query
         });
-        // this.props.history.push(query);
       }
     }
 
@@ -88,7 +85,7 @@ class Listings extends React.Component {
     if(this.context.accountType==="CUSTOMER" && this.props.location.pathname!=="/search"){
       userUrl = `users/${this.context.username}/`;
     }
-    if(query!=="" && (prevQuery === "" || prevQuery !== query) || (query==="" && !this.state.updated) && !this.state.firstTime){
+    if((query!=="" && (prevQuery === "" || prevQuery !== query)) || ((query==="" && !this.state.updated) && (!this.state.firstTime || this.context.accountType==="CUSTOMER"))){
       axios
       .get(
         `http://localhost:4567/api/${userUrl}listings${query}`
@@ -109,9 +106,6 @@ class Listings extends React.Component {
         });
       })
       .catch(error => {
-        if (error.response === undefined) {
-          // return this.props.history.push("/signin");
-        }
         console.log(`error:${JSON.stringify(error)}`);
       });
     }

@@ -53,7 +53,7 @@ class FullListing extends Component {
             listingUser: {
               ...this.state.listingUser,
               rating: (rating===undefined)?0:rating,
-              reviews: (reviews===undefined)?0:rating
+              reviews: (reviews===undefined)?0:reviews
             }
           });
       })

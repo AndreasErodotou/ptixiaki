@@ -6,6 +6,7 @@ import axios from "axios";
 import AuthContent from "../context/auth-context";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
+import Filters from '../components/Filters/Filters';
 
 class UserProfilePage extends Component {
   constructor(props) {
@@ -149,6 +150,15 @@ class UserProfilePage extends Component {
     const content = (
         <div className="container mt-4">
           {contentTop}
+          {/*<div className={"d-flex"}>*/}
+          {/*<div className={"col-2 mt-3"}>*/}
+          {/*  <Filters*/}
+          {/*    categories={null}*/}
+          {/*    locations={null}*/}
+          {/*    order={"all"}*/}
+          {/*  />*/}
+          {/*</div>*/}
+          {/*  <div className={"col-10 "}>*/}
           <DropdownButton
               id="dropdown-basic-button"
               title={`Reviews: ${this.state.query.replace('&order=',' ').replace('all','')}`}
@@ -163,6 +173,8 @@ class UserProfilePage extends Component {
 
           </DropdownButton>
           {contentDown}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
     );
     return (

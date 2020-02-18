@@ -15,26 +15,25 @@ const Filters = props => {
     starsChecked : [],
     withReview: false,
     withoutReview: false,
+    activeListings:false,
+    nonActiveListings:false,
     minPrice: 0,
     maxPrice: 0
   });
 
   let location = useLocation();
-  // alert(JSON.stringify(useLocation()));
 
   const history = useHistory();
 
   useEffect(() => {
     console.log(JSON.stringify(filters) );
     const query = createQuery();
-    // window.location.href = window.location.href+query;
 
     if(location.pathname.indexOf("search") > 0){
       history.push(location.search.split('&')[0] + query);
     }
     else{
       history.push('?' +query);
-      // location.search = '?'+query;
     }
     console.log("Query: "+query);
   }, [filters,props.profFilters,props.order]);
@@ -44,8 +43,6 @@ const Filters = props => {
     let putSymbolAnd = location.pathname.indexOf("search")>0;
 
     if((props.profFilters !==null && props.profFilters !==undefined) && !profFiltersUpdated &&!putSymbolAnd){
-      // alert(JSON.stringify(props.profFilters));
-      // userDetails.jobs.charAt(0).toUpperCase() + userDetails.jobs.slice(1)
       const profCategories = props.profFilters.categories.map(category => category.charAt(0).toUpperCase() + category.slice(1).toLowerCase())
       const profLocations = props.profFilters.locations.map(location => location.charAt(0).toUpperCase() + location.slice(1).toLowerCase())
 
@@ -71,6 +68,14 @@ const Filters = props => {
     }
     if(filters.withReview !== false && !(filters.withoutReview && filters.withReview)){
       query += ((putSymbolAnd)? "&":"") + "with_review=" + filters.withReview;
+      putSymbolAnd=true;
+    }
+    if(filters.activeListings !== false && !(filters.nonActiveListings && filters.activeListings)){
+      query += ((putSymbolAnd)? "&":"") + "active_listings=true";
+      putSymbolAnd=true;
+    }
+    if(filters.nonActiveListings !== false && !(filters.nonActiveListings && filters.activeListings)){
+      query += ((putSymbolAnd)? "&":"") + "active_listings=false";
       putSymbolAnd=true;
     }
     if(filters.minPrice> 0){
@@ -128,6 +133,22 @@ const Filters = props => {
     }
   };
 
+  const activeListingsChanged = (e) => {
+    if(e.target.checked){
+      setFilters({...filters ,activeListings : true})
+    }else{
+      setFilters({...filters ,activeListings : false});
+    }
+  };
+
+  const nonActiveListingsChanged = (e) => {
+    if(e.target.checked){
+      setFilters({...filters ,nonActiveListings : true})
+    }else{
+      setFilters({...filters ,nonActiveListings : false});
+    }
+  };
+
   const minPriceChanged = (e) => {
     const minPrice= e.target.value;
     if(parseInt(minPrice) <= parseInt(filters.maxPrice) && minPrice >= 0){
@@ -165,6 +186,18 @@ const Filters = props => {
   }
 
   const listingFilters = (<div className="sticky-top">
+
+      <article className="card-group-item" key={"listings"}>
+        <header className="card-header">
+          <h6 className="title">Listings Status</h6>
+        </header>
+        <div className="card-body">
+          <form>
+            <Category category={`Active`} onChangeMade={activeListingsChanged}/>
+            <Category category={`Expired`} onChangeMade={nonActiveListingsChanged}/>
+          </form>
+        </div>
+      </article>
 
         <article className="card-group-item">
           <header className="card-header">
@@ -218,6 +251,7 @@ const Filters = props => {
             </div>
           </div>
         </article>
+
 
         {/* <h4 className="onHoverBluePointer">Posted Today</h4>
           <h4 className="onHoverBluePointer">Ending Soon</h4> */}
@@ -285,10 +319,21 @@ const Filters = props => {
       </div>
   );
 
+  const path=location.pathname;
+
+  let content = null;
+  if (path.indexOf("reviews") > 0){
+    content = ratingFilters;
+  }else if((path.indexOf("listings") > 0) || path.indexOf("bids") > 0 || (path.indexOf("search") > 0)){
+    content = listingFilters;
+  }else{
+    content = profileFilters;
+  }
+
   return (
     <aside className="filters">
       <div className="card" style={{ borderRadius: "0rem" }}>
-        {(location.pathname.indexOf("reviews") > 0)?ratingFilters:listingFilters}
+        {content}
       </div>
     </aside>
   );

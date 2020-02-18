@@ -76,6 +76,17 @@ public class ListingAPI implements DataApi {
             filters += "') ";
             putAnd = true;
         }
+
+        if(req.queryParams("active_listings")!=null){
+            boolean activeListings = Boolean.valueOf(req.queryParams("active_listings"));
+            if(activeListings){
+                filters += (putAnd?" and ":"") + "( EXPIRE >= '" + new Date() + "') ";
+            }else{
+                filters += (putAnd?" and ":"") + "( EXPIRE <= '" + new Date() + "') ";
+            }
+
+            putAnd = true;
+        }
         
         if(req.queryParams("min_price")!=null){
             String minPrice = req.queryParams("min_price").toLowerCase();
