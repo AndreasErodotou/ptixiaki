@@ -92,7 +92,7 @@ class ReviewsPage extends Component {
   }
 
   render() {
-    let listings = <div className="container mt-3 ">
+    let listings = <div className="container mt-3 " key={"listings"}>
       <div className="row">
         {
           this.state.listings.map(listing => {

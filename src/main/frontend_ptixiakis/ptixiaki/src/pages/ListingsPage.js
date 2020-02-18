@@ -24,7 +24,8 @@ class Listings extends React.Component {
       searchQuery : "",
       updated: false,
       profFilters: null,
-      firstTimeCDUreq: false
+      firstTime:true
+
     };
   }
   
@@ -54,47 +55,28 @@ class Listings extends React.Component {
   async componentDidMount() {
     if(this.props.location.pathname.indexOf("/search")<0){
       let query='';
-      let url ='';
-      if(this.props.location.pathname.indexOf("bids") > 0){
-        this.getListingsRequest(`http://localhost:4567/api/users/${this.context.username}/listings`);
-      }else{
-        url = `/users/${this.context.username}/listings`;
-        let professionalFilters = null;
-        if (this.context.accountType === "PROFESSIONAL") {
-          let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`, {
-            headers: {
-              Authorization: localStorage.getItem("token")
-            }
-          });
-          let userDetails = await res.data.data;
-          url = `/listings?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
-          query = `?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
-          console.log("userDetails:" + userDetails);
-          // console.log("url:" + url);
-          professionalFilters = {
-            categories: userDetails.jobs,
-            locations: userDetails.servedLoc
-          };
-        }
-        // let res = await axios
-        //     .get(
-        //         `http://localhost:4567/api${url}`,
-        //         {
-        //           headers: {
-        //             Authorization: this.context.token
-        //           }
-        //         }
-        //     );
-        //  let data = await   res.data.data;
-              this.setState({
-                ...this.state,
-                // listings: [...data],
-                profFilters: professionalFilters,
-                // updated: true,
-                searchQuery: query,
-                // firstTimeCDUreq: true
-              });
-            }
+
+      let professionalFilters = null;
+      if (this.context.accountType === "PROFESSIONAL") {
+        let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`, {
+          headers: {
+            Authorization: this.context.token
+          }
+        });
+        let userDetails = await res.data.data;
+        query = `?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
+        console.log("userDetails:" + userDetails);
+        professionalFilters = {
+          categories: userDetails.jobs,
+          locations: userDetails.servedLoc
+        };
+      }
+        this.setState({
+          ...this.state,
+          profFilters: professionalFilters,
+          searchQuery: query
+        });
+        // this.props.history.push(query);
       }
     }
 
@@ -106,7 +88,7 @@ class Listings extends React.Component {
     if(this.context.accountType==="CUSTOMER" && this.props.location.pathname!=="/search"){
       userUrl = `users/${this.context.username}/`;
     }
-    if(query!=="" && (prevQuery === "" || prevQuery !== query || this.state.firstTimeCDUreq)){
+    if(query!=="" && (prevQuery === "" || prevQuery !== query) || (query==="" && !this.state.updated) && !this.state.firstTime){
       axios
       .get(
         `http://localhost:4567/api/${userUrl}listings${query}`
@@ -122,8 +104,8 @@ class Listings extends React.Component {
         this.setState({
           listings: [...response.data.data],
           searchQuery: query,
-          updated: false,
-          firstTimeCDUreq: false
+          updated: (query==="")?true:false,
+          firstTime: false
         });
       })
       .catch(error => {
@@ -133,31 +115,6 @@ class Listings extends React.Component {
         console.log(`error:${JSON.stringify(error)}`);
       });
     }
-    else if(query==="" && !this.state.updated){
-      // const url = `/users/${this.context.username}/listings`;
-      axios
-        .get(
-          `http://localhost:4567/api/${userUrl}listings`,
-          {
-            headers: {
-              Authorization: localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          this.setState({
-            listings: [...response.data.data],
-            searchQuery: "",
-            updated: true
-          });
-        })
-        .catch(error => {
-          if (error.response === undefined) {
-            // return this.props.history.push("/signin");
-          }
-          console.log(`error:${JSON.stringify(error)}`);
-        });
-      }
   }
   
 

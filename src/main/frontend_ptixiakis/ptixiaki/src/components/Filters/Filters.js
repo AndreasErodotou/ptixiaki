@@ -83,7 +83,7 @@ const Filters = props => {
     }
     if(props.order !=="all"){
       query += ((putSymbolAnd)? "&":"") + "order=" + props.order;
-      putSymbolAnd=true;
+      // putSymbolAnd=true;
     }
     return query
   };
@@ -131,9 +131,13 @@ const Filters = props => {
   const minPriceChanged = (e) => {
     const minPrice= e.target.value;
     if(parseInt(minPrice) <= parseInt(filters.maxPrice) && minPrice >= 0){
-      setFilters({...filters ,minPrice :  e.target.value});
-    }else{
-      e.target.value = filters.minPrice;
+        setFilters({...filters ,minPrice :  e.target.value});
+    }
+    else if(minPrice===''){
+        setFilters({...filters ,minPrice :  0});
+    }
+    else{
+        e.target.value = filters.minPrice;
     }
   };
 
@@ -141,6 +145,9 @@ const Filters = props => {
     const maxPrice = e.target.value;
     if(parseInt(maxPrice) >= parseInt(filters.minPrice) && maxPrice >= 0){
       setFilters({...filters ,maxPrice :  e.target.value});
+    }
+    else if(maxPrice===''){
+        setFilters({...filters ,maxPrice :  0});
     }else{
       e.target.value = filters.maxPrice;
     }

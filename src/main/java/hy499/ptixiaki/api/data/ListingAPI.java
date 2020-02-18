@@ -109,13 +109,10 @@ public class ListingAPI implements DataApi {
         }
 
         if (req.params(":UID") != null) {
-            filters += (putAnd?" and (":"") + " UID = '" + req.params(":UID");
-            filters += putAnd ? "') ":"'";
-            putAnd = true;
 
             Token token = new JwtAPI().parseJWT(req.headers("Authorization"));
             if((token.getAccountType().toString().equals("PROFESSIONAL")) && (req.queryParams("selected") == null)){
-                return new Gson().toJson(listingDB.getUserBidListings(" BID.UID = '" + req.params(":UID")+"'"));
+                return new Gson().toJson(listingDB.getUserBidListings(filters + (putAnd?" and ":"") + " (BID.UID = '" + req.params(":UID")+"')"));
             }else if (req.queryParams("selected") != null) {
                 String tmpQuery;
                 if(token.getAccountType().toString().equals("PROFESSIONAL")) {
@@ -123,17 +120,29 @@ public class ListingAPI implements DataApi {
                 }else{
                     tmpQuery =  " (Listing.UID = '" + req.params(":UID") + "')";
                 }
-                tmpQuery += (putAnd?" and ":"") + " ( BID.selected = '" + req.queryParams("selected")+ "') ";
+                if(req.queryParams("min_price")!=null){
+                    String minPrice = req.queryParams("min_price");
+                    tmpQuery += " and (Listing.max_price >= '" + minPrice + "') ";
+                }
+
+                if(req.queryParams("max_price")!=null){
+                    String maxPrice = req.queryParams("max_price");
+                    tmpQuery += " and (max_price <= '" + maxPrice + "') ";
+                }
+                tmpQuery += " and (BID.selected = '" + req.queryParams("selected")+ "') ";
                 if(req.queryParams("with_review") != null){
-                    tmpQuery += (putAnd?" and ":"") + "(REVIEW.UID = '" + req.params(":UID") + "')";
+                    tmpQuery += " and (REVIEW.UID = '" + req.params(":UID") + "')";
                     return new Gson().toJson(listingDB.getUserReviewListings(tmpQuery,true));
                 }else if(req.queryParams("without_review") != null){
-                    tmpQuery += (putAnd?" and ":"") + " (REVIEW.LID IS NULL or REVIEW.UID != '" + req.params(":UID") + "') ";
+                    tmpQuery += " and (REVIEW.LID IS NULL or REVIEW.UID != '" + req.params(":UID") + "') ";
                     return new Gson().toJson(listingDB.getUserReviewListings(tmpQuery,false));
                 }else {
                     return new Gson().toJson(listingDB.getUserBidListings(tmpQuery));
                 }
             }
+            filters += (putAnd?" and (":"") + " UID = '" + req.params(":UID");
+            filters += putAnd ? "') ":"'";
+            putAnd = true;
         }
         
         if(putAnd){

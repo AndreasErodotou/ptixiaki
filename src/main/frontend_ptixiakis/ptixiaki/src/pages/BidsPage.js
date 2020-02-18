@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import Listing from "../components/Listings/Listing";
 import FullListing from "./FullListingPage.js";
-import SimpleTemplate from "./templates/SimpleTemplatePage";
+import Template from "./templates/TemplatePage";
 import AuthContext from "../context/auth-context";
 
 import axios from "axios";
@@ -13,31 +13,42 @@ class BidsPage extends Component {
     this.state = {
       showFullListing: false,
       listingClicked: [],
-      listings: []
+      listings: [],
+
+      filterCategories: ["Electrician", "Plumber", "Engineer"],
+      filterLocations: ["Heraklion","Nicosia", "Athens"],
+
+      searchQuery:"",
+      updated: false
     };
   }
 
   static contextType = AuthContext;
 
-  componentDidMount() {
-    axios
-      .get(`http://localhost:4567/api/users/${this.context.username}/listings`, {
-        headers: {
-          Authorization: this.context.token
-        }
-      })
-      .then(response => {
-        console.log(response);
-        this.setState({
-          listings: response.data.data
-        });
-      })
-      .catch(error => {
-        if (error.response === undefined) {
-          return this.props.history.push("/signin");
-        }
-        console.log(`error:${JSON.stringify(error)}`);
-      });
+
+  componentDidUpdate() {
+    const query=this.props.history.location.search;
+    const prevQuery= this.state.searchQuery;
+
+    if((query!=="" && (prevQuery === "" || prevQuery !== query)) || (query==="" && !this.state.updated)){
+      axios
+          .get(`http://localhost:4567/api/users/${this.context.username}/listings${query}`, {
+            headers: {
+              Authorization: this.context.token
+            }
+          })
+          .then(response => {
+            console.log(response);
+            this.setState({
+              listings: [...response.data.data],
+              searchQuery: query,
+              updated: (query==="")?true:false
+            });
+          })
+          .catch(error => {
+            // console.log(`error:${JSON.stringify(error)}`);
+          });
+    }
   }
 
   bidClickedModalHandler(LID) {
@@ -69,7 +80,7 @@ class BidsPage extends Component {
 
   render() {
     const path = this.props.location.pathname;
-    let listings = <div className="container mt-3 ">
+    let listings = <div className="container mt-3" key={"listings"}>
       <div className="row">
         {
           this.state.listings.map(listing => {
@@ -102,8 +113,11 @@ class BidsPage extends Component {
 
 
     return (
-        <SimpleTemplate
+        <Template
             content={[listings,fullListing]}
+            categories={this.state.filterCategories}
+            locations={this.state.filterLocations}
+            profFilters={null}
         />
     );
   }

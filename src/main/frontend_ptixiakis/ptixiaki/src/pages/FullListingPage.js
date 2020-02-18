@@ -47,17 +47,15 @@ class FullListing extends Component {
         }
       })
       .then(response => {
-        if (response.data.data.rating!==undefined) {
           const rating = response.data.data.rating;
           const reviews = response.data.data.count;
           this.setState({
             listingUser: {
               ...this.state.listingUser,
-              rating: rating,
-              reviews: reviews
+              rating: (rating===undefined)?0:rating,
+              reviews: (reviews===undefined)?0:rating
             }
           });
-        }
       })
       .catch(error => {
         console.log(`error:${JSON.stringify(error)}`);
