@@ -1,10 +1,11 @@
 import React from "react";
 import SignupField from "../components/Signup/SignupField";
 import SignupSelect from "../components/Signup/SignupSelect";
-import axios from "axios";
 import SuccessAlert from "../components/SuccessAlert";
 
 // import PropTypes from "prop-types";
+import {getReq,postReq} from "../requests/Request";
+
 
 import { Link } from "react-router-dom";
 
@@ -117,80 +118,56 @@ class Signup extends React.Component {
   checkEmailAndUsername() {
     let allFieldsAreValid = true;
     let warnings = "";
-    let jwtToken = localStorage.getItem("myJwtToken");
     let email;
     let username;
     if (this.state.isValid.email) {
-      axios
-        .get(`http://localhost:4567/api/users?email=${this.state.user.email}`, {
-          headers: {
-            Authorization: jwtToken
-          }
-        })
-        .then(response => {
-          email = response.data;
+      getReq(`users?email=${this.state.user.email}`,null,(response) => {
+        email = response.data;
+        if (email.status !== "SUCCESS") {
+          warnings += email.msg;
+          allFieldsAreValid = false;
+        }
 
-          if (email.status !== "SUCCESS") {
-            warnings = +email.msg;
-            allFieldsAreValid = false;
-          }
+        if (this.state.isValid.username) {
+          getReq(`users?username=${this.state.user.username}`, null, response => {
+            username = response.data;
 
-          //send a request to check if there is anyone else with this username
-          if (this.state.isValid.username) {
-            axios
-              .get(
-                `http://localhost:4567/api/users?username=${this.state.user.username}`,
-                {
-                  headers: {
-                    Authorization: jwtToken
-                  }
-                }
-              )
-              .then(response => {
-                username = response.data;
-
-                if (username.status !== "SUCCESS") {
-                  warnings = +username.msg;
-                  allFieldsAreValid = false;
+            if (username.status !== "SUCCESS") {
+              warnings += username.msg;
+              allFieldsAreValid = false;
+            };
+            
+            if (allFieldsAreValid) {
+              this.addUserToDB();
+              this.setState({
+                signupSuccess: true
+              });
+            } else {
+              alert(warnings);
+              this.setState({
+                isValid: {
+                  ...this.state.isValid,
+                  email:
+                    email !== undefined && email.status === "SUCCESS"
+                      ? true
+                      : false,
+                  username:
+                    username !== undefined && username.status === "SUCCESS"
+                      ? true
+                      : false
                 }
               });
-          }
-        })
-        .then(() => {
-          if (allFieldsAreValid) {
-            this.addUserToDB();
-            this.setState({
-              signupSuccess: true
-            });
-          } else {
-            alert(warnings);
-            this.setState({
-              isValid: {
-                ...this.state.isValid,
-                email:
-                  email !== undefined && email.status === "SUCCESS"
-                    ? true
-                    : false,
-                username:
-                  username !== undefined && username.status === "SUCCESS"
-                    ? true
-                    : false
-              }
-            });
-          }
-        });
+            }
+          })
+        }
+      });
     }
   }
 
   addUserToDB() {
-    axios
-      .post("http://localhost:4567/api/users", this.state.user)
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(`Error:${error}`);
-      });
+    postReq('users',this.state.user, response => {
+      console.log(response.data);
+    });
   }
 
   nameChanged(event) {

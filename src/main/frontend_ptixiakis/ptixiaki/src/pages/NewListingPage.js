@@ -4,7 +4,9 @@ import NewListingField from "../components/Listings/NewListingField";
 import Image from "react-bootstrap/Image";
 import SimpleTemplatePage from "./templates/SimpleTemplatePage";
 import AuthContext from "../context/auth-context";
-import axios from "axios";
+
+import {postReq} from "../requests/Request";
+
 
 // import PickyDateTime from "react-picky-date-time";
 // import Modal from "react-bootstrap/Modal";
@@ -136,20 +138,10 @@ class NewListing extends Component {
   }
 
   addListingToDB() {
-    let jwtToken = this.context.token;
-    axios
-      .post("http://localhost:4567/api/listings", this.state.newListing, {
-        headers: {
-          Authorization: jwtToken
-        }
-      })
-      .then(response => {
-        console.log(response.data);
-        alert("Listing Posted");
-      })
-      .catch(error => {
-        console.log(`Error:${error}`);
-      });
+    // let jwtToken = this.context.token;
+    postReq('listings',this.state.newListing,(response) => {
+      console.log(response.data);
+    });
   }
 
   onLocChange(location) {
@@ -327,7 +319,5 @@ class NewListing extends Component {
   }
 }
 
-// NewListing.propTypes = {
-// };
 
 export default NewListing;

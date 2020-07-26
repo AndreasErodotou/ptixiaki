@@ -5,6 +5,8 @@ import Template from "./templates/TemplatePage";
 import AuthContext from "../context/auth-context";
 
 import axios from "axios";
+import {getReq} from "../requests/Request"
+
 // import { Route } from "react-router-dom";
 
 class Listings extends React.Component {
@@ -51,7 +53,7 @@ class Listings extends React.Component {
   }
 
   async componentDidMount() {
-    if(this.props.location.pathname.indexOf("/search")<0){
+    if(this.props.location.pathname.indexOf("/search")<0) {
       let query='';
 
       let professionalFilters = null;
@@ -61,7 +63,8 @@ class Listings extends React.Component {
             Authorization: this.context.token
           }
         });
-        let userDetails = await res.data.data;
+        let userDetails=  await res.data.data;
+      
         query = `?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
         console.log("userDetails:" + userDetails);
         professionalFilters = {
@@ -86,27 +89,16 @@ class Listings extends React.Component {
       userUrl = `users/${this.context.username}/`;
     }
     if((query!=="" && (prevQuery === "" || prevQuery !== query)) || ((query==="" && !this.state.updated) && (!this.state.firstTime || this.context.accountType==="CUSTOMER"))){
-      axios
-      .get(
-        `http://localhost:4567/api/${userUrl}listings${query}`
-        ,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token")
-          }
-        }
-      )
-      .then(response => {
-        // console.log(response);
-        this.setState({
-          listings: [...response.data.data],
-          searchQuery: query,
-          updated: (query==="")?true:false,
-          firstTime: false
-        });
-      })
-      .catch(error => {
-        console.log(`error:${JSON.stringify(error)}`);
+      
+      getReq(`${userUrl}listings${query}`,
+        null,
+        (response)=>{
+          this.setState({
+            listings: [...response.data.data],
+            searchQuery: query,
+            updated: (query==="")?true:false,
+            firstTime: false
+          });
       });
     }
   }

@@ -7,14 +7,15 @@ import Form from "react-bootstrap/Form";
 import Rating from "../components/Rating";
 import UserIcon from "../assets/User_sm.svg";
 import AuthContext from "../context/auth-context";
-import axios from "axios";
 import SuccessAlert from "../components/SuccessAlert";
 import ListingDetails from "../components/Listings/ListingDetails";
 import BidForm from "../components/BidForm";
 import ReviewForm from "../components/ReviewForm";
 import BidsMade from "../components/BidsMade";
 
-import {Link} from "react-router-dom"
+import {getReq} from "../requests/Request";
+
+import {Link} from "react-router-dom";
 // import ModalDialog from "react-bootstrap/ModalDialog";
 
 class FullListing extends Component {
@@ -40,26 +41,17 @@ class FullListing extends Component {
   componentDidMount() {
     // const lid = this.props.listing[0].LID;
     const username = this.props.listing[0].UID;
-    axios
-      .get(`http://localhost:4567/api/reviews/rating/${username}`, {
-        headers: {
-          Authorization: this.context.token
+    getReq(`reviews/rating/${username}`,null,(response) => {
+      const rating = response.data.data.rating;
+      const reviews = response.data.data.count;
+      this.setState({
+        listingUser: {
+          ...this.state.listingUser,
+          rating: (rating===undefined)?0:rating,
+          reviews: (reviews===undefined)?0:reviews
         }
-      })
-      .then(response => {
-          const rating = response.data.data.rating;
-          const reviews = response.data.data.count;
-          this.setState({
-            listingUser: {
-              ...this.state.listingUser,
-              rating: (rating===undefined)?0:rating,
-              reviews: (reviews===undefined)?0:reviews
-            }
-          });
-      })
-      .catch(error => {
-        console.log(`error:${JSON.stringify(error)}`);
       });
+    })
   }
 
   setSendReq() {

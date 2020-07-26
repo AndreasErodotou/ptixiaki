@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import SimpleTemplatePage from "./templates/SimpleTemplatePage";
 import Review from "../components/Review";
 import UserDetails from "../components/UserDetails";
-import axios from "axios";
 import AuthContent from "../context/auth-context";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Filters from '../components/Filters/Filters';
+
+import {getReq} from "../requests/Request";
+
 
 class UserProfilePage extends Component {
   constructor(props) {
@@ -28,103 +30,41 @@ class UserProfilePage extends Component {
 
   componentDidMount() {
     const path=window.location.pathname;
-    console.log(`pathname:${window.location.pathname}`);
-    axios
-      .get(`http://localhost:4567/api${path}`, {
-        headers: {
-          Authorization: this.context.token
-        }
-      })
-      .then(response => {
+    // console.log(`pathname:${window.location.pathname}`);
+
+    [
+      path.substring(1),
+      `${path}/reviews/rating`.substring(1),
+      `${path}/bids/selected/count`.substring(1)
+    ].map((path) => {
+      getReq(path,null,response => {
         this.setState({
           user: {
             ...this.state.user,
             ...response.data.data
           }
         });
-      })
-      .catch(error => {
-        console.log(`error: ${JSON.stringify(error)}`);
       });
+    })
 
-    axios
-      .get(
-        `http://localhost:4567/api${path}/reviews/rating`,
-        {
-          headers: {
-            Authorization: this.context.token
-          }
-        }
-      )
-      .then(response => {
-        this.setState({
-          user: {
-            ...this.state.user,
-            ...response.data.data
-          }
-        });
-      })
-      .catch(error => {
-        console.log(`error: ${JSON.stringify(error)}`);
+    getReq(`reviews?TO_UID=${path.split('/')[2]}`,null,response => {
+      this.setState({
+        reviews: response.data.data
       });
-
-    axios
-      .get(
-        `http://localhost:4567/api${path}/bids/selected/count`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token")
-          }
-        }
-      )
-      .then(response => {
-        this.setState({
-          user: {
-            ...this.state.user,
-            ...response.data.data
-          }
-        });
-      })
-      .catch(error => {
-        console.log(`error: ${JSON.stringify(error)}`);
-      });
-
-    axios
-      .get(`http://localhost:4567/api/reviews?TO_UID=${path.split('/')[2]}`, {
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
-      })
-      .then(response => {
-        this.setState({
-          reviews: response.data.data
-        });
-      })
-      .catch(error => {
-        console.log(`error: ${JSON.stringify(error)}`);
-      });
+    });
   }
 
   componentDidUpdate() {
     const query= this.state.query;
     if(query!=="" && this.state.update){
-      const path = window.location.pathname;
-      alert(`http://localhost:4567api/reviews?TO_UID=${this.context.username}${this.state.query}`);
-      axios
-          .get(`http://localhost:4567/api/reviews?TO_UID=${this.context.username}${this.state.query}`, {
-            headers: {
-              Authorization: this.context.token
-            }
-          })
-          .then(response => {
-            this.setState({
-              reviews: [...response.data.data],
-              update:false
-            });
-          })
-          .catch(error => {
-            console.log(`error: ${JSON.stringify(error)}`);
-          });
+      // const path = window.location.pathname;
+
+      getReq(`reviews?TO_UID=${this.context.username}${this.state.query}`,null,response => {
+        this.setState({
+          reviews: [...response.data.data],
+          update:false
+        });
+      });
     }
   }
 
@@ -137,8 +77,8 @@ class UserProfilePage extends Component {
   }
 
   render(){
-    const Categories = ["Electrician", "Hydraulic", "Engineer"];
-    const Locations = ["Nicosia", "Heraklion", "Athens"];
+    // const Categories = ["Electrician", "Hydraulic", "Engineer"];
+    // const Locations = ["Nicosia", "Heraklion", "Athens"];
     let contentTop;
     if (this.state.user !== null && this.state.user !== undefined) {
       contentTop = <UserDetails user={this.state.user} />;

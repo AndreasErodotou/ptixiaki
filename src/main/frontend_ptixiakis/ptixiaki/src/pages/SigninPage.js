@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 
 import AuthContext from "../context/auth-context";
 
+import {getReq,postReq} from "../requests/Request";
+
+
 class Signin extends React.Component {
   constructor(props) {
     super(props);
@@ -16,40 +19,15 @@ class Signin extends React.Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    let jwtToken = localStorage.getItem("token");
     console.log(`contex in login:${JSON.stringify(this.context)}`);
-    fetch("http://localhost:4567/api/listings", {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Authorization: jwtToken
-      }
-    })
-      .then(response => {
-        // console.log("Get Listings Status: " + response.status);
-        if (response.status >= 400) {
-          return response.json().then(errorMsg => {
-            let error;
-            error.statusCode = response.status;
-            error.msg = errorMsg;
-            throw error;
-          });
-        }
-        return response.json();
-      })
-      .then(resJson => {
-        this.setState({
-          ...this.state,
-          listings: resJson.data
-        });
-        this.props.history.push("/");
-        console.log(resJson.data);
-      })
-      .catch(error => {
-        if (error.statusCode === 403) {
-          return this.props.history.push("/signin");
-        }
+    getReq('listings',null,response => {
+      this.setState({
+        ...this.state,
+        listings: response.data
       });
+      this.props.history.push("/");
+      console.log(response.data);
+    });
   }
 
   onLoginError() {
@@ -65,20 +43,15 @@ class Signin extends React.Component {
 
     let user = { email: email, password: password };
 
-    fetch("http://localhost:4567/api/login", {
-      method: "post",
-      body: JSON.stringify(user)
-    })
-      .then(response => response.json())
-      .then(isAuthenticated => {
-        if (isAuthenticated.token) {
-          console.log("success");
-          localStorage.setItem("token", isAuthenticated.token);
-          window.location.reload();
-        } else {
-          this.onLoginError();
-        }
-      });
+    postReq('login',user,isAuthenticated => {
+      if (isAuthenticated.data.token) {
+        console.log("success");
+        localStorage.setItem("token", isAuthenticated.data.token);
+        window.location.reload();
+      } else {
+        this.onLoginError();
+      }
+    });
   }
 
   render() {

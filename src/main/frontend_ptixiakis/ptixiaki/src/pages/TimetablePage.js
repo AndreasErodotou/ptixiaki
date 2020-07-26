@@ -5,6 +5,9 @@ import SimpleTemplate from "./templates/SimpleTemplatePage";
 import Timetable from "../components/Timetable/Timetable";
 import AuthContext from "../context/auth-context";
 
+import {getReq} from "../requests/Request";
+
+
 class TimetablePage extends Component {
   constructor(props) {
     super(props);
@@ -17,37 +20,11 @@ class TimetablePage extends Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    fetch(`http://localhost:4567/api/events/${this.context.username}`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Authorization: this.context.token
-      }
-    })
-      .then(response => {
-        // console.log("Get Listings Status: " + response.status);
-        if (response.status >= 400) {
-          return response.json().then(errorMsg => {
-            let error;
-            error.statusCode = response.status;
-            error.msg = errorMsg;
-            throw error;
-          });
-        }
-        return response.json();
-      })
-      .then(resJson => {
-        this.setState({
-          events: resJson.data
-        });
-        console.log(resJson.data);
-      })
-      .catch(error => {
-        console.log("ERROR: " + error.msg);
-        if (error.statusCode === 403) {
-          return this.props.history.push("/signin");
-        }
+    getReq(`events/${this.context.username}`,null,response => {
+      this.setState({
+        events: response.data.data
       });
+    });
   }
 
   render() {

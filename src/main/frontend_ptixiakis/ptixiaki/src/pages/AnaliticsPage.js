@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Analitics from "../components/AnaliticsChart";
 import SimpleTemplatePage from "./templates/SimpleTemplatePage";
 import AuthContext from "../context/auth-context";
+import {getReq} from "../requests/Request"
+
 class AnaliticsPage extends Component {
   constructor(props) {
     super(props);
@@ -13,38 +15,12 @@ class AnaliticsPage extends Component {
   }
   static contextType = AuthContext;
   componentDidMount() {
-    fetch(`http://localhost:4567/api/statistics/${this.context.username}`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Authorization: this.context.token
-      }
-    })
-      .then(response => {
-        // console.log("Get Listings Status: " + response.status);
-        if (response.status >= 400) {
-          return response.json().then(errorMsg => {
-            let error;
-            error.statusCode = response.status;
-            error.msg = errorMsg;
-            throw error;
-          });
-        }
-        return response.json();
-      })
-      .then(resJson => {
-        this.setState({
-          ...this.state,
-          analitics: resJson.data
-        });
-        console.log(resJson.data);
-      })
-      .catch(error => {
-        console.log("ERROR: msg:" + error.msg + " status: " + error.statusCode);
-        if (error.statusCode === 403) {
-          this.props.history.push("/signin");
-        }
+    getReq(`statistics/${this.context.username}`,null,(res) => {
+      this.setState({
+        ...this.state,
+        analitics: res.data.data
       });
+    })
   }
 
   chartClick(chartName) {

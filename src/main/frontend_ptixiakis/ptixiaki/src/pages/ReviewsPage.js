@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 import Listing from "../components/Listings/Listing";
-import axios from "axios";
 import AuthContext from "../context/auth-context";
 import FullListing from "./FullListingPage";
 import Template from "./templates/TemplatePage";
+
+import {getReq} from "../requests/Request";
+
 
 class ReviewsPage extends Component {
   constructor(props) {
@@ -26,51 +28,21 @@ class ReviewsPage extends Component {
     const prevQuery= this.state.searchQuery;
 
     if(query!=="" && (prevQuery === "" || prevQuery !== query)){
-      axios
-          .get(
-              `http://localhost:4567/api/users/${this.context.username}/listings${query}&selected=true`,
-              {
-                headers: {
-                  Authorization: this.context.token
-                }
-              }
-          )
-          .then(response => {
-            this.setState({
-              listings: [...response.data.data],
-              searchQuery: query,
-              updated: false
-            });
-          })
-          .catch(error => {
-            if (error.response === undefined) {
-              // return this.props.history.push("/signin");
-            }
-            console.log(`error:${JSON.stringify(error)}`);
-          });
+      getReq(`users/${this.context.username}/listings${query}&selected=true`,null,(response) => {
+        this.setState({
+          listings: [...response.data.data],
+          searchQuery: query,
+          updated: false
+        });
+      });
     }else if(query==="" && !this.state.updated){
-      axios
-          .get(
-              `http://localhost:4567/api/users/${this.context.username}/listings?selected=true`,
-              {
-                headers: {
-                  Authorization: this.context.token
-                }
-              }
-          )
-          .then(response => {
-            this.setState({
-              listings: [...response.data.data],
-              searchQuery: query,
-              updated: true
-            });
-          })
-          .catch(error => {
-            if (error.response === undefined) {
-              // return this.props.history.push("/signin");
-            }
-            console.log(`error:${JSON.stringify(error)}`);
-          });
+      getReq(`users/${this.context.username}/listings?selected=true`,null,(response) => {
+        this.setState({
+          listings: [...response.data.data],
+          searchQuery: query,
+          updated: true
+        });
+      });
     }
   }
 

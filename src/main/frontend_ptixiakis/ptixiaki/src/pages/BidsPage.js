@@ -4,7 +4,8 @@ import FullListing from "./FullListingPage.js";
 import Template from "./templates/TemplatePage";
 import AuthContext from "../context/auth-context";
 
-import axios from "axios";
+import {getReq} from "../requests/Request"
+
 
 class BidsPage extends Component {
   constructor(props) {
@@ -31,23 +32,13 @@ class BidsPage extends Component {
     const prevQuery= this.state.searchQuery;
 
     if((query!=="" && (prevQuery === "" || prevQuery !== query)) || (query==="" && !this.state.updated)){
-      axios
-          .get(`http://localhost:4567/api/users/${this.context.username}/listings${query}`, {
-            headers: {
-              Authorization: this.context.token
-            }
-          })
-          .then(response => {
-            console.log(response);
-            this.setState({
-              listings: [...response.data.data],
-              searchQuery: query,
-              updated: (query==="")?true:false
-            });
-          })
-          .catch(error => {
-            // console.log(`error:${JSON.stringify(error)}`);
-          });
+      getReq(`users/${this.context.username}/listings${query}`,null,(response) => {
+        this.setState({
+          listings: [...response.data.data],
+          searchQuery: query,
+          updated: (query==="")?true:false
+        });
+      });
     }
   }
 
