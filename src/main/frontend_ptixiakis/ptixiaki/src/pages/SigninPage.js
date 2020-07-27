@@ -20,7 +20,7 @@ class Signin extends React.Component {
 
   componentDidMount() {
     console.log(`contex in login:${JSON.stringify(this.context)}`);
-    getReq('listings',null,response => {
+    getReq('listings',response => {
       this.setState({
         ...this.state,
         listings: response.data

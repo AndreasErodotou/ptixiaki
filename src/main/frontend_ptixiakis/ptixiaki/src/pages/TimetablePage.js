@@ -20,7 +20,7 @@ class TimetablePage extends Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    getReq(`events/${this.context.username}`,null,response => {
+    getReq(`events/${this.context.username}`,response => {
       this.setState({
         events: response.data.data
       });

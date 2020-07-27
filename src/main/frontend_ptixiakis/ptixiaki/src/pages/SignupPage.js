@@ -121,7 +121,7 @@ class Signup extends React.Component {
     let email;
     let username;
     if (this.state.isValid.email) {
-      getReq(`users?email=${this.state.user.email}`,null,(response) => {
+      getReq(`users?email=${this.state.user.email}`,(response) => {
         email = response.data;
         if (email.status !== "SUCCESS") {
           warnings += email.msg;
@@ -129,7 +129,7 @@ class Signup extends React.Component {
         }
 
         if (this.state.isValid.username) {
-          getReq(`users?username=${this.state.user.username}`, null, response => {
+          getReq(`users?username=${this.state.user.username}`, response => {
             username = response.data;
 
             if (username.status !== "SUCCESS") {

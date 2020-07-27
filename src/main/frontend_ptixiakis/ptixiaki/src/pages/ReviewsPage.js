@@ -28,7 +28,7 @@ class ReviewsPage extends Component {
     const prevQuery= this.state.searchQuery;
 
     if(query!=="" && (prevQuery === "" || prevQuery !== query)){
-      getReq(`users/${this.context.username}/listings${query}&selected=true`,null,(response) => {
+      getReq(`users/${this.context.username}/listings${query}&selected=true`,(response) => {
         this.setState({
           listings: [...response.data.data],
           searchQuery: query,
@@ -36,7 +36,7 @@ class ReviewsPage extends Component {
         });
       });
     }else if(query==="" && !this.state.updated){
-      getReq(`users/${this.context.username}/listings?selected=true`,null,(response) => {
+      getReq(`users/${this.context.username}/listings?selected=true`,(response) => {
         this.setState({
           listings: [...response.data.data],
           searchQuery: query,

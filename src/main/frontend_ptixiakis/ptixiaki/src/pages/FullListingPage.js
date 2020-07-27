@@ -41,7 +41,7 @@ class FullListing extends Component {
   componentDidMount() {
     // const lid = this.props.listing[0].LID;
     const username = this.props.listing[0].UID;
-    getReq(`reviews/rating/${username}`,null,(response) => {
+    getReq(`reviews/rating/${username}`,(response) => {
       const rating = response.data.data.rating;
       const reviews = response.data.data.count;
       this.setState({

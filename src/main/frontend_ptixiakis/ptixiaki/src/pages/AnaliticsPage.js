@@ -15,7 +15,7 @@ class AnaliticsPage extends Component {
   }
   static contextType = AuthContext;
   componentDidMount() {
-    getReq(`statistics/${this.context.username}`,null,(res) => {
+    getReq(`statistics/${this.context.username}`,(res) => {
       this.setState({
         ...this.state,
         analitics: res.data.data

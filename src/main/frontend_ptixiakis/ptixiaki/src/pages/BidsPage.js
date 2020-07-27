@@ -32,7 +32,7 @@ class BidsPage extends Component {
     const prevQuery= this.state.searchQuery;
 
     if((query!=="" && (prevQuery === "" || prevQuery !== query)) || (query==="" && !this.state.updated)){
-      getReq(`users/${this.context.username}/listings${query}`,null,(response) => {
+      getReq(`users/${this.context.username}/listings${query}`,(response) => {
         this.setState({
           listings: [...response.data.data],
           searchQuery: query,

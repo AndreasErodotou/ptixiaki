@@ -4,7 +4,6 @@ import FullListing from "./FullListingPage.js";
 import Template from "./templates/TemplatePage";
 import AuthContext from "../context/auth-context";
 
-import axios from "axios";
 import {getReq} from "../requests/Request"
 
 // import { Route } from "react-router-dom";
@@ -31,47 +30,28 @@ class Listings extends React.Component {
   
   static contextType = AuthContext;
 
-  getListingsRequest (URL){
-    axios
-        .get(URL, {
-          headers: {
-            Authorization: this.context.token
-          }
-        })
-        .then(response => {
-          console.log(response);
-          this.setState({
-            listings: response.data.data
-          });
-        })
-        .catch(error => {
-          if (error.response === undefined) {
-            // return this.props.history.push("/signin");
-          }
-          console.log(`error:${JSON.stringify(error)}`);
-        });
-  }
-
   async componentDidMount() {
     if(this.props.location.pathname.indexOf("/search")<0) {
       let query='';
 
       let professionalFilters = null;
       if (this.context.accountType === "PROFESSIONAL") {
-        let res = await axios.get(`http://localhost:4567/api/users/${this.context.username}`, {
-          headers: {
-            Authorization: this.context.token
-          }
+        let userDetails;
+        getReq(`users/${this.context.username}`, response => {
+          userDetails =  response.data.data;
+          query = `?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
+          console.log("userDetails:" + userDetails);
+          professionalFilters = {
+            categories: userDetails.jobs,
+            locations: userDetails.servedLoc
+          };
+          this.setState({
+            ...this.state,
+            profFilters: professionalFilters,
+            searchQuery: query
+          });
         });
-        let userDetails=  await res.data.data;
-      
-        query = `?categories=${userDetails.jobs.join(',', ',')}&locations=${userDetails.servedLoc.join(',', ',')}`;
-        console.log("userDetails:" + userDetails);
-        professionalFilters = {
-          categories: userDetails.jobs,
-          locations: userDetails.servedLoc
-        };
-      }
+      }else{
         this.setState({
           ...this.state,
           profFilters: professionalFilters,
@@ -79,6 +59,7 @@ class Listings extends React.Component {
         });
       }
     }
+  }
 
   componentDidUpdate() {
     const query=this.props.history.location.search;
@@ -91,7 +72,6 @@ class Listings extends React.Component {
     if((query!=="" && (prevQuery === "" || prevQuery !== query)) || ((query==="" && !this.state.updated) && (!this.state.firstTime || this.context.accountType==="CUSTOMER"))){
       
       getReq(`${userUrl}listings${query}`,
-        null,
         (response)=>{
           this.setState({
             listings: [...response.data.data],

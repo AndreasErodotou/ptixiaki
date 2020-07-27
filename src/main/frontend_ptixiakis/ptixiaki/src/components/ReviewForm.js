@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
-import axios from "axios";
 import AuthContext from "../context/auth-context";
 import Select from "react-select";
+
+import {getReq, postReq, putReq} from "../requests/Request";
+
 
 const ratingArray = [1, 2, 3, 4, 5];
 //   { label: "1", value: 1 },
@@ -44,39 +46,26 @@ class ReviewForm extends Component {
       // if(this.context.accountType==="PROFESSIONAL"){
       //   UID=this.context.username;
       // }
-      axios
-        .get(`http://localhost:4567/api/users/${this.context.username}/listings/${this.props.LID}/reviews`, {
-          headers: {
-            Authorization: this.context.token
-          }
-        })
-        .then(response => {
-          if (response.data.data[0] !== undefined && response.data.data[0] !== null  ) {
-            this.setState({
-              review: { ...response.data.data[0] },
-              isReviewValid: {comments: true},
-              reviewExists: true
-            });
-          } else {
-            this.setState({
-              reviewExists: false
-            });
-          }
-        })
-        .catch(error => console.log(`Error${JSON.stringify(error)}`));
+      getReq(`users/${this.context.username}/listings/${this.props.LID}/reviews`,response => {
+        if (response.data.data[0] !== undefined && response.data.data[0] !== null  ) {
+          this.setState({
+            review: { ...response.data.data[0] },
+            isReviewValid: {comments: true},
+            reviewExists: true
+          });
+        } else {
+          this.setState({
+            reviewExists: false
+          });
+        }
+      });
     }
   }
 
   async handleReview() {
     if (this.state.isReviewValid.comments) {
       if(this.state.reviewExists){
-        axios
-        .put(`http://localhost:4567/api/reviews/${this.state.review.RID}`, this.state.review, {
-          headers: {
-            Authorization: this.context.token
-          } 
-        })
-        .then(response => {
+        putReq(`reviews/${this.state.review.RID}`,this.state.review,response => {
           if (response.data.status === "SUCCESS") {
             const title="Review Edited";
            
@@ -84,40 +73,35 @@ class ReviewForm extends Component {
                        comments: ${this.state.review.comments} `;
             this.props.setSuccess(msg,title);
           }
-        })
-        .catch(error => console.log(`Error${JSON.stringify(error.response)}`));
+        });
+        
       }else{
         let review= this.state.review;
         const accountType = this.context.accountType;
         review.UID=(accountType === "PROFESSIONAL")?this.context.username:this.props.UID;
         review.TO_UID=(accountType === "PROFESSIONAL")?this.props.UID :null;
         if(accountType !== "PROFESSIONAL"){
-          let response = await axios
-              .get(`http://localhost:4567/api/listings/${this.props.LID}/bids?selected=true`, {
-                headers: {
-                  Authorization: this.context.token
-                }
-              });
-           let data = await response.data.data;
-           review.TO_UID = data[0].UID;
-           console.log("den ime prof");
+          getReq(`listings/${this.props.LID}/bids?selected=true`,(response) => {
+            review.TO_UID = response.data.data[0].UID;
+            postReq('reviews',review, response => {
+              if (response.data.status === "SUCCESS") {
+                const title="Review Posted";
+                const msg = `rating: ${this.state.review.rating}\n
+                           comments: ${this.state.review.comments} `;
+                this.props.setSuccess(msg,title);
+              }
+            });
+          });
+        }else{
+          postReq('reviews',review, response => {
+            if (response.data.status === "SUCCESS") {
+              const title="Review Posted";
+              const msg = `rating: ${this.state.review.rating}\n
+                         comments: ${this.state.review.comments} `;
+              this.props.setSuccess(msg,title);
+            }
+          });
         }
-        console.log(JSON.stringify(review));
-      axios
-        .post("http://localhost:4567/api/reviews", review, {
-          headers: {
-            Authorization: this.context.token
-          }
-        })
-        .then(response => {
-          if (response.data.status === "SUCCESS") {
-            const title="Review Posted";
-            const msg = `rating: ${this.state.review.rating}\n
-                       comments: ${this.state.review.comments} `;
-            this.props.setSuccess(msg,title);
-          }
-        })
-        .catch(error => console.log(`Error${JSON.stringify(error.response)}`));
       }
     } else {
       alert("fileds are not valid...");

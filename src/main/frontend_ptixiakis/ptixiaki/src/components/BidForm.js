@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
-import axios from "axios";
 import AuthContext from "../context/auth-context";
+
+import {getReq, postReq, putReq} from '../requests/Request';
 
 class BidForm extends Component {
   constructor(props) {
@@ -38,62 +39,40 @@ class BidForm extends Component {
     }
 
     if (this.state.isBidExists === null) {
-      axios
-        .get(`http://localhost:4567/api/users/${this.context.username}/listings/${this.props.listing[0].LID}/bids`, {
-          headers: {
-            Authorization: this.context.token
-          }
-        })
-        .then(response => {
-          console.log(
-            "get bid: response.data" + JSON.stringify(response.data)
-          );
-          if (response.data.data[0] !== undefined && response.data.data[0] !== null) {
-            console.log("SUCCESS");
-            this.setState({
-              bid: { 
-                ...response.data.data[0]
-              },
-              isBidValid: {
-                solution_decription: true,
-                price: true,
-                time_to_fix: true,
-                when: true
-              },
-              isBidExists: true
-            });
-          } else {
-            this.setState({
-              isBidExists: false
-            });
-          }
-        })
-        .catch(error => console.log(`Error${JSON.stringify(error)}`));
+      getReq(`users/${this.context.username}/listings/${this.props.listing[0].LID}/bids`,response => {
+        if (response.data.data[0] !== undefined && response.data.data[0] !== null) {
+          console.log("SUCCESS");
+          this.setState({
+            bid: { 
+              ...response.data.data[0]
+            },
+            isBidValid: {
+              solution_decription: true,
+              price: true,
+              time_to_fix: true,
+              when: true
+            },
+            isBidExists: true
+          });
+        } else {
+          this.setState({
+            isBidExists: false
+          });
+        }
+      })
     }
 
     if (this.state.bidGeneralInfo.bidsCount === -1) {
-      axios
-        .get(
-          `http://localhost:4567/api/bids/${this.props.listing[0].LID}/min`,
-          {
-            headers: {
-              Authorization: this.context.token
-            }
+      getReq(`bids/${this.props.listing[0].LID}/min`,response => {
+        const bidsCount = response.data.data.count;
+        const minBidPrice = response.data.data.price;
+        this.setState({
+          bidGeneralInfo: {
+            bidsCount: bidsCount,
+            minBidPrice: minBidPrice
           }
-        )
-        .then(response => {
-          const bidsCount = response.data.data.count;
-          const minBidPrice = response.data.data.price;
-          this.setState({
-            bidGeneralInfo: {
-              bidsCount: bidsCount,
-              minBidPrice: minBidPrice
-            }
-          });
-        })
-        .catch(error => {
-          console.log(`error:${JSON.stringify(error)}`);
         });
+      });
     }
   }
 
@@ -102,43 +81,31 @@ class BidForm extends Component {
       let data = this.state.bid
       data.UID = this.context.username;
       if(this.state.isBidExists){
-        axios
-      .put(`http://localhost:4567/api/bids/${this.state.bid.BID}`, data, {
-        headers: {
-          Authorization: this.context.token
-        }
-      })
-      .then(response => {
-        console.log("response.data.status" + response.data.status);
-        if (response.data.status === "SUCCESS") {
-          const title="Bid Edited";
-          const msg = `Bid price: ${this.state.bid.price}\n
-                      Solution: ${this.state.bid.solution_decription}\n
-                      Fixing Time: ${this.state.bid.time_to_fix}\n
-                      when: ${this.state.bid.when.split('T').join(' ')} `;
-          this.props.setSuccess(msg,title);
-        }
-      });
+        putReq(`bids/${this.state.bid.BID}`, response => {
+          console.log("response.data.status" + response.data.status);
+          if (response.data.status === "SUCCESS") {
+            const title="Bid Edited";
+            const msg = `Bid price: ${this.state.bid.price}\n
+                        Solution: ${this.state.bid.solution_decription}\n
+                        Fixing Time: ${this.state.bid.time_to_fix}\n
+                        when: ${this.state.bid.when.split('T').join(' ')} `;
+            this.props.setSuccess(msg,title);
+          }
+        });
       }else{
-        axios
-          .post("http://localhost:4567/api/bids", data, {
-            headers: {
-              Authorization: this.context.token
-            }
-          })
-          .then(response => {
-            console.log("response.data.status" + response.data.status);
-            if (response.data.status === "SUCCESS") {
-              const title="Bid Posted";
-              const msg = `Bid price: ${this.state.bid.price}\n
-                          Solution: ${this.state.bid.solution_decription}\n
-                          Fixing Time: ${this.state.bid.time_to_fix}\n
-                          when: ${this.state.bid.when.split('T').join(' ')} `;
-              this.props.setSuccess(msg,title);
-            }
-          });
-        }
+        postReq('bids',response => {
+          console.log("response.data.status" + response.data.status);
+          if (response.data.status === "SUCCESS") {
+            const title="Bid Posted";
+            const msg = `Bid price: ${this.state.bid.price}\n
+                        Solution: ${this.state.bid.solution_decription}\n
+                        Fixing Time: ${this.state.bid.time_to_fix}\n
+                        when: ${this.state.bid.when.split('T').join(' ')} `;
+            this.props.setSuccess(msg,title);
+          }
+        });
       }
+    }
   }
 
   checkValidity(){

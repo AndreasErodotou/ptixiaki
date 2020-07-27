@@ -36,8 +36,8 @@ class UserProfilePage extends Component {
       path.substring(1),
       `${path}/reviews/rating`.substring(1),
       `${path}/bids/selected/count`.substring(1)
-    ].map((path) => {
-      getReq(path,null,response => {
+    ].forEach((path) => {
+      getReq(path,response => {
         this.setState({
           user: {
             ...this.state.user,
@@ -47,7 +47,7 @@ class UserProfilePage extends Component {
       });
     })
 
-    getReq(`reviews?TO_UID=${path.split('/')[2]}`,null,response => {
+    getReq(`reviews?TO_UID=${path.split('/')[2]}`,response => {
       this.setState({
         reviews: response.data.data
       });
@@ -59,7 +59,7 @@ class UserProfilePage extends Component {
     if(query!=="" && this.state.update){
       // const path = window.location.pathname;
 
-      getReq(`reviews?TO_UID=${this.context.username}${this.state.query}`,null,response => {
+      getReq(`reviews?TO_UID=${this.context.username}${this.state.query}`,response => {
         this.setState({
           reviews: [...response.data.data],
           update:false
